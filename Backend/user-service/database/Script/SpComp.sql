@@ -39,7 +39,6 @@ BEGIN
 END
 GO
 
-
 PRINT 'Creacion procedimiento Compania Set '
 GO
 CREATE PROCEDURE dbo.dbSpCompSet

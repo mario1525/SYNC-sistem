@@ -28,12 +28,10 @@ Backend:
 - .NET Core 7.0+
 - Entity Framework Core
 - SQL Server
-- SignalR para comunicación en tiempo real
 
 Infraestructura:
 
 - Docker y Docker Compose
-- Azure App Services
 
 ## Requisitos
 
@@ -118,4 +116,4 @@ SOFTWARE.
 
 ## Contacto
 
-Mario Beltran - [mario.beltran@sync.com](mailto:mario.beltran@sync.com)
+Mario Beltran - [ma](mailto:mario.beltran@sync.com)
