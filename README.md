@@ -31,7 +31,11 @@ Backend:
 
 Infraestructura:
 
-- Docker y Docker Compose
+- Docker
+- Kubernetes (opcional)
+- API Gateway (Ocelot)
+- Servicio de Configuración (Consul)
+- Servicio de Descubrimiento (Eureka)
 
 ## Requisitos
 
@@ -40,11 +44,11 @@ Infraestructura:
 - Docker Desktop
 - SQL Server 2019+
 
-## Instalación
+## Instalación y Ejecución
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tuusuario/sync-maintenance.git
+git clone https://github.com/mario1525/sync-maintenance.git
 
 # Navegar al directorio del proyecto
 cd sync-maintenance
@@ -63,7 +67,7 @@ npm install
 ng serve
 ```
 
-1. Backend (.NET Core):
+2. Backend (.NET Core):
 
 ```bash
 cd backend
@@ -71,15 +75,93 @@ dotnet restore
 dotnet run
 ```
 
+3. Docker:
+
+```bash
+cd docker
+docker-compose up --build
+```
+
 ## Estructura del Proyecto
 
 ```
 /
 ├── frontend/           # Aplicación Angular PWA
+│   ├── src/
+│   ├── angular.json
+│   ├── package.json
+│   └── ...
 ├── backend/            # API .NET Core
-├── database/          # Scripts SQL y migraciones
+│   ├── user-service/
+│   │   ├── src/
+│   │   ├── Dockerfile
+│   │   ├── database/
+│   │   │   ├── migrations/
+│   │   │   │   ├── 2024_06_05_create_user_table.sql
+│   │   │   ├── seeds/
+│   │   │   │   ├── seed_user_data.sql
+│   │   │   ├── backups/
+│   │   │   │   ├── backup_2024_06_05.sql
+│   │   │   └── scripts/
+│   │   │       ├── create_tables.sql
+│   │   │       ├── create_stored_procedures.sql
+│   │   │       └── ...
+│   │   └── ...
+│   ├── maintenance-service/
+│   │   ├── src/
+│   │   ├── Dockerfile
+│   │   ├── database/
+│   │   │   ├── migrations/
+│   │   │   │   ├── 2024_06_05_create_maintenance_table.sql
+│   │   │   ├── seeds/
+│   │   │   │   ├── seed_maintenance_data.sql
+│   │   │   ├── backups/
+│   │   │   │   ├── backup_2024_06_05.sql
+│   │   │   └── scripts/
+│   │   │       ├── create_tables.sql
+│   │   │       ├── create_stored_procedures.sql
+│   │   │       └── ...
+│   │   └── ...
+│   ├── notification-service/
+│   │   ├── src/
+│   │   ├── Dockerfile
+│   │   ├── database/
+│   │   │   ├── migrations/
+│   │   │   │   ├── 2024_06_05_create_notification_table.sql
+│   │   │   ├── seeds/
+│   │   │   │   ├── seed_notification_data.sql
+│   │   │   ├── backups/
+│   │   │   │   ├── backup_2024_06_05.sql
+│   │   │   └── scripts/
+│   │   │       ├── create_tables.sql
+│   │   │       ├── create_stored_procedures.sql
+│   │   │       └── ...
+│   │   └── ...
+│   ├── api-gateway/
+│   │   ├── src/
+│   │   ├── Dockerfile
+│   │   └── ...
+│   ├── config-service/
+│   │   ├── src/
+│   │   ├── Dockerfile
+│   │   └── ...
+│   ├── discovery-service/
+│   │   ├── src/
+│   │   ├── Dockerfile
+│   │   └── ...
+│   └── docker-compose.yml
+├── database/          # Scripts SQL y migraciones generales
+│   ├── README.md
+│   └── ...
 ├── docker/            # Configuraciones Docker
-└── docs/             # Documentación adicional
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   └── ...
+├── docs/             # Documentación adicional
+│   ├── architecture.md
+│   ├── api-docs.md
+│   └── ...
+└── README.md
 ```
 
 ## Contribución
