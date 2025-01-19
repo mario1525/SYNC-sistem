@@ -3,74 +3,61 @@ using Entity;
 using Middlewares;
 namespace Services
 {
-    public class UsuarioLogical
+    public class UsersLogical
     {
-        private readonly DaoUsuario _daoUsuario;
+        private readonly DaoUsers _daoUsers;
         
-        public UsuarioLogical(DaoUsuario daoUsuario)
+        public UsersLogical(DaoUsers daoUsers)
         {
-            _daoUsuario = daoUsuario;
+            _daoUsers = daoUsers;
             
         }
 
-        public async Task<List<Usuario>> GetUsuario(String Id)
+        public async Task<List<Users>> GetUser(String Id)
         {            
-            return await _daoUsuario.GetUser(Id);
+            return await _daoUsers.GetUser(Id);
+        }      
+        
+
+        public async Task<List<Users>> GetUsers(String Id)
+        {
+            return await _daoUsers.GetUsers(Id);
         }
 
-        public async Task<List<Usuario>> GetUsuariosComp(String IdCompania)
-        {
-            return await _daoUsuario.GetUsersComp(IdCompania);
-        }
-        public async Task<List<Usuario>> GetUsuariosSuperv(String IdCompania)
-        {
-            return await _daoUsuario.GetUsersSuperv(IdCompania);
-        }
-
-        public async Task<List<Usuario>> GetUsuariosOperativo(String IdCompania)
-        {
-            return await _daoUsuario.GetUsersOperativo(IdCompania);
-        }
-
-        public async Task<List<Usuario>> GetUsuarios()
-        {
-            return await _daoUsuario.GetUsers();
-        }
-
-        public Mensaje CreateUsuario(Usuario usuario)
+        public Mensaje CreateUsers(Users Users)
         {
             Guid uid = Guid.NewGuid();
-            usuario.Id = uid.ToString();           
-            _daoUsuario.SetUsers("I", usuario);
+            Users.Id = uid.ToString();           
+            _daoUsers.SetUsers("I", Users);
             Mensaje mensaje = new Mensaje();    
             mensaje.mensaje = uid.ToString();
             return mensaje;
 
         }
 
-        public Mensaje UpdateUsuario(Usuario usuario)
+        public Mensaje UpdateUsers(Users Users)
         {
-            _daoUsuario.SetUsers("A", usuario);
+            _daoUsers.SetUsers("A", Users);
             Mensaje mensaje = new Mensaje();
-            mensaje.mensaje = "usuario actualizado";
+            mensaje.mensaje = "Users actualizado";
             return mensaje;
 
         }
 
-        public Mensaje DeleteUsuario(string Id)
+        public Mensaje DeleteUsers(string Id)
         {
-            _daoUsuario.DeleteUser(Id);
+            _daoUsers.DeleteUser(Id);
             Mensaje mensaje = new Mensaje();
-            mensaje.mensaje = "usuario eliminado";
+            mensaje.mensaje = "Users eliminado";
             return mensaje;
 
         }
 
-        public Mensaje ActiveUsuario(string Id, int estado)
+        public Mensaje ActiveUsers(string Id, int estado)
         {
-            _daoUsuario.ActiveUser(Id, estado);
+            _daoUsers.ActiveUser(Id, estado);
             Mensaje mensaje = new Mensaje();
-            mensaje.mensaje = "se cambio el estado del usuario";
+            mensaje.mensaje = "se cambio el estado del Users";
             return mensaje;
 
         }        
