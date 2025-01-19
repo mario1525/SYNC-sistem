@@ -78,6 +78,7 @@ BEGIN
     CREATE TABLE dbo.Turno(
         Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
         Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre del Turno*/
+        IdComp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
         HoraInicio      TIME NOT NULL DEFAULT '00:00:00',             /*Hora de inicio del turno*/
         HoraFin         TIME NOT NULL DEFAULT '00:00:00',             /*Hora de fin del turno*/ 
         Eliminado	    BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
