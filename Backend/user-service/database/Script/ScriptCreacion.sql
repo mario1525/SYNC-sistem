@@ -27,16 +27,15 @@ BEGIN
 		Eliminado	    BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
         Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
     ) ON [PRIMARY]
-    ALTER TABLE dbo.Cuad ADD CONSTRAINT
-		FKCuad_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
+    
 END
 GO
 
 -- Tabla User_
-PRINT 'creacion de la tabla User_'
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'User')
+PRINT 'creacion de la tabla Users_'
+IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Users')
 BEGIN
-    CREATE TABLE dbo.User(
+    CREATE TABLE dbo.Users(
         Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
         Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre del usuario*/
         Apellido        VARCHAR(255) NOT NULL DEFAULT '',             /*Apellido del usuario*/
@@ -68,9 +67,24 @@ BEGIN
         Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP /*log fecha*/
     ) ON [PRIMARY]
         ALTER TABLE dbo.User_Cred ADD CONSTRAINT
-		FKUser_Cred FOREIGN KEY (IdUser) REFERENCES dbo.User(Id)
+		FKUser_Cred FOREIGN KEY (IdUser) REFERENCES dbo.Users(Id)
 END
 GO
+
+-- Tabla Turno
+PRINT 'creacion de la tabla Turno'
+IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Turno')
+BEGIN
+    CREATE TABLE dbo.Turno(
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
+        Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre del Turno*/
+        HoraInicio      TIME NOT NULL DEFAULT '00:00:00',             /*Hora de inicio del turno*/
+        HoraFin         TIME NOT NULL DEFAULT '00:00:00',             /*Hora de fin del turno*/ 
+        Eliminado	    BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
+    ) ON [PRIMARY]
+
+END
 
 -- Tabla Horario
 PRINT 'creacion de la tabla Horario'
@@ -88,21 +102,6 @@ BEGIN
     ) ON [PRIMARY]
     ALTER TABLE dbo.Horario ADD CONSTRAINT
         FKHorario_Turno FOREIGN KEY (IdTurno) REFERENCES dbo.Turno(Id),
-        FKHorario_Cuad FOREIGN KEY (IdCuad) REFERENCES dbo.Cuad(Id)
-END
-
--- Tabla Turno
-PRINT 'creacion de la tabla Turno'
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Turno')
-BEGIN
-    CREATE TABLE dbo.Turno(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre del Turno*/
-        HoraInicio      TIME NOT NULL DEFAULT '00:00:00',             /*Hora de inicio del turno*/
-        HoraFin         TIME NOT NULL DEFAULT '00:00:00',             /*Hora de fin del turno*/ 
-        Eliminado	    BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-
+        FKHorario_Cuad  FOREIGN KEY (IdCuad) REFERENCES dbo.Cuad(Id)
 END
 
