@@ -9,9 +9,9 @@ namespace Controllers.Endpoint
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UsuarioCredentialLogical _UsConLogical;
+        private readonly UsersCredentialLogical _UsConLogical;
 
-        public AuthController(UsuarioCredentialLogical usConLogical)
+        public AuthController(UsersCredentialLogical usConLogical)
         {
             _UsConLogical = usConLogical;
         }

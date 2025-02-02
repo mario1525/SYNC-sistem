@@ -4,16 +4,16 @@ using Middlewares;
 
 namespace Services
 {
-    public class UsuarioCredentialLogical
+    public class UsersCredentialLogical
     {
         private readonly DaoUsuarioCredential _daoCredential;
-        private readonly DaoUsuario _daoUsuario;
+        private readonly DaoUsers _DaoUsers;
         private readonly HashPassword _password;
         private readonly GenerateToken _Token;
-        public UsuarioCredentialLogical(DaoUsuarioCredential daoCredential, HashPassword password, GenerateToken token, DaoUsuario daoUsuario)
+        public UsersCredentialLogical(DaoUsuarioCredential daoCredential, HashPassword password, GenerateToken token, DaoUsers DaoUsers)
         {
             _daoCredential = daoCredential;
-            _daoUsuario = daoUsuario;
+            _DaoUsers = DaoUsers;
             _password = password;
             _Token = token;
 
@@ -29,8 +29,8 @@ namespace Services
                 if (acep)
                 {
                     List<UsuarioCredential> credetial = await _daoCredential.GetUserName(login.Usuario);
-                    List<Usuario> usuario = await _daoUsuario.GetUser(credetial[0].IdUsuario);
-                    Token token = _Token.GenerateJwtToken(usuario[0]);
+                    List<Users> Users = await _DaoUsers.GetUser(credetial[0].IdUser);
+                    Token token = _Token.GenerateJwtToken(Users[0]);
                     return token;
                 }   
                 return null;
@@ -39,22 +39,22 @@ namespace Services
             return null;
         }
 
-        public async Task<Mensaje> CreateUsuario(UsuarioCredential usuario)
+        public async Task<Mensaje> CreateUsers(UsuarioCredential Users)
         {
-            bool credential = await _daoCredential.ValidCredential(usuario.IdUsuario);
+            bool credential = await _daoCredential.ValidCredential(Users.IdUser);
             if( credential )
             {
                 Mensaje mensaje = new Mensaje();
-                mensaje.mensaje = "El usuario tiene credenciales asignadas";
+                mensaje.mensaje = "El Users tiene credenciales asignadas";
                 return mensaje;
             }
             else
             {
                 Guid uid = Guid.NewGuid();
-                usuario.Id = uid.ToString();
-                string PassHash = _password.Hashpassword(usuario.Contrasenia);
-                usuario.Contrasenia = PassHash;
-                _daoCredential.SetUsers("I", usuario);
+                Users.Id = uid.ToString();
+                string PassHash = _password.Hashpassword(Users.Contrasenia);
+                Users.Contrasenia = PassHash;
+                _daoCredential.SetUsers("I", Users);
                 Mensaje mensaje = new Mensaje();
                 mensaje.mensaje = "Credenciales guardadas correctamente";
                 return mensaje;
@@ -67,18 +67,18 @@ namespace Services
             return credential ;
         }
 
-        public Mensaje UpdateUsuario(UsuarioCredential usuario)
+        public Mensaje UpdateUsers(UsuarioCredential Users)
         {
-            string PassHash = _password.Hashpassword(usuario.Contrasenia);
-            usuario.Contrasenia = PassHash;
-            _daoCredential.SetUsers("A", usuario);
+            string PassHash = _password.Hashpassword(Users.Contrasenia);
+            Users.Contrasenia = PassHash;
+            _daoCredential.SetUsers("A", Users);
             Mensaje mensaje = new Mensaje();
             mensaje.mensaje = "credenciales actualizadas";
             return mensaje;
 
         }
 
-        public Mensaje DeleteUsuario(string Id)
+        public Mensaje DeleteUsers(string Id)
         {
             _daoCredential.DeleteUser(Id);
             Mensaje mensaje = new Mensaje();
@@ -87,7 +87,7 @@ namespace Services
 
         }
 
-        public Mensaje ActiveUsuario(string Id, int estado)
+        public Mensaje ActiveUsers(string Id, int estado)
         {
             _daoCredential.ActiveUser(Id, estado);
             Mensaje mensaje = new Mensaje();

@@ -97,7 +97,7 @@ namespace Data
                     new SqlParameter("@Id", user.Id),
                     new SqlParameter("@Usuario", user.Usuario),
                     new SqlParameter("@Contrasenia", user.Contrasenia),                    
-                    new SqlParameter("@IdUsuario", user.IdUsuario),                    
+                    new SqlParameter("@IdUsuario", user.IdUser),                    
                     new SqlParameter("@Estado", 1),
                     new SqlParameter("@Operacion", operacion),
                };
@@ -167,8 +167,8 @@ namespace Data
                     Id = row["Id"].ToString(),
                     Usuario = row["Id"].ToString(),
                     Contrasenia = row["Contrasenia"].ToString(),
-                    IdUsuario = row["IdUsuario"].ToString(),
-                    Estado = row["Estado"].ToString(),
+                    IdUser = row["IdUsuario"].ToString(),
+                    Estado = Convert.ToBoolean(row["Estado"]),
                     //Eliminado = Convert.ToBoolean(row["Eliminado"]),
                     Fecha_log = row["Fecha_log"].ToString()
                     // Asigna otras propiedades según tu DataTable

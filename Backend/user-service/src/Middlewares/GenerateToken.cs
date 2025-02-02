@@ -19,7 +19,7 @@ namespace Middlewares
             _audience = audience;
         }
 
-        public Token GenerateJwtToken(Usuario user)
+        public Token GenerateJwtToken(Users user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -28,7 +28,7 @@ namespace Middlewares
             {
                  new Claim(JwtRegisteredClaimNames.Sub, user.Nombre),
                  new Claim(ClaimTypes.Role, user.Rol),                
-                 new Claim("IdCompania", user.IdCompania),
+                 new Claim("IdComp", user.IdComp),
                  new Claim(ClaimTypes.NameIdentifier, user.Id),
                  new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 // Puedes agregar más claims según tus necesidades

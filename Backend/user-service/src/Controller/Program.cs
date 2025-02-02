@@ -24,19 +24,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<SqlClient>(new SqlClient(connectionString));
 
 //DATA
-builder.Services.AddSingleton<DaoUsuario>();
+builder.Services.AddSingleton<DaoUsers>();
 builder.Services.AddSingleton<DaoUsuarioCredential>();
 
 // ENTITY
-builder.Services.AddSingleton<Usuario>(); 
+builder.Services.AddSingleton<Users>(); 
 builder.Services.AddSingleton<Mensaje>();
 builder.Services.AddSingleton<UsuarioCredential>();
 builder.Services.AddSingleton<Login>();
 builder.Services.AddSingleton<Token>();
+builder.Services.AddSingleton<Cuad>();
+builder.Services.AddSingleton<Horario>();
+builder.Services.AddSingleton<Turno>();
+
+
 
 // SERVICES
-builder.Services.AddSingleton<UsuarioLogical>();
-builder.Services.AddSingleton<UsuarioCredentialLogical>();
+builder.Services.AddSingleton<UsersLogical>();
+builder.Services.AddSingleton<UsersCredentialLogical>();
 
 //Middlewares
 builder.Services.AddSingleton<HashPassword>();
