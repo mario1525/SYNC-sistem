@@ -1,6 +1,20 @@
 version: "3.8"
 
-services:  
+services: 
+
+  user-services:
+    image: user-services:latest
+    build:
+      context: ../Backend/user-service/src
+      dockerfile: Dockerfile
+    ports:
+      - "7020:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Data Source=sqlserver,1433;Initial Catalog=ProductTrack;Persist Security Info=True;TrustServerCertificate=True; User ID=SA;Password=logPaSs#123$32 
+    depends_on:
+      - user-sqlserver
+    restart: always
   
   user-sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -12,7 +26,7 @@ services:
       - "1433:1433"
     volumes:
       - sql_data:/var/opt/mssql    
-    restart: always     
+    restart: always  
 
 volumes:
   sql_data:

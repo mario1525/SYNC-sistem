@@ -21,13 +21,13 @@ namespace Data
             try
             {
                 // Nombre del procedimiento almacenado
-                const string procedureName = "dbo.dbSpUsuarioCredencialGet";
+                const string procedureName = "dbo.db_Sp_User_Cred_Get";
 
                 // Definición de parámetros
                 var parameters = new[]
                 {
-                new SqlParameter("@IdUsuarioCredencial", ""),
-                new SqlParameter("@Usuario", username),                
+                new SqlParameter("@IdUserCred", ""),
+                new SqlParameter("@User", username),                
                 new SqlParameter("@Estado", 1)
                 };
 
@@ -50,7 +50,7 @@ namespace Data
             try
             {
                 // Nombre del procedimiento almacenado
-                const string procedureName = "dbo.dbSpValidateUsuarioCredencial";
+                const string procedureName = "dbo.db_Sp_User_Cred_Validate";
 
                 // Definición de parámetros
                 var parameters = new[]
@@ -91,13 +91,13 @@ namespace Data
                     throw new ArgumentNullException(nameof(user));
                 }
 
-                string procedureName = "dbo.dbSpUsuarioCredencialSet";
+                string procedureName = "dbo.db_Sp_User_Cred_Set";
                 SqlParameter[] parameters =
                 {
                     new SqlParameter("@Id", user.Id),
                     new SqlParameter("@Usuario", user.Usuario),
                     new SqlParameter("@Contrasenia", user.Contrasenia),                    
-                    new SqlParameter("@IdUsuario", user.IdUser),                    
+                    new SqlParameter("@IdUser", user.IdUser),                    
                     new SqlParameter("@Estado", 1),
                     new SqlParameter("@Operacion", operacion),
                };
@@ -167,7 +167,7 @@ namespace Data
                     Id = row["Id"].ToString(),
                     Usuario = row["Id"].ToString(),
                     Contrasenia = row["Contrasenia"].ToString(),
-                    IdUser = row["IdUsuario"].ToString(),
+                    IdUser = row["IdUser"].ToString(),
                     Estado = Convert.ToBoolean(row["Estado"]),
                     //Eliminado = Convert.ToBoolean(row["Eliminado"]),
                     Fecha_log = row["Fecha_log"].ToString()

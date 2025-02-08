@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34221.43
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api-gateway", "api-gateway.csproj", "{A81EF7C7-3F16-427E-8894-B8A7CF9F955D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{6D238F1F-173E-4481-840F-DD5E800721BD}"
+	ProjectSection(SolutionItems) = preProject
+		ocelot.json = ocelot.json
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A81EF7C7-3F16-427E-8894-B8A7CF9F955D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A81EF7C7-3F16-427E-8894-B8A7CF9F955D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A81EF7C7-3F16-427E-8894-B8A7CF9F955D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A81EF7C7-3F16-427E-8894-B8A7CF9F955D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A062383-E5B2-4C0D-B5FC-45A96CFF690C}
+	EndGlobalSection
+EndGlobal
