@@ -2,17 +2,17 @@
 -- Author:		Mario Beltran
 -- Create Date: 2024/05/15
 --        
--- Description: Creation of the DB DB_SYNC
+-- Description: Creation of the DB DB_SYNC_MAINTENANCE
 -- ===================================================================================
 
 PRINT 'Creating the DB'
-IF NOT EXISTS(SELECT NAME FROM SYSDATABASES WHERE NAME = 'DB_SYNC')
+IF NOT EXISTS(SELECT NAME FROM SYSDATABASES WHERE NAME = 'DB_SYNC_MAINTENANCE')
 BEGIN
-    CREATE DATABASE DB_SYNC
+    CREATE DATABASE DB_SYNC_MAINTENANCE
 END
 GO  
 
-USE DB_SYNC
+USE DB_SYNC_MAINTENANCE
 GO
 
 -- Table Comp
@@ -174,7 +174,7 @@ BEGIN
 END
 
 -- TipoActividad
-PRINT 'creacion de la tabla TipoActividad_ '
+PRINT 'creacion de la tabla TipoActividad '
 IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'TipoActividad')
 BEGIN
     CREATE TABLE dbo.TipoActividad(

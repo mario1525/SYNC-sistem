@@ -7,7 +7,7 @@ namespace Entity
          public string Nombre { get; set; }  
         public string IdComp { get; set; }
         public bool Estado { get; set; }
-        public string Fecha { get; set; }
+        public string Fecha_log { get; set; }
 
     }
 }
