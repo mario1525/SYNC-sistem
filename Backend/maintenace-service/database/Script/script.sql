@@ -22,34 +22,18 @@ BEGIN
     CREATE TABLE dbo.Comp(
         Id            VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',            /* Internal record ID */
         Nombre        VARCHAR(255) NOT NULL DEFAULT '',                       /* Company name */
-        City          VARCHAR(255) NOT NULL DEFAULT '',                       /* City where the main office is located */
+        Ciudad        VARCHAR(255) NOT NULL DEFAULT '',                       /* City where the main office is located */
         NIT           VARCHAR(255) NOT NULL DEFAULT '',                       /* Company registration number */
         Direccion     VARCHAR(255) NOT NULL DEFAULT '',                       /* Company address */ 
         Sector        VARCHAR(255) NOT NULL DEFAULT '',                       /* Sector in which the company operates */
         Estado        BIT NOT NULL DEFAULT 1,                                 /* Status */
-        Deleted       BIT NOT NULL DEFAULT 0,                                 /* Deleted */
-        LogDate       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP                 /* Log date */
+        Eliminado       BIT NOT NULL DEFAULT 0,                                 /* Deleted */
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP                 /* Log date */
     ) 
 END
 GO
 
 
--- Tabla Esp_
-PRINT 'creacion de la tabla Esp'
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Esp')
-BEGIN
-    CREATE TABLE dbo.Esp(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre de la cuadrilla*/
-        IdComp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
-        Estado		    BIT NOT NULL DEFAULT 1,                       /*Estado*/
-		Eliminado	    BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-    ALTER TABLE dbo.Esp ADD CONSTRAINT
-		FKEsp_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
-END
-GO
 
 
 -- Guia

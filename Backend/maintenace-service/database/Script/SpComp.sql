@@ -6,17 +6,17 @@
 -- ========================================================
 
 PRINT 'Creacion procedimientos tabla Compania'
-IF EXISTS(SELECT NAME FROM SYSOBJECTS WHERE NAME LIKE 'dbSpCompania%')
+IF EXISTS(SELECT NAME FROM SYSOBJECTS WHERE NAME LIKE 'db_Sp_Comp_%')
 BEGIN
-    DROP PROCEDURE dbo.dbSpCompGet
-	DROP PROCEDURE dbo.dbSpCompSet
-	DROP PROCEDURE dbo.dbSpCompDet
-	DROP PROCEDURE dbo.dbSpCompActive
+    DROP PROCEDURE dbo.db_Sp_Comp_Get
+	DROP PROCEDURE dbo.db_Sp_Comp_Set
+	DROP PROCEDURE dbo.db_Sp_Comp_Det
+	DROP PROCEDURE dbo.db_Sp_Comp_Active
 END
 
 PRINT 'Creacion procedimiento Comp Get '
 GO
-CREATE PROCEDURE dbo.dbSpCompGet
+CREATE PROCEDURE dbo.db_Sp_Comp_Get
     @Id          VARCHAR(36),
     @Nombre      VARCHAR(255),
     @NIT         VARCHAR(255),
@@ -41,7 +41,7 @@ GO
 
 PRINT 'Creacion procedimiento Compania Set '
 GO
-CREATE PROCEDURE dbo.dbSpCompSet
+CREATE PROCEDURE dbo.db_Sp_Comp_Set
     @Id          VARCHAR(36),
     @Nombre      VARCHAR(255),
     @NIT         VARCHAR(255),
@@ -69,7 +69,7 @@ GO
 
 PRINT 'Creacion procedimiento Compania Del '
 GO
-CREATE PROCEDURE dbo.dbSpCompDel
+CREATE PROCEDURE dbo.db_Sp_Comp_Del
     @Id VARCHAR(36)
 AS
 BEGIN
@@ -87,7 +87,7 @@ END
 GO
 PRINT 'Creacion procedimiento Compania Active '
 GO
-CREATE PROCEDURE dbo.dbSpCompActive
+CREATE PROCEDURE dbo.db_Sp_Comp_Active
     @Id VARCHAR(36),
     @Estado BIT
 AS
