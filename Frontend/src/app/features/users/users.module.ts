@@ -1,10 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormRegisterComponent } from './Components/form-register/form-register.component';
+import { PageRegisterComponent } from './pages/page-register/page-register.component';
+import { PageProfileComponent } from './pages/page-profile/page-profile.component';
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    FormRegisterComponent,
+    PageRegisterComponent,
+    PageProfileComponent
+  ],
   imports: [
     CommonModule
   ]
