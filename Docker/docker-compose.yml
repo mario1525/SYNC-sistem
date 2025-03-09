@@ -11,10 +11,22 @@ services:
       - "7020:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Data Source=sqlserver,1433;Initial Catalog=ProductTrack;Persist Security Info=True;TrustServerCertificate=True; User ID=SA;Password=logPaSs#123$32 
+      - ConnectionStrings__DefaultConnection=Data Source=user-sqlserver,1433;Initial Catalog=ProductTrack;Persist Security Info=True;TrustServerCertificate=True; User ID=SA;Password=logPaSs#123$32 
     depends_on:
       - user-sqlserver
     restart: always
+
+  api-gateway:
+    image: api-gateway:latest
+    build:
+      context: ../Backend/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "7021:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development      
+    restart: always
+    
   
   user-sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest

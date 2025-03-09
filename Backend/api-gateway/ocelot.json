@@ -1,17 +1,30 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/products",
-      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/Auth",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5001
+          "Host": "user-services",
+          "Port": 7020
         }
       ],
-      "UpstreamPathTemplate": "/gateway/products",
-      "UpstreamHttpMethod": [ "GET", "POST" ]
+      "UpstreamPathTemplate": "/Auth",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Users/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-services",
+          "Port": 7020
+        }
+      ],
+      "UpstreamPathTemplate": "/Users/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
     }
+
   ],
   "GlobalConfiguration": {
     "BaseUrl": "http://localhost:5000"
