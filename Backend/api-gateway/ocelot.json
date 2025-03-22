@@ -9,9 +9,41 @@
           "Port": 7020
         }
       ],
-      "UpstreamPathTemplate": "/Auth",
+      "UpstreamPathTemplate": "/apigataway/Auth",
       "UpstreamHttpMethod": [ "POST" ]
     },
+
+
+
+
+    {
+      "DownstreamPathTemplate": "/api/Credential/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-services",
+          "Port": 7020
+        }
+      ],
+      "UpstreamPathTemplate": "/apigataway/Credential/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Credential",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-services",
+          "Port": 7020
+        }
+      ],
+      "UpstreamPathTemplate": "/apigataway/Credential",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+
+
+
+
     {
       "DownstreamPathTemplate": "/api/Users/{id}",
       "DownstreamScheme": "https",
@@ -21,9 +53,53 @@
           "Port": 7020
         }
       ],
-      "UpstreamPathTemplate": "/Users/{id}",
+      "UpstreamPathTemplate": "/apigataway/Users/{id}",
       "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Users",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-services",
+          "Port": 7020
+        }
+      ],
+      "UpstreamPathTemplate": "/apigataway/Users",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+
+
+
+
+    {
+      "DownstreamPathTemplate": "/api/Comp/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenace-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigataway/Compania/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Comp",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenace-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigataway/Compania",
+      "UpstreamHttpMethod": [ "POST" ]
     }
+
+
+
+
 
   ],
   "GlobalConfiguration": {

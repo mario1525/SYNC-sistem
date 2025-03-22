@@ -2,6 +2,7 @@
 using Data.SQLClient;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Data
 {
@@ -16,7 +17,7 @@ namespace Data
             _sqlClient = dbContext;
         }
 
-        public async Task<List<Comp>> GetComp(string id, string nombre, string nit, string sector, string ciudad, string direccion, int estado)
+        public async Task<List<Comp>> GetComp(String ID)
         {
             try
             {
@@ -26,13 +27,13 @@ namespace Data
                 // Definición de parámetros
                 var parameters = new[]
                 {
-                    new SqlParameter("@Id", id),
-                    new SqlParameter("@Nombre", nombre),
-                    new SqlParameter("@NIT", nit),
-                    new SqlParameter("@Sector", sector),
-                    new SqlParameter("@Ciudad", ciudad),
-                    new SqlParameter("@Direccion", direccion),
-                    new SqlParameter("@Estado", estado)
+                    new SqlParameter("@Id", ID),
+                    new SqlParameter("@Nombre", ""),
+                    new SqlParameter("@NIT", ""),
+                    new SqlParameter("@Sector", ""),
+                    new SqlParameter("@Ciudad", ""),
+                    new SqlParameter("@Direccion", ""),
+                    new SqlParameter("@Estado", "")
                 };
 
                 // Ejecutar el procedimiento almacenado

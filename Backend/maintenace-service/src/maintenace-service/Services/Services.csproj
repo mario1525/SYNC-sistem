@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Entity\Entity.csproj" />
+    <ProjectReference Include="..\..\Middlewares\Middlewares.csproj" />
     <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
