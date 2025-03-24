@@ -23,7 +23,7 @@ namespace Controllers.Endpoints
         public async Task<ActionResult<List<Equipo>>> Get([FromQuery] string Id, string Nombre, string IdComp, string Marca, string NSerie, bool Estado)
         {
             var result = await _equipoLogical.GetEquipos(Id, Nombre, IdComp, Marca, NSerie, Estado);
-            if (result == null )
+            if (result == null || result.Count == 0)
                 return NotFound("No se encontraron equipos.");
 
             return Ok(result);
