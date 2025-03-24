@@ -15,7 +15,7 @@ namespace Data
         }
 
         // Método para obtener los registros de la tabla Actividad_Equipo
-        public async Task<List<Actividad_Equipo>> GetActividadEquipo(string idActividad, int estado)
+        public async Task<List<ActividadEquipo>> GetActividadEquipo(string idActividad, int estado)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace Data
                 // Ejecutar el procedimiento almacenado
                 DataTable dataTable = await _sqlClient.ExecuteStoredProcedure(procedureName, parameters);
 
-                List<Actividad_Equipo> listaActividadEquipo = MapDataTableToList(dataTable);
+                List<ActividadEquipo> listaActividadEquipo = MapDataTableToList(dataTable);
                 return listaActividadEquipo;
             }
             catch (Exception ex)
@@ -44,7 +44,7 @@ namespace Data
         }
 
         // Método para insertar o actualizar los registros de la tabla Actividad_Equipo
-        public async void SetActividadEquipo(string operacion, Actividad_Equipo actividadEquipo)
+        public async void SetActividadEquipo(string operacion, ActividadEquipo actividadEquipo)
         {
             try
             {
@@ -114,13 +114,13 @@ namespace Data
             }
         }
 
-        private static List<Actividad_Equipo> MapDataTableToList(DataTable dataTable)
+        private static List<ActividadEquipo> MapDataTableToList(DataTable dataTable)
         {
-            List<Actividad_Equipo> actividadEquipoList = new List<Actividad_Equipo>();
+            List<ActividadEquipo> actividadEquipoList = new List<ActividadEquipo>();
 
             foreach (DataRow row in dataTable.Rows)
             {
-                Actividad_Equipo actividadEquipo = new Actividad_Equipo
+                ActividadEquipo actividadEquipo = new ActividadEquipo
                 {
                     Id = row["Id"].ToString(),
                     IdActividad = row["IdActividad"].ToString(),

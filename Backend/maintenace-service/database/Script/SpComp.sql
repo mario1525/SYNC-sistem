@@ -10,7 +10,7 @@ IF EXISTS(SELECT NAME FROM SYSOBJECTS WHERE NAME LIKE 'db_Sp_Comp_%')
 BEGIN
     DROP PROCEDURE dbo.db_Sp_Comp_Get
 	DROP PROCEDURE dbo.db_Sp_Comp_Set
-	DROP PROCEDURE dbo.db_Sp_Comp_Det
+	DROP PROCEDURE dbo.db_Sp_Comp_Del
 	DROP PROCEDURE dbo.db_Sp_Comp_Active
 END
 
@@ -26,16 +26,16 @@ CREATE PROCEDURE dbo.db_Sp_Comp_Get
     @Estado      INT
 AS 
 BEGIN
-    SELECT Id, Nombre, Ciudad, NIT, Direccion, Sector, Estado, Fecha_log     
+    SELECT Id, Nombre, City, NIT, Direccion, Sector, Estado, LogDate     
     FROM dbo.Comp
     WHERE Id = CASE WHEN ISNULL(@Id,'')='' THEN Id ELSE @Id END
     AND Nombre LIKE CASE WHEN ISNULL(@Nombre,'')='' THEN Nombre ELSE '%'+@Nombre+'%' END    
     AND NIT LIKE CASE WHEN ISNULL(@NIT,'')='' THEN NIT ELSE '%'+@NIT+'%' END
-    AND Ciudad LIKE CASE WHEN ISNULL(@Ciudad,'')='' THEN Ciudad ELSE '%'+@Ciudad+'%' END
+    AND City LIKE CASE WHEN ISNULL(@Ciudad,'')='' THEN City ELSE '%'+@Ciudad+'%' END
     AND Sector LIKE CASE WHEN ISNULL(@Sector,'')='' THEN Sector ELSE '%'+@Sector+'%' END
     AND Direccion LIKE CASE WHEN ISNULL(@Direccion,'')='' THEN Direccion ELSE '%'+@Direccion+'%' END
     AND Estado = CASE WHEN ISNULL(@Estado,0) = 1 THEN 1 ELSE 0 END
-    AND Eliminado = 0
+    AND Deleted = 0
 END
 GO
 
@@ -54,13 +54,13 @@ AS
 BEGIN
     IF @Operacion = 'I'
     BEGIN
-        INSERT INTO dbo.Comp(Id, Nombre, Ciudad, NIT, Direccion, Sector, Estado, Fecha_log, Eliminado)
+        INSERT INTO dbo.Comp(Id, Nombre, City, NIT, Direccion, Sector, Estado, LogDate, Deleted)
         VALUES(@Id, @Nombre,@Ciudad, @NIT, @Direccion, @Sector, @Estado, DEFAULT, 0)
     END
     ELSE IF @Operacion = 'A'
     BEGIN
         UPDATE dbo.Comp
-        SET Nombre = @Nombre, Ciudad = @Ciudad, NIT = @NIT, Direccion = @Direccion, Sector = @Sector, Estado = @Estado
+        SET Nombre = @Nombre, City = @Ciudad, NIT = @NIT, Direccion = @Direccion, Sector = @Sector, Estado = @Estado
         WHERE Id = @Id
     END
 END
@@ -75,11 +75,11 @@ AS
 BEGIN
     -- Actualiza el estado "Eliminado" a 1
     UPDATE dbo.Comp
-    SET Eliminado = 1
+    SET Deleted = 1
     WHERE Id = @Id;
     
     -- Obtiene el estado "Eliminado" después de la actualización 
-    SELECT Eliminado
+    SELECT Deleted
     FROM dbo.Comp
     WHERE Id = @Id;    
 END
@@ -97,6 +97,5 @@ BEGIN
     WHERE Id = @Id
 END
 GO
-
 
 

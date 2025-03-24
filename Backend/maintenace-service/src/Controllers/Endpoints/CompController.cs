@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Entity;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Controllers.Endpoint
 {

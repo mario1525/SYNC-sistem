@@ -15,7 +15,7 @@ namespace Data
         }
 
         // Método para obtener los registros de la tabla Equipo
-        public async Task<List<Equipo>> GetEquipo(string id, string nombre, string idComp, string marca, string nSerie, int estado)
+        public async Task<List<Equipo>> GetEquipo(string id, string nombre, string idComp, string marca, string nSerie, bool estado)
         {
             try
             {

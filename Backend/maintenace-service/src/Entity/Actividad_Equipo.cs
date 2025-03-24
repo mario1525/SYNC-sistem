@@ -1,6 +1,6 @@
 ﻿namespace Entity
 {
-    public class Actividad_Equipo
+    public class ActividadEquipo
     {
         public string Id { get; set; }              // Id interno del registro
         public string IdActividad { get; set; }     // FK de la tabla Actividad

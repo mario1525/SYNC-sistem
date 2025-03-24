@@ -15,7 +15,7 @@ namespace Data
         }
 
         // Método para obtener los registros de la tabla Actividad
-        public async Task<List<Actividad>> GetActividad(string id, string idTipoActividad, string idCuad, int estado)
+        public async Task<List<Actividad>> GetActividad(string id, string idTipoActividad, string idCuad, bool estado)
         {
             try
             {

@@ -37,7 +37,7 @@ builder.Services.AddSingleton<DaoValid>();
 // ENTITY
 builder.Services.AddSingleton<Comp>();
 builder.Services.AddSingleton<Actividad>();
-builder.Services.AddSingleton<Actividad_Equipo>();
+builder.Services.AddSingleton<ActividadEquipo>();
 builder.Services.AddSingleton<Equipo>();
 builder.Services.AddSingleton<Esp>();
 builder.Services.AddSingleton<Guia>();
@@ -50,6 +50,15 @@ builder.Services.AddSingleton<Valid>();
 
 //Logical
 builder.Services.AddSingleton<CompLogical>();
+builder.Services.AddSingleton<ActividadLogical>();
+builder.Services.AddSingleton<ActividadEquipoLogical>();
+builder.Services.AddSingleton<EquipoLogical>();
+builder.Services.AddSingleton<EspLogical>();
+builder.Services.AddSingleton<GuiaLogical>();
+builder.Services.AddSingleton<GuiaEquipoLogical>();
+builder.Services.AddSingleton<ProcedLogical>();
+builder.Services.AddSingleton<TipoActividadLogical>();
+builder.Services.AddSingleton<ValidLogical>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -71,6 +80,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configuraci?n de la autenticaci?n JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

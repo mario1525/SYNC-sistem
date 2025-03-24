@@ -33,9 +33,6 @@ BEGIN
 END
 GO
 
-
-
-
 -- Guia
 PRINT 'creacion de la tabla Guia_ '
 IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Guia')
@@ -105,6 +102,55 @@ BEGIN
         FKValid_Proced FOREIGN KEY (IdProced) REFERENCES dbo.Proced(Id)
 END
 
+-- Tabla Planta (Ubicación general)
+CREATE TABLE dbo.Planta (
+    Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+    Nombre      VARCHAR(255) NOT NULL , /* Nombre de la planta */
+    Region      VARCHAR(255) NOT NULL, /* Región donde está ubicada la planta */
+    IdComp   	VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
+    Estado      BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
+    Fecha_log SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla Área Funcional (Si el equipo está en producción)
+CREATE TABLE dbo.AreaFuncional (
+    Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+    IdPlanta    VARCHAR(36) NOT NULL DEFAULT '', /* Relación con Planta */
+    Nombre      VARCHAR(255) NOT NULL, /* Nombre del área funcional */
+    Estado      BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
+    Fecha_log SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (IdPlanta) REFERENCES Planta(Id) ON DELETE CASCADE
+);
+
+-- Tabla Bodega (Si el equipo está almacenado)
+CREATE TABLE dbo.Bodega (
+    Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+    IdPlanta    VARCHAR(36) NOT NULL DEFAULT '', /* Relación con Planta */
+    Nombre      VARCHAR(255) NOT NULL, /* Nombre de la bodega */
+    Estado      BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
+    Fecha_log SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (IdPlanta) REFERENCES Planta(Id) ON DELETE CASCADE
+);
+
+-- Tabla Sección de Bodega (Para dividir las bodegas en secciones)
+CREATE TABLE dbo.SeccionBodega (
+    Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+    IdBodega    VARCHAR(36) NOT NULL DEFAULT '', /* Relación con Bodega */
+    Nombre      VARCHAR(255) NOT NULL, /* Nombre de la sección dentro de la bodega */
+    Estado      BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
+    Fecha_log SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (IdBodega) REFERENCES Bodega(Id) ON DELETE CASCADE
+);
+
+-- Tabla Patio (Para almacenamiento en espacios abiertos)
+CREATE TABLE dbo.Patio (
+    Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+    IdBodega    VARCHAR(36) NOT NULL DEFAULT '', /* Relación con Bodega */
+    Nombre      VARCHAR(255) NOT NULL, /* Nombre del patio dentro de la bodega */
+    Estado      BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
+    Fecha_log   SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (IdBodega) REFERENCES Bodega(Id) ON DELETE CASCADE
+);
 
 -- Equipo
 PRINT 'creacion de la tabla Equipo '   
@@ -138,6 +184,25 @@ BEGIN
         ALTER TABLE dbo.Equipo ADD CONSTRAINT
         FKEquipo_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
 END
+
+CREATE TABLE dbo.UbicacionEquipo (
+    Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+    IdEquipo        VARCHAR(36) NOT NULL DEFAULT '', /* Relación con Equipo */
+    TipoUbicacion   VARCHAR(50) NOT NULL CHECK (TipoUbicacion IN ('Bodega', 'Produccion')), /* Tipo de ubicación */
+    IdPlanta        VARCHAR(36) NOT NULL DEFAULT '',  /* Planta donde se encuentra */
+    IdAreaFuncional VARCHAR(36) NULL, /* Si está en producción */
+    IdBodega        VARCHAR(36) NULL, /* Si está en almacenamiento */
+    IdSeccionBodega VARCHAR(36) NULL, /* Sección de bodega */
+    IdPatio         VARCHAR(36) NULL, /* Patio (si aplica) */
+    Estado          BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
+    Fecha_log SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (IdEquipo) REFERENCES dbo.Equipo(Id) ON DELETE CASCADE,
+    FOREIGN KEY (IdPlanta) REFERENCES dbo.Planta(Id),
+    FOREIGN KEY (IdAreaFuncional) REFERENCES dbo.AreaFuncional(Id) ,
+    FOREIGN KEY (IdBodega) REFERENCES dbo.Bodega(Id),
+    FOREIGN KEY (IdSeccionBodega) REFERENCES dbo.SeccionBodega(Id),
+    FOREIGN KEY (IdPatio) REFERENCES dbo.Patio(Id)
+);
 
 -- Guia_Equipo
 PRINT 'creacion de la tabla Guia_Equipo'
