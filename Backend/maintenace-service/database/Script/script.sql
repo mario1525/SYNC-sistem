@@ -110,7 +110,10 @@ CREATE TABLE dbo.Planta (
     IdComp   	VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
     Estado      BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
     Fecha_log SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
-);
+)ON [PRIMARY]
+    ALTER TABLE dbo.Planta ADD CONSTRAINT
+	FKPlanta_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
+END
 
 -- Tabla Área Funcional (Si el equipo está en producción)
 CREATE TABLE dbo.AreaFuncional (
@@ -162,8 +165,7 @@ BEGIN
         Descripcion     VARCHAR(max) NOT NULL DEFAULT '',             /*Descripcion del equipo*/
         IdComp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
         Modelo          VARCHAR(255) NOT NULL DEFAULT '',             /*Modelo del equipo*/
-        NSerie          VARCHAR(255) NOT NULL DEFAULT '',             /*Numero de serie del equipo*/
-        Ubicacion       VARCHAR(255) NOT NULL DEFAULT '',             /*Ubicacion del equipo*/  
+        NSerie          VARCHAR(255) NOT NULL DEFAULT '',             /*Numero de serie del equipo*/             /*Ubicacion del equipo*/  
         Fabricante      VARCHAR(255) NOT NULL DEFAULT '',             /*Fabricante del equipo*/
         Marca           VARCHAR(255) NOT NULL DEFAULT '',             /*Marca del equipo*/
         Funcion         VARCHAR(max) NOT NULL DEFAULT '',             /*Funcion del equipo*/

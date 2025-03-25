@@ -27,7 +27,7 @@ CREATE PROCEDURE dbo.db_Sp_Equipo_Get
     @Estado      INT = NULL
 AS 
 BEGIN
-    SELECT Id, Nombre, Descripcion, IdComp, Modelo, NSerie, Ubicacion, Fabricante, Marca, Funcion, Peso, Cilindraje, Potencia, Ancho, Alto, Largo, Capacidad, AnioFabricacion, Caracteristicas, Seccion, Estado, Fecha_log     
+    SELECT Id, Nombre, Descripcion, IdComp, Modelo, NSerie, Fabricante, Marca, Funcion, Peso, Cilindraje, Potencia, Ancho, Alto, Largo, Capacidad, AnioFabricacion, Caracteristicas, Seccion, Estado, Fecha_log     
     FROM dbo.Equipo
     WHERE Id = CASE WHEN ISNULL(@Id,'')='' THEN Id ELSE @Id END
     AND Nombre LIKE CASE WHEN ISNULL(@Nombre,'')='' THEN Nombre ELSE '%'+@Nombre+'%' END    
@@ -39,9 +39,20 @@ BEGIN
 END
 GO
 
+
+CREATE TYPE UbicacionType AS TABLE
+(
+    Id NVARCHAR(36),
+    TipoUbicacion NVARCHAR(36),
+    IdPlanta NVARCHAR(36),
+    IdAreaFuncional NVARCHAR(36),
+    IdBodega NVARCHAR(36),
+    IdSeccionBodega NVARCHAR(36),
+    IdPatio NVARCHAR(36)      
+);
+
+
 -- Procedimiento para insertar o actualizar los datos
-PRINT 'Creación del procedimiento Equipo Set'
-GO
 CREATE PROCEDURE dbo.db_Sp_Equipo_Set
     @Id              VARCHAR(36),
     @Nombre          VARCHAR(255),
@@ -49,7 +60,6 @@ CREATE PROCEDURE dbo.db_Sp_Equipo_Set
     @IdComp          VARCHAR(36),
     @Modelo          VARCHAR(255),
     @NSerie          VARCHAR(255),
-    @Ubicacion       VARCHAR(255),
     @Fabricante      VARCHAR(255),
     @Marca           VARCHAR(255),
     @Funcion         VARCHAR(max),
@@ -63,19 +73,27 @@ CREATE PROCEDURE dbo.db_Sp_Equipo_Set
     @AnioFabricacion INT,
     @Caracteristicas VARCHAR(max),
     @Seccion         VARCHAR(255),
+    @Ubicacion       UbicacionType READONLY,
     @Estado          BIT,
     @Operacion       VARCHAR(1)
 AS
 BEGIN
     IF @Operacion = 'I'
     BEGIN
-        INSERT INTO dbo.Equipo(Id, Nombre, Descripcion, IdComp, Modelo, NSerie, Ubicacion, Fabricante, Marca, Funcion, Peso, Cilindraje, Potencia, Ancho, Alto, Largo, Capacidad, AnioFabricacion, Caracteristicas, Seccion, Estado, Eliminado, Fecha_log)
-        VALUES(@Id, @Nombre, @Descripcion, @IdComp, @Modelo, @NSerie, @Ubicacion, @Fabricante, @Marca, @Funcion, @Peso, @Cilindraje, @Potencia, @Ancho, @Alto, @Largo, @Capacidad, @AnioFabricacion, @Caracteristicas, @Seccion, @Estado, 0, DEFAULT)
+        BEGIN TRANSACTION;
+            INSERT INTO dbo.Equipo(Id, Nombre, Descripcion, IdComp, Modelo, NSerie, Fabricante, Marca, Funcion, Peso, Cilindraje, Potencia, Ancho, Alto, Largo, Capacidad, AnioFabricacion, Caracteristicas, Seccion, Estado, Eliminado, Fecha_log)
+            VALUES(@Id, @Nombre, @Descripcion, @IdComp, @Modelo, @NSerie,  @Fabricante, @Marca, @Funcion, @Peso, @Cilindraje, @Potencia, @Ancho, @Alto, @Largo, @Capacidad, @AnioFabricacion, @Caracteristicas, @Seccion, @Estado, 0, DEFAULT)
+
+            INSERT INTO dbo.UbicacionEquipo(Id, IdEquipo, TipoUbicacion, IdPlanta, IdAreaFuncional, IdBodega, IdSeccionBodega, IdPatio, Estado, Fecha_log)
+            Select Id, @Id, TipoUbicacion, IdPlanta, IdAreaFuncional, IdBodega, IdSeccionBodega, IdPatio, @Estado, GETDATE()
+			from @Ubicacion
+        COMMIT;
+        PRINT 'Transacción completada exitosamente.';
     END
     ELSE IF @Operacion = 'A'
     BEGIN
         UPDATE dbo.Equipo
-        SET Nombre = @Nombre, Descripcion = @Descripcion, IdComp = @IdComp, Modelo = @Modelo, NSerie = @NSerie, Ubicacion = @Ubicacion, Fabricante = @Fabricante, Marca = @Marca, Funcion = @Funcion, Peso = @Peso, Cilindraje = @Cilindraje, Potencia = @Potencia, Ancho = @Ancho, Alto = @Alto, Largo = @Largo, Capacidad = @Capacidad, AnioFabricacion = @AnioFabricacion, Caracteristicas = @Caracteristicas, Seccion = @Seccion, Estado = @Estado
+        SET Nombre = @Nombre, Descripcion = @Descripcion, IdComp = @IdComp, Modelo = @Modelo, NSerie = @NSerie, Fabricante = @Fabricante, Marca = @Marca, Funcion = @Funcion, Peso = @Peso, Cilindraje = @Cilindraje, Potencia = @Potencia, Ancho = @Ancho, Alto = @Alto, Largo = @Largo, Capacidad = @Capacidad, AnioFabricacion = @AnioFabricacion, Caracteristicas = @Caracteristicas, Seccion = @Seccion, Estado = @Estado
         WHERE Id = @Id
     END
 END
