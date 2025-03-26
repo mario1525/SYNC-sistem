@@ -35,15 +35,16 @@ namespace Services
         }
 
         // Crear equipo
-        public async Task<Mensaje> CreateEquipo(Equipo equipo)
+        public async Task<Mensaje> CreateEquipo(EquipoC equipo)
         {
             try
             {
-                Guid uid = Guid.NewGuid();
-                equipo.Id = uid.ToString();
+                
+                Guid uid2 = Guid.NewGuid();
+                equipo.Ubicacion.Id = uid2.ToString();
                 _daoEquipo.SetEquipo("I", equipo);
 
-                return new Mensaje { mensaje = uid.ToString() };
+                return new Mensaje { mensaje = "EQP-0000000000" };
             }
             catch (Exception ex)
             {
@@ -53,7 +54,7 @@ namespace Services
         }
 
         // Actualizar equipo
-        public async Task<Mensaje> UpdateEquipo(Equipo equipo)
+        public async Task<Mensaje> UpdateEquipo(EquipoC equipo)
         {
             try
             {

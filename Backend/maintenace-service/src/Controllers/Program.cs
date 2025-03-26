@@ -33,6 +33,14 @@ builder.Services.AddSingleton<DaoGuiaEquipo>();
 builder.Services.AddSingleton<DaoProced>();
 builder.Services.AddSingleton<DaoTipoActividad>();
 builder.Services.AddSingleton<DaoValid>();
+builder.Services.AddSingleton<DaoAreaFuncional>();
+builder.Services.AddSingleton<DaoBodega>();
+builder.Services.AddSingleton<DaoPatio>();
+builder.Services.AddSingleton<DaoPlanta>();
+builder.Services.AddSingleton<DaoSeccionBodega>();
+builder.Services.AddSingleton<DaoUbicacionEquipo>();
+
+
 
 // ENTITY
 builder.Services.AddSingleton<Comp>();
@@ -46,6 +54,12 @@ builder.Services.AddSingleton<Mensaje>();
 builder.Services.AddSingleton<Proced>();
 builder.Services.AddSingleton<TipoAct>();
 builder.Services.AddSingleton<Valid>();
+builder.Services.AddSingleton<AreaFuncional>();
+builder.Services.AddSingleton<Bodega>();
+builder.Services.AddSingleton<Patio>();
+builder.Services.AddSingleton<Planta>();
+builder.Services.AddSingleton<SeccionBodega>();
+builder.Services.AddSingleton<UbicacionEquipo>();
 
 
 //Logical
@@ -59,6 +73,13 @@ builder.Services.AddSingleton<GuiaEquipoLogical>();
 builder.Services.AddSingleton<ProcedLogical>();
 builder.Services.AddSingleton<TipoActividadLogical>();
 builder.Services.AddSingleton<ValidLogical>();
+builder.Services.AddSingleton<AreaFuncionalLogical>();
+builder.Services.AddSingleton<BodegaLogical>();
+builder.Services.AddSingleton<PatioLogical>();
+builder.Services.AddSingleton<PlantaLogical>();
+builder.Services.AddSingleton<SeccionBodegaLogical>();
+builder.Services.AddSingleton<UbicacionEquipoLogical>();
+
 
 // Add services to the container.
 builder.Services.AddRazorPages();

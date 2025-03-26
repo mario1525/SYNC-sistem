@@ -17,7 +17,7 @@ namespace Data
             _sqlClient = dbContext;
         }
 
-        public async Task<List<Comp>> GetComp(String ID)
+        public async Task<List<Comp>> GetComp(string ID)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace Data
                     new SqlParameter("@Sector", ""),
                     new SqlParameter("@Ciudad", ""),
                     new SqlParameter("@Direccion", ""),
-                    new SqlParameter("@Estado", "")
+                    new SqlParameter("@Estado", 1 )
                 };
 
                 // Ejecutar el procedimiento almacenado
@@ -136,9 +136,9 @@ namespace Data
                     NIT = row["NIT"].ToString(),
                     Direccion = row["Direccion"].ToString(),
                     Sector = row["Sector"].ToString(),
-                    Ciudad = row["Ciudad"].ToString(),
+                    Ciudad = row["City"].ToString(),
                     Estado = Convert.ToBoolean(row["Estado"]), 
-                    Fecha_log = Convert.ToDateTime(row["Fecha_log"])
+                    Fecha_log = Convert.ToDateTime(row["LogDate"])
                 };
                 CompsList.Add(comp);
             }

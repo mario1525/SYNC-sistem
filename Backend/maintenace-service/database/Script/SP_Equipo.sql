@@ -80,6 +80,17 @@ AS
 BEGIN
     IF @Operacion = 'I'
     BEGIN
+        DECLARE @NuevoId INT, @Prefijo VARCHAR(4) = 'EQP-', @Consecutivo VARCHAR(10);
+        
+        -- Obtener el siguiente número consecutivo basado en la cantidad de registros
+        SELECT @NuevoId = COALESCE(MAX(CAST(SUBSTRING(Id, 5, 10) AS INT)), 0) + 1
+        FROM dbo.Equipo WHERE Id LIKE 'EQP-%';
+
+        -- Formatear el número con ceros a la izquierda
+        SET @Consecutivo = FORMAT(@NuevoId, '0000000000');
+
+        -- Generar el nuevo Id con el formato deseado
+        SET @Id = @Prefijo + @Consecutivo;
         BEGIN TRANSACTION;
             INSERT INTO dbo.Equipo(Id, Nombre, Descripcion, IdComp, Modelo, NSerie, Fabricante, Marca, Funcion, Peso, Cilindraje, Potencia, Ancho, Alto, Largo, Capacidad, AnioFabricacion, Caracteristicas, Seccion, Estado, Eliminado, Fecha_log)
             VALUES(@Id, @Nombre, @Descripcion, @IdComp, @Modelo, @NSerie,  @Fabricante, @Marca, @Funcion, @Peso, @Cilindraje, @Potencia, @Ancho, @Alto, @Largo, @Capacidad, @AnioFabricacion, @Caracteristicas, @Seccion, @Estado, 0, DEFAULT)

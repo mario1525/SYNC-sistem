@@ -48,13 +48,38 @@ namespace Data
         }
 
         // Método para insertar o actualizar los registros de la tabla Equipo
-        public async void SetEquipo(string operacion, Equipo equipo)
+        public async void SetEquipo(string operacion, EquipoC equipo)
         {
             try
             {
                 if (equipo == null)
                 {
                     throw new ArgumentNullException(nameof(equipo));
+                }
+
+                DataTable camposTable = new DataTable();
+                camposTable.Columns.Add("Id", typeof(string));
+                camposTable.Columns.Add("TipoUbicacion", typeof(string));
+                camposTable.Columns.Add("IdPlanta", typeof(string));
+                camposTable.Columns.Add("IdAreaFuncional", typeof(string));
+                camposTable.Columns.Add("IdBodega", typeof(string));
+                camposTable.Columns.Add("IdSeccionBodega", typeof(string));
+                camposTable.Columns.Add("IdPatio", typeof(string));
+
+                // Recorrer el array de campos y agregar cada campo como una fila al DataTable
+                if (operacion == "I")
+                {                    
+                    
+                   camposTable.Rows.Add(
+                       equipo.Ubicacion.Id, 
+                       equipo.Ubicacion.TipoUbicacion,
+                       equipo.Ubicacion.IdPlanta, 
+                       equipo.Ubicacion.IdAreaFuncional, 
+                       equipo.Ubicacion.IdBodega, 
+                       equipo.Ubicacion.IdSeccionBodega, 
+                       equipo.Ubicacion.IdPatio
+                       );                  
+
                 }
 
                 string procedureName = "dbo.db_Sp_Equipo_Set";
@@ -66,7 +91,11 @@ namespace Data
                     new SqlParameter("@IdComp", equipo.IdComp),
                     new SqlParameter("@Modelo", equipo.Modelo),
                     new SqlParameter("@NSerie", equipo.NSerie),
-                    new SqlParameter("@Ubicacion", equipo.Ubicacion),
+                    new SqlParameter{
+                        ParameterName = "@Ubicacion",
+                        SqlDbType = SqlDbType.Structured,
+                        Value = camposTable // Pasar el DataTable como parámetro
+                    },
                     new SqlParameter("@Fabricante", equipo.Fabricante),
                     new SqlParameter("@Marca", equipo.Marca),
                     new SqlParameter("@Funcion", equipo.Funcion),
@@ -148,7 +177,6 @@ namespace Data
                     IdComp = row["IdComp"].ToString(),
                     Modelo = row["Modelo"].ToString(),
                     NSerie = row["NSerie"].ToString(),
-                    Ubicacion = row["Ubicacion"].ToString(),
                     Fabricante = row["Fabricante"].ToString(),
                     Marca = row["Marca"].ToString(),
                     Funcion = row["Funcion"].ToString(),

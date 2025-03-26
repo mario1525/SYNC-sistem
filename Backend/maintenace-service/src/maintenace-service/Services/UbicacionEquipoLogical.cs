@@ -1,153 +1,124 @@
+using Data;
 using Entity;
-using Data.SQLClient;
-using Microsoft.Data.SqlClient;
-using System.Data;
 
-namespace Data
+namespace Services
 {
-    public class DaoUbicacionEquipo
+    public class UbicacionEquipoLogical
     {
-        private readonly SqlClient _sqlClient;
+        private readonly DaoUbicacionEquipo _daoUbicacionEquipo;
 
-        public DaoUbicacionEquipo(SqlClient dbContext)
+        public UbicacionEquipoLogical(DaoUbicacionEquipo daoUbicacionEquipo)
         {
-            _sqlClient = dbContext;
+            _daoUbicacionEquipo = daoUbicacionEquipo;
         }
 
-        // Método para obtener los registros de la tabla UbicacionEquipo
-        public async Task<List<UbicacionEquipo>> GetUbicacionEquipo(string id, string idEquipo, string tipoUbicacion, string idPlanta, string idAreaFuncional, string idBodega, string idSeccionBodega, string idPatio, bool? estado)
+        // Obtener todas las ubicaciones de equipos
+        public async Task<List<UbicacionEquipo>> GetUbicacionEquipos(UbicacionEquipo ubicacionEquipo)
         {
             try
             {
-                const string procedureName = "dbo.db_Sp_UbicacionEquipo_Get";
+                var ubicaciones = await _daoUbicacionEquipo.GetUbicacionEquipo(
+                    ubicacionEquipo.Id,
+                    ubicacionEquipo.IdEquipo,
+                    ubicacionEquipo.TipoUbicacion,
+                    ubicacionEquipo.IdPlanta,
+                    ubicacionEquipo.IdAreaFuncional,
+                    ubicacionEquipo.IdBodega,
+                    ubicacionEquipo.IdSeccionBodega,
+                    ubicacionEquipo.IdPatio,
+                    ubicacionEquipo.Estado
+                );
 
-                var parameters = new[]
+                if (ubicaciones == null || !ubicaciones.Any())
                 {
-                    new SqlParameter("@Id", id ?? (object)DBNull.Value),
-                    new SqlParameter("@IdEquipo", idEquipo ?? (object)DBNull.Value),
-                    new SqlParameter("@TipoUbicacion", tipoUbicacion ?? (object)DBNull.Value),
-                    new SqlParameter("@IdPlanta", idPlanta ?? (object)DBNull.Value),
-                    new SqlParameter("@IdAreaFuncional", idAreaFuncional ?? (object)DBNull.Value),
-                    new SqlParameter("@IdBodega", idBodega ?? (object)DBNull.Value),
-                    new SqlParameter("@IdSeccionBodega", idSeccionBodega ?? (object)DBNull.Value),
-                    new SqlParameter("@IdPatio", idPatio ?? (object)DBNull.Value),
-                    new SqlParameter("@Estado", estado.HasValue ? (object)estado.Value : DBNull.Value)
-                };
-
-                DataTable dataTable = await _sqlClient.ExecuteStoredProcedure(procedureName, parameters);
-
-                return MapDataTableToList(dataTable);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al obtener UbicacionEquipo: {ex.Message}");
-                throw;
-            }
-        }
-
-        // Método para insertar o actualizar los registros de la tabla UbicacionEquipo
-        public async void SetUbicacionEquipo(string operacion, UbicacionEquipo ubicacionEquipo)
-        {
-            try
-            {
-                if (ubicacionEquipo == null)
-                {
-                    throw new ArgumentNullException(nameof(ubicacionEquipo));
+                    Console.WriteLine("No se encontraron ubicaciones de equipos.");
                 }
 
-                const string procedureName = "dbo.db_Sp_UbicacionEquipo_Set";
-
-                var parameters = new[]
-                {
-                    new SqlParameter("@Id", ubicacionEquipo.Id),
-                    new SqlParameter("@IdEquipo", ubicacionEquipo.IdEquipo),
-                    new SqlParameter("@TipoUbicacion", ubicacionEquipo.TipoUbicacion),
-                    new SqlParameter("@IdPlanta", ubicacionEquipo.IdPlanta),
-                    new SqlParameter("@IdAreaFuncional", ubicacionEquipo.IdAreaFuncional ?? (object)DBNull.Value),
-                    new SqlParameter("@IdBodega", ubicacionEquipo.IdBodega ?? (object)DBNull.Value),
-                    new SqlParameter("@IdSeccionBodega", ubicacionEquipo.IdSeccionBodega ?? (object)DBNull.Value),
-                    new SqlParameter("@IdPatio", ubicacionEquipo.IdPatio ?? (object)DBNull.Value),
-                    new SqlParameter("@Estado", ubicacionEquipo.Estado),
-                    new SqlParameter("@Operacion", operacion)
-                };
-
-                await _sqlClient.ExecuteStoredProcedure(procedureName, parameters);
+                return ubicaciones;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al crear/modificar una UbicacionEquipo: {ex.Message}");
+                Console.WriteLine($"Error en GetUbicacionEquipos: {ex.Message}");
                 throw;
             }
         }
 
-        // Método para eliminar los registros de la tabla UbicacionEquipo
-        public async void DeleteUbicacionEquipo(string id)
+        // Crear ubicación de equipo
+        public async Task<Mensaje> CreateUbicacionEquipo(UbicacionEquipo ubicacionEquipo)
         {
             try
             {
-                const string procedureName = "dbo.db_Sp_UbicacionEquipo_Del";
+                Guid uid = Guid.NewGuid();
+                ubicacionEquipo.Id = uid.ToString();
+                _daoUbicacionEquipo.SetUbicacionEquipo("I", ubicacionEquipo);
 
-                var parameters = new[]
-                {
-                    new SqlParameter("@Id", id)
-                };
-
-                await _sqlClient.ExecuteStoredProcedure(procedureName, parameters);
+                return new Mensaje { mensaje = uid.ToString() };
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al eliminar una UbicacionEquipo: {ex.Message}");
+                Console.WriteLine($"Error en CreateUbicacionEquipo: {ex.Message}");
                 throw;
             }
         }
 
-        // Método para activar o desactivar los registros de la tabla UbicacionEquipo
-        public async void ActiveUbicacionEquipo(string id, bool estado)
+        // Actualizar ubicación de equipo
+        public async Task<Mensaje> UpdateUbicacionEquipo(UbicacionEquipo ubicacionEquipo)
         {
             try
             {
-                const string procedureName = "dbo.db_Sp_UbicacionEquipo_Active";
-
-                var parameters = new[]
+                if (string.IsNullOrEmpty(ubicacionEquipo.Id))
                 {
-                    new SqlParameter("@Id", id),
-                    new SqlParameter("@Estado", estado)
-                };
+                    throw new ArgumentException("El ID de la ubicación del equipo no puede estar vacío.");
+                }
 
-                await _sqlClient.ExecuteStoredProcedure(procedureName, parameters);
+                _daoUbicacionEquipo.SetUbicacionEquipo("A", ubicacionEquipo);
+                return new Mensaje { mensaje = "Ubicación de equipo actualizada" };
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al cambiar el estado de una UbicacionEquipo: {ex.Message}");
+                Console.WriteLine($"Error en UpdateUbicacionEquipo: {ex.Message}");
                 throw;
             }
         }
 
-        // Método para mapear los resultados de la consulta a una lista de UbicacionEquipo
-        private static List<UbicacionEquipo> MapDataTableToList(DataTable dataTable)
+        // Eliminar ubicación de equipo
+        public async Task<Mensaje> DeleteUbicacionEquipo(string id)
         {
-            var ubicacionEquipoList = new List<UbicacionEquipo>();
-
-            foreach (DataRow row in dataTable.Rows)
+            try
             {
-                var ubicacionEquipo = new UbicacionEquipo
+                if (string.IsNullOrEmpty(id))
                 {
-                    Id = row["Id"].ToString(),
-                    IdEquipo = row["IdEquipo"].ToString(),
-                    TipoUbicacion = row["TipoUbicacion"].ToString(),
-                    IdPlanta = row["IdPlanta"].ToString(),
-                    IdAreaFuncional = row["IdAreaFuncional"]?.ToString(),
-                    IdBodega = row["IdBodega"]?.ToString(),
-                    IdSeccionBodega = row["IdSeccionBodega"]?.ToString(),
-                    IdPatio = row["IdPatio"]?.ToString(),
-                    Estado = Convert.ToBoolean(row["Estado"]),
-                    Fecha_log = Convert.ToDateTime(row["Fecha_log"])
-                };
+                    throw new ArgumentException("El ID no puede estar vacío.");
+                }
 
-                ubicacionEquipoList.Add(ubicacionEquipo);
+                _daoUbicacionEquipo.DeleteUbicacionEquipo(id);
+                return new Mensaje { mensaje = "Ubicación de equipo eliminada" };
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en DeleteUbicacionEquipo: {ex.Message}");
+                throw;
+            }
+        }
 
-            return ubicacionEquipoList;
+        // Activar/desactivar ubicación de equipo
+        public async Task<Mensaje> ActiveUbicacionEquipo(string id, bool estado)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("El ID no puede estar vacío.");
+                }
+
+                _daoUbicacionEquipo.ActiveUbicacionEquipo(id, estado);
+                return new Mensaje { mensaje = "Se cambió el estado de la ubicación del equipo" };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en ActiveUbicacionEquipo: {ex.Message}");
+                throw;
+            }
         }
     }
 }

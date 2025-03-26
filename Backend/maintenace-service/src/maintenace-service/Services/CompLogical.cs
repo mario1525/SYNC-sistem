@@ -22,7 +22,7 @@ namespace Services
 
                 if (comp == null || !comp.Any())
                 {
-                    Console.WriteLine("No se encontraron compañías.");
+                    Console.WriteLine("No se encontraron compañías Log.");
                 }
 
                 return comp;

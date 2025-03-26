@@ -32,7 +32,7 @@ namespace Controllers.Endpoints
         // POST api/Equipo
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<Mensaje>> Post([FromBody] Equipo equipo)
+        public async Task<ActionResult<Mensaje>> Post([FromBody] EquipoC equipo)
         {
             if (equipo == null)
                 return BadRequest("Los datos del equipo no pueden estar vacíos.");
@@ -44,7 +44,7 @@ namespace Controllers.Endpoints
         // PUT api/Equipo/5
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<Mensaje>> Put(string id, [FromBody] Equipo equipo)
+        public async Task<ActionResult<Mensaje>> Put(string id, [FromBody] EquipoC equipo)
         {
             if (string.IsNullOrEmpty(id))
                 return BadRequest("El ID no puede estar vacío.");
