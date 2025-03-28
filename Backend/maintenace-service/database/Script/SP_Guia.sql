@@ -67,6 +67,17 @@ AS
 BEGIN
     IF @Operacion = 'I'
     BEGIN
+       DECLARE @NuevoId INT, @Prefijo VARCHAR(4) = 'GM-', @Consecutivo VARCHAR(10);
+        
+        -- Obtener el siguiente número consecutivo basado en la cantidad de registros
+        SELECT @NuevoId = COALESCE(MAX(CAST(SUBSTRING(Id, 5, 10) AS INT)), 0) + 1
+        FROM dbo.Guia WHERE Id LIKE 'GM-%';
+
+        -- Formatear el número con ceros a la izquierda
+        SET @Consecutivo = FORMAT(@NuevoId, '0000000000');
+
+        -- Generar el nuevo Id con el formato deseado
+        SET @Id = @Prefijo + @Consecutivo;
         INSERT INTO dbo.Guia(Id, Nombre, Descripcion, Proceso, Inspeccion, Herramientas, IdComp, IdEsp, SeguridadInd, SeguridadAmb, Intervalo, Importante, Insumos, Personal, Duracion, Logistica, Situacion, Notas, CreatedBy, UpdatedBy, FechaUpdate, Estado, Eliminado, Fecha_log)
         VALUES(@Id, @Nombre, @Descripcion, @Proceso, @Inspeccion, @Herramientas, @IdComp, @IdEsp, @SeguridadInd, @SeguridadAmb, @Intervalo, @Importante, @Insumos, @Personal, @Duracion, @Logistica, @Situacion, @Notas, @CreatedBy, @UpdatedBy, DEFAULT, @Estado, 0, DEFAULT)
     END

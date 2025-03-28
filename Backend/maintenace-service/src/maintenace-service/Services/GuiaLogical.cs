@@ -18,7 +18,7 @@ namespace Services
         {
             try
             {
-                var guias = await _daoGuia.GetGuia(guia.Id, guia.Nombre, guia.IdComp, guia.IdEsp, guia.Estado ? 1 : 0);
+                var guias = await _daoGuia.GetGuia(guia.Id, guia.Nombre, guia.IdComp, guia.IdEsp, 1);
 
                 if (guias == null || !guias.Any())
                 {
@@ -39,11 +39,10 @@ namespace Services
         {
             try
             {
-                Guid uid = Guid.NewGuid();
-                guia.Id = uid.ToString();
+
                 _daoGuia.SetGuia("I", guia);
 
-                return new Mensaje { mensaje = uid.ToString() };
+                return new Mensaje { mensaje = "GM-0000000000"};
             }
             catch (Exception ex)
             {

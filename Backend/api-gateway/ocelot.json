@@ -73,29 +73,49 @@
 
 
     {
-      "DownstreamPathTemplate": "/api/Comp/{id}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
+      "Routes": [
         {
-          "Host": "maintenace-services",
-          "Port": 7022
+          "DownstreamPathTemplate": "/api/Comp/{id}",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "maintenance-services",
+              "Port": 7022
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Compania/{id}",
+          "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+        },
+        {
+          "DownstreamPathTemplate": "/api/Planta/{id}",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "plant-services",
+              "Port": 7022
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Planta/{id}",
+          "UpstreamHttpMethod": [ "GET", "POST", "DELETE" ]
+        },
+        {
+          "DownstreamPathTemplate": "/api/Guia/{id}",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "guide-services",
+              "Port": 7022
+            }
+          ],
+          "UpstreamPathTemplate": "/apigateway/Guia/{id}",
+          "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
         }
       ],
-      "UpstreamPathTemplate": "/apigataway/Compania/{id}",
-      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Comp",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "maintenace-services",
-          "Port": 7022
-        }
-      ],
-      "UpstreamPathTemplate": "/apigataway/Compania",
-      "UpstreamHttpMethod": [ "POST" ]
+      "GlobalConfiguration": {
+        "BaseUrl": "https://apigateway.local"
+      }
     }
+
 
 
 

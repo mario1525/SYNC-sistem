@@ -20,9 +20,9 @@ namespace Controllers.Endpoints
         // GET: api/Equipo
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<List<Equipo>>> Get([FromQuery] string Id, string Nombre, string IdComp, string Marca, string NSerie, bool Estado)
+        public async Task<ActionResult<List<Equipo>>> Get([FromQuery] string? Id, string? Nombre, string? IdComp, string? Marca, string? NSerie)
         {
-            var result = await _equipoLogical.GetEquipos(Id, Nombre, IdComp, Marca, NSerie, Estado);
+            var result = await _equipoLogical.GetEquipos(Id, Nombre, IdComp, Marca, NSerie, true);
             if (result == null || result.Count == 0)
                 return NotFound("No se encontraron equipos.");
 
