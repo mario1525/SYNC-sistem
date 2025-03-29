@@ -70,7 +70,115 @@
     },
 
 
+    {
+      "DownstreamPathTemplate": "/api/Actividad/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Actividad/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Actividad",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Actividad",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Actividad/{id}/estado",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Actividad/{id}/estado",
+      "UpstreamHttpMethod": [ "PATCH" ]
+    },
 
+    {
+      "DownstreamPathTemplate": "/api/Equipo/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Equipo/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Equipo",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Equipo",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Equipo/{id}/estado",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Equipo/{id}/estado",
+      "UpstreamHttpMethod": [ "PATCH" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Guia/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Guia/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Guia",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Guia",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Guia/{id}/estado",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Guia/{id}/estado",
+      "UpstreamHttpMethod": [ "PATCH" ]
+    },
 
     {
       "Routes": [
@@ -114,13 +222,331 @@
       "GlobalConfiguration": {
         "BaseUrl": "https://apigateway.local"
       }
+    },
+    {
+      "DownstreamPathTemplate": "/api/SeccionBodega/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/SeccionBodega/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/SeccionBodega",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/SeccionBodega",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/SeccionBodega/{id}/estado",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/SeccionBodega/{id}/estado",
+      "UpstreamHttpMethod": [ "PATCH" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Patio/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Patio/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Patio",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Patio",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Patio/{id}/estado",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Patio/{id}/estado",
+      "UpstreamHttpMethod": [ "PATCH" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/AreaFuncional/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/AreaFuncional/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/AreaFuncional",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/AreaFuncional",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/AreaFuncional/{id}/estado",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/AreaFuncional/{id}/estado",
+      "UpstreamHttpMethod": [ "PATCH" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Bodega/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Bodega/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Bodega",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Bodega",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Bodega/{id}/estado",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Bodega/{id}/estado",
+      "UpstreamHttpMethod": [ "PATCH" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/ActividadEquipo/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/ActividadEquipo/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/ActividadEquipo",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/ActividadEquipo",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/ActividadEquipo/{id}/estado",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/ActividadEquipo/{id}/estado",
+      "UpstreamHttpMethod": [ "PATCH" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/TipoActividad/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/TipoActividad/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/TipoActividad",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/TipoActividad",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/TipoActividad/{id}/estado",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/TipoActividad/{id}/estado",
+      "UpstreamHttpMethod": [ "PATCH" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Proced/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Proced/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Proced",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Proced",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Proced/{id}/estado",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Proced/{id}/estado",
+      "UpstreamHttpMethod": [ "PATCH" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/GuiaEquipo/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/GuiaEquipo/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/GuiaEquipo",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/GuiaEquipo",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/GuiaEquipo/{id}/estado",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/GuiaEquipo/{id}/estado",
+      "UpstreamHttpMethod": [ "PATCH" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Esp/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Esp/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Esp",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Esp",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Esp/{id}/estado",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "maintenance-services",
+          "Port": 7022
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Esp/{id}/estado",
+      "UpstreamHttpMethod": [ "PATCH" ]
     }
-
-
-
-
-
-
   ],
   "GlobalConfiguration": {
     "BaseUrl": "http://localhost:5000"
