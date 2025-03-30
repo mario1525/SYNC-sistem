@@ -2,17 +2,17 @@
 -- Author:		Mario Beltran
 -- Create Date: 2024/05/15
 --        
--- Description: Creation of the DB DB_SYNC
+-- Description: Creation of the DB DB_SYNC_MAINTENANCE
 -- ===================================================================================
 
 PRINT 'Creating the DB'
-IF NOT EXISTS(SELECT NAME FROM SYSDATABASES WHERE NAME = 'DB_SYNC')
+IF NOT EXISTS(SELECT NAME FROM SYSDATABASES WHERE NAME = 'DB_SYNC_MAINTENANCE')
 BEGIN
-    CREATE DATABASE DB_SYNC
+    CREATE DATABASE DB_SYNC_MAINTENANCE
 END
 GO  
 
-USE DB_SYNC
+USE DB_SYNC_MAINTENANCE
 GO
 
 -- Table Comp
@@ -22,35 +22,16 @@ BEGIN
     CREATE TABLE dbo.Comp(
         Id            VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',            /* Internal record ID */
         Nombre        VARCHAR(255) NOT NULL DEFAULT '',                       /* Company name */
-        City          VARCHAR(255) NOT NULL DEFAULT '',                       /* City where the main office is located */
+        Ciudad        VARCHAR(255) NOT NULL DEFAULT '',                       /* City where the main office is located */
         NIT           VARCHAR(255) NOT NULL DEFAULT '',                       /* Company registration number */
         Direccion     VARCHAR(255) NOT NULL DEFAULT '',                       /* Company address */ 
         Sector        VARCHAR(255) NOT NULL DEFAULT '',                       /* Sector in which the company operates */
         Estado        BIT NOT NULL DEFAULT 1,                                 /* Status */
-        Deleted       BIT NOT NULL DEFAULT 0,                                 /* Deleted */
-        LogDate       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP                 /* Log date */
+        Eliminado       BIT NOT NULL DEFAULT 0,                                 /* Deleted */
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP                 /* Log date */
     ) 
 END
 GO
-
-
--- Tabla Esp_
-PRINT 'creacion de la tabla Esp'
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Esp')
-BEGIN
-    CREATE TABLE dbo.Esp(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre de la cuadrilla*/
-        IdComp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
-        Estado		    BIT NOT NULL DEFAULT 1,                       /*Estado*/
-		Eliminado	    BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-    ALTER TABLE dbo.Esp ADD CONSTRAINT
-		FKEsp_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
-END
-GO
-
 
 -- Guia
 PRINT 'creacion de la tabla Guia_ '
@@ -121,6 +102,58 @@ BEGIN
         FKValid_Proced FOREIGN KEY (IdProced) REFERENCES dbo.Proced(Id)
 END
 
+-- Tabla Planta (Ubicación general)
+CREATE TABLE dbo.Planta (
+    Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+    Nombre      VARCHAR(255) NOT NULL , /* Nombre de la planta */
+    Region      VARCHAR(255) NOT NULL, /* Región donde está ubicada la planta */
+    IdComp   	VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
+    Estado      BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
+    Fecha_log SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+)ON [PRIMARY]
+    ALTER TABLE dbo.Planta ADD CONSTRAINT
+	FKPlanta_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
+END
+
+-- Tabla Área Funcional (Si el equipo está en producción)
+CREATE TABLE dbo.AreaFuncional (
+    Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+    IdPlanta    VARCHAR(36) NOT NULL DEFAULT '', /* Relación con Planta */
+    Nombre      VARCHAR(255) NOT NULL, /* Nombre del área funcional */
+    Estado      BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
+    Fecha_log SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (IdPlanta) REFERENCES Planta(Id) ON DELETE CASCADE
+);
+
+-- Tabla Bodega (Si el equipo está almacenado)
+CREATE TABLE dbo.Bodega (
+    Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+    IdPlanta    VARCHAR(36) NOT NULL DEFAULT '', /* Relación con Planta */
+    Nombre      VARCHAR(255) NOT NULL, /* Nombre de la bodega */
+    Estado      BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
+    Fecha_log SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (IdPlanta) REFERENCES Planta(Id) ON DELETE CASCADE
+);
+
+-- Tabla Sección de Bodega (Para dividir las bodegas en secciones)
+CREATE TABLE dbo.SeccionBodega (
+    Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+    IdBodega    VARCHAR(36) NOT NULL DEFAULT '', /* Relación con Bodega */
+    Nombre      VARCHAR(255) NOT NULL, /* Nombre de la sección dentro de la bodega */
+    Estado      BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
+    Fecha_log SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (IdBodega) REFERENCES Bodega(Id) ON DELETE CASCADE
+);
+
+-- Tabla Patio (Para almacenamiento en espacios abiertos)
+CREATE TABLE dbo.Patio (
+    Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+    IdBodega    VARCHAR(36) NOT NULL DEFAULT '', /* Relación con Bodega */
+    Nombre      VARCHAR(255) NOT NULL, /* Nombre del patio dentro de la bodega */
+    Estado      BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
+    Fecha_log   SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (IdBodega) REFERENCES Bodega(Id) ON DELETE CASCADE
+);
 
 -- Equipo
 PRINT 'creacion de la tabla Equipo '   
@@ -132,8 +165,7 @@ BEGIN
         Descripcion     VARCHAR(max) NOT NULL DEFAULT '',             /*Descripcion del equipo*/
         IdComp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
         Modelo          VARCHAR(255) NOT NULL DEFAULT '',             /*Modelo del equipo*/
-        NSerie          VARCHAR(255) NOT NULL DEFAULT '',             /*Numero de serie del equipo*/
-        Ubicacion       VARCHAR(255) NOT NULL DEFAULT '',             /*Ubicacion del equipo*/  
+        NSerie          VARCHAR(255) NOT NULL DEFAULT '',             /*Numero de serie del equipo*/             /*Ubicacion del equipo*/  
         Fabricante      VARCHAR(255) NOT NULL DEFAULT '',             /*Fabricante del equipo*/
         Marca           VARCHAR(255) NOT NULL DEFAULT '',             /*Marca del equipo*/
         Funcion         VARCHAR(max) NOT NULL DEFAULT '',             /*Funcion del equipo*/
@@ -155,6 +187,25 @@ BEGIN
         FKEquipo_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
 END
 
+CREATE TABLE dbo.UbicacionEquipo (
+    Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+    IdEquipo        VARCHAR(36) NOT NULL DEFAULT '', /* Relación con Equipo */
+    TipoUbicacion   VARCHAR(50) NOT NULL CHECK (TipoUbicacion IN ('Bodega', 'Produccion')), /* Tipo de ubicación */
+    IdPlanta        VARCHAR(36) NOT NULL DEFAULT '',  /* Planta donde se encuentra */
+    IdAreaFuncional VARCHAR(36) NULL, /* Si está en producción */
+    IdBodega        VARCHAR(36) NULL, /* Si está en almacenamiento */
+    IdSeccionBodega VARCHAR(36) NULL, /* Sección de bodega */
+    IdPatio         VARCHAR(36) NULL, /* Patio (si aplica) */
+    Estado          BIT NOT NULL DEFAULT 1, /* Activo/Inactivo */
+    Fecha_log SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (IdEquipo) REFERENCES dbo.Equipo(Id) ON DELETE CASCADE,
+    FOREIGN KEY (IdPlanta) REFERENCES dbo.Planta(Id),
+    FOREIGN KEY (IdAreaFuncional) REFERENCES dbo.AreaFuncional(Id) ,
+    FOREIGN KEY (IdBodega) REFERENCES dbo.Bodega(Id),
+    FOREIGN KEY (IdSeccionBodega) REFERENCES dbo.SeccionBodega(Id),
+    FOREIGN KEY (IdPatio) REFERENCES dbo.Patio(Id)
+);
+
 -- Guia_Equipo
 PRINT 'creacion de la tabla Guia_Equipo'
 IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Guia_Equipo')
@@ -174,7 +225,7 @@ BEGIN
 END
 
 -- TipoActividad
-PRINT 'creacion de la tabla TipoActividad_ '
+PRINT 'creacion de la tabla TipoActividad '
 IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'TipoActividad')
 BEGIN
     CREATE TABLE dbo.TipoActividad(
