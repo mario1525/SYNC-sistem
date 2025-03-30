@@ -27,7 +27,7 @@
         public DateTime? Fecha_log { get; set; }     // Log fecha
     }
 
-    public class Guia
+    public class GuiaC
     {
         public string? Id { get; set; }              // Id interno del registro
         public string? Nombre { get; set; }          // Nombre de la guia

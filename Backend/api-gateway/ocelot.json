@@ -2,27 +2,23 @@
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/Auth",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "user-services",
-          "Port": 7020
+          "Host": "docker-user-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigataway/Auth",
       "UpstreamHttpMethod": [ "POST" ]
     },
-
-
-
-
     {
       "DownstreamPathTemplate": "/api/Credential/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "user-services",
-          "Port": 7020
+          "Host": "docker-user-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigataway/Credential/{id}",
@@ -30,27 +26,23 @@
     },
     {
       "DownstreamPathTemplate": "/api/Credential",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "user-services",
-          "Port": 7020
+          "Host": "docker-user-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigataway/Credential",
       "UpstreamHttpMethod": [ "POST" ]
     },
-
-
-
-
     {
       "DownstreamPathTemplate": "/api/Users/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "user-services",
-          "Port": 7020
+          "Host": "docker-user-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigataway/Users/{id}",
@@ -58,25 +50,47 @@
     },
     {
       "DownstreamPathTemplate": "/api/Users",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "user-services",
-          "Port": 7020
+          "Host": "docker-user-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigataway/Users",
       "UpstreamHttpMethod": [ "POST" ]
     },
-
-
     {
-      "DownstreamPathTemplate": "/api/Actividad/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamPathTemplate": "/api/Comp/{id}",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Comp/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Planta/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "plant-services",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Planta/{id}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Actividad/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Actividad/{id}",
@@ -84,11 +98,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Actividad",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Actividad",
@@ -96,24 +110,23 @@
     },
     {
       "DownstreamPathTemplate": "/api/Actividad/{id}/estado",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Actividad/{id}/estado",
       "UpstreamHttpMethod": [ "PATCH" ]
     },
-
     {
       "DownstreamPathTemplate": "/api/Equipo/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Equipo/{id}",
@@ -121,11 +134,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Equipo",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Equipo",
@@ -133,11 +146,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Equipo/{id}/estado",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Equipo/{id}/estado",
@@ -145,11 +158,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Guia/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Guia/{id}",
@@ -157,11 +170,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Guia",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Guia",
@@ -169,67 +182,23 @@
     },
     {
       "DownstreamPathTemplate": "/api/Guia/{id}/estado",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Guia/{id}/estado",
       "UpstreamHttpMethod": [ "PATCH" ]
     },
-
-    {
-      "Routes": [
-        {
-          "DownstreamPathTemplate": "/api/Comp/{id}",
-          "DownstreamScheme": "https",
-          "DownstreamHostAndPorts": [
-            {
-              "Host": "maintenance-services",
-              "Port": 7022
-            }
-          ],
-          "UpstreamPathTemplate": "/apigateway/Compania/{id}",
-          "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
-        },
-        {
-          "DownstreamPathTemplate": "/api/Planta/{id}",
-          "DownstreamScheme": "https",
-          "DownstreamHostAndPorts": [
-            {
-              "Host": "plant-services",
-              "Port": 7022
-            }
-          ],
-          "UpstreamPathTemplate": "/apigateway/Planta/{id}",
-          "UpstreamHttpMethod": [ "GET", "POST", "DELETE" ]
-        },
-        {
-          "DownstreamPathTemplate": "/api/Guia/{id}",
-          "DownstreamScheme": "https",
-          "DownstreamHostAndPorts": [
-            {
-              "Host": "guide-services",
-              "Port": 7022
-            }
-          ],
-          "UpstreamPathTemplate": "/apigateway/Guia/{id}",
-          "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
-        }
-      ],
-      "GlobalConfiguration": {
-        "BaseUrl": "https://apigateway.local"
-      }
-    },
     {
       "DownstreamPathTemplate": "/api/SeccionBodega/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/SeccionBodega/{id}",
@@ -237,11 +206,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/SeccionBodega",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/SeccionBodega",
@@ -249,11 +218,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/SeccionBodega/{id}/estado",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/SeccionBodega/{id}/estado",
@@ -261,11 +230,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Patio/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Patio/{id}",
@@ -273,11 +242,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Patio",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Patio",
@@ -285,11 +254,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Patio/{id}/estado",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Patio/{id}/estado",
@@ -297,11 +266,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/AreaFuncional/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/AreaFuncional/{id}",
@@ -309,11 +278,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/AreaFuncional",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/AreaFuncional",
@@ -321,11 +290,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/AreaFuncional/{id}/estado",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/AreaFuncional/{id}/estado",
@@ -333,11 +302,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Bodega/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Bodega/{id}",
@@ -345,11 +314,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Bodega",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Bodega",
@@ -357,11 +326,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Bodega/{id}/estado",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Bodega/{id}/estado",
@@ -369,11 +338,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/ActividadEquipo/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/ActividadEquipo/{id}",
@@ -381,11 +350,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/ActividadEquipo",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/ActividadEquipo",
@@ -393,11 +362,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/ActividadEquipo/{id}/estado",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/ActividadEquipo/{id}/estado",
@@ -405,11 +374,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/TipoActividad/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/TipoActividad/{id}",
@@ -417,11 +386,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/TipoActividad",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/TipoActividad",
@@ -429,11 +398,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/TipoActividad/{id}/estado",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/TipoActividad/{id}/estado",
@@ -441,11 +410,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Proced/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Proced/{id}",
@@ -453,11 +422,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Proced",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Proced",
@@ -465,11 +434,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Proced/{id}/estado",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Proced/{id}/estado",
@@ -477,11 +446,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/GuiaEquipo/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/GuiaEquipo/{id}",
@@ -489,11 +458,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/GuiaEquipo",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/GuiaEquipo",
@@ -501,11 +470,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/GuiaEquipo/{id}/estado",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/GuiaEquipo/{id}/estado",
@@ -513,11 +482,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Esp/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Esp/{id}",
@@ -525,11 +494,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Esp",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Esp",
@@ -537,16 +506,16 @@
     },
     {
       "DownstreamPathTemplate": "/api/Esp/{id}/estado",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "maintenance-services",
-          "Port": 7022
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/apigateway/Esp/{id}/estado",
       "UpstreamHttpMethod": [ "PATCH" ]
-    }
+    }    
   ],
   "GlobalConfiguration": {
     "BaseUrl": "http://localhost:5000"
