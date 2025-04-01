@@ -6,12 +6,24 @@
   
     <div class="form-section">
       <h2>Iniciar sesión</h2>
-      <form>
+      <form (ngSubmit)="onSubmit()">
         <label for="username">Usuario</label>
-        <input type="text" id="username" placeholder="Usuario">
+        <input 
+          type="text" 
+          id="username" 
+          placeholder="Usuario"
+          [(ngModel)]="loginRequest.username"
+          name="username"
+          required>
   
         <label for="password">Contraseña</label>
-        <input type="password" id="password" placeholder="Contraseña">
+        <input 
+          type="password" 
+          id="password" 
+          placeholder="Contraseña"
+          [(ngModel)]="loginRequest.password"
+          name="password"
+          required>
   
         <button type="submit">Entrar</button>
       </form>
