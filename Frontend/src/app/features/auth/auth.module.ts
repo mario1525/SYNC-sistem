@@ -1,22 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LoginFormComponent } from './components/login-form/login-form.component';
+import { AuthRoutingModule } from './auth-routing.module';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-
-
+import { LoginFormComponent } from './Components/login-form/login-form.component';
 
 @NgModule({
-  declarations: [
-    LoginFormComponent,
-    LoginPageComponent
-  ],
   imports: [
     CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule.forChild([{ path: '', component: LoginPageComponent }])
+    AuthRoutingModule,
+    LoginPageComponent, // ✅ standalone component
+    LoginFormComponent  // ✅ standalone component
   ]
 })
-export class AuthModule { }
+export class AuthModule {}

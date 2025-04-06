@@ -1,12 +1,16 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { RouterModule, Routes } from '@angular/router';
+import { PageProfileComponent } from './pages/page-profile/page-profile.component';
+import { PageRegisterComponent } from './pages/page-register/page-register.component';
 
 
+const routes: Routes = [
+  { path: 'register', component: PageRegisterComponent },
+  { path: 'profile', component: PageProfileComponent }
+];
 
 @NgModule({
-  declarations: [],
-  imports: [
-    CommonModule
-  ]
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
 })
 export class UsersRoutingModule { }

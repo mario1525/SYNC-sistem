@@ -10,8 +10,8 @@ export interface JwtToken {
   }
   
   export interface LoginRequest {
-    username: string;
-    password: string;
+    usuario: string;
+    contrasenia: string;
   }
   
   export interface LoginResponse {

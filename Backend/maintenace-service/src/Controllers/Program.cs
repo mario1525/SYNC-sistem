@@ -127,16 +127,13 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
-
-app.UseCors("MyPolicy");
-
-// Middleware de autenticaci�n y autorizaci�n
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseRouting();               // 1️⃣ Primero enrutar
+app.UseCors("MyPolicy");        // 2️⃣ Luego aplicar CORS justo después de routing
+app.UseAuthentication();        // 3️⃣ Luego autenticación
+app.UseAuthorization();         // 4️⃣ Finalmente autorización
 
 app.MapRazorPages();
 

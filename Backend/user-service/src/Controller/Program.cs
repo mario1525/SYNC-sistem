@@ -1,4 +1,4 @@
-using Data;
+﻿using Data;
 using Entity;
 using System.Text;
 using Services;
@@ -54,13 +54,13 @@ builder.Services.AddControllers();
 // Add Cors
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("MyPolicy",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:4200 , http://localhost:3000")
-                 .AllowAnyHeader()
-                 .AllowAnyMethod();
-        });
+    options.AddPolicy("MyPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Agrega esto si usas cookies o tokens por cabecera
+    });
 });
 
 // swagger 
@@ -93,16 +93,14 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
-
-app.UseCors("MyPolicy");
-
-// Middleware de autenticaci?n y autorizaci?n
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseRouting();               // 1️⃣ Primero enrutar
+app.UseCors("MyPolicy");        // 2️⃣ Luego aplicar CORS justo después de routing
+app.UseAuthentication();        // 3️⃣ Luego autenticación
+app.UseAuthorization();         // 4️⃣ Finalmente autorización
 
 app.MapRazorPages();
 

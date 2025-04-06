@@ -1,5 +1,5 @@
 ﻿using Entity;
-
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 

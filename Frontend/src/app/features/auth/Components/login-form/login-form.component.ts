@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../Services/auth.service';
-import { LoginRequest } from '../../../../../app/Types/Auth';
-
+import { LoginRequest } from '../../../../../Types/Auth';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-login-form',
   standalone: true,
@@ -12,16 +12,19 @@ import { LoginRequest } from '../../../../../app/Types/Auth';
 })
 export class LoginFormComponent {
   loginRequest: LoginRequest = {
-    username: '',
-    password: ''
+    usuario: '',
+    contrasenia: ''
   };
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit(): void {
     this.authService.login(this.loginRequest).subscribe({
       next: () => {
-        // Manejar login exitoso
+        const userRole = this.authService.getUserRole();
+        if (userRole === 'admin') {
+          this.router.navigate(['/users/profile']);
+        }
       },
       error: (error) => {
         console.error('Error en login:', error);

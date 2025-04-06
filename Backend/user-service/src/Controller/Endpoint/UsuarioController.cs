@@ -1,5 +1,6 @@
 ﻿using Entity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
@@ -8,6 +9,7 @@ using Services;
 namespace Controllers.Endpoint
 {
     [Route("api/Users")]
+    [EnableCors("MyPolicy")]
     [ApiController]
     public class UsersController : ControllerBase
     {

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { LoginRequest, LoginResponse, JwtToken } from '../../../../Types/Auth';
 import { jwtDecode } from 'jwt-decode';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -21,9 +22,10 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>('/apigateway/Auth', credentials)
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/Auth`, credentials)
       .pipe(
         tap(response => {
+          //console.log(response);
           this.setToken(response.token);
           this.setCurrentUser(response.token);
         })
