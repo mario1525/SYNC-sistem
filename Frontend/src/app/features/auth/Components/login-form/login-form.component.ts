@@ -22,7 +22,7 @@ export class LoginFormComponent {
     this.authService.login(this.loginRequest).subscribe({
       next: () => {
         const userRole = this.authService.getUserRole();
-        if (userRole === 'admin') {
+        if (userRole === 'Admin') {
           this.router.navigate(['/users/profile']);
         }
       },
