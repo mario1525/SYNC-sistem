@@ -5,12 +5,10 @@ import { EquipoListComponent } from './pages/equipo-list/equipo-list.component';
 import { EquipoFormComponent } from './pages/equipo-form/equipo-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
+import { EquipoRoutingModule } from './equipo-routing.module';
+import { MenuComponent } from '../../shared/Components/menu/menu.component';
+import { LogoHeaderComponent } from '../../shared/Components/logo-header/logo-header.component';
 
-const routes: Routes = [
-  { path: '', component: EquipoListComponent },
-  { path: 'nuevo', component: EquipoFormComponent },
-  { path: 'editar/:id', component: EquipoFormComponent }
-];
 
 @NgModule({
   declarations: [
@@ -21,7 +19,10 @@ const routes: Routes = [
     CommonModule,
     ReactiveFormsModule,
     SharedModule,
-    RouterModule.forChild(routes)
+    EquipoRoutingModule,
+    MenuComponent,
+    LogoHeaderComponent
+    
   ]
 })
 export class EquipoModule { } 

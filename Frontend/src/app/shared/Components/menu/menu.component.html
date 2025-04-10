@@ -1,0 +1,19 @@
+<aside class="sidebar">
+    <nav class="menu-items">
+      <a 
+        *ngFor="let item of menuItems" 
+        [routerLink]="item.route" 
+        routerLinkActive="active"
+        class="menu-link"
+      >
+        {{ item.label }}
+      </a>
+    </nav>
+  
+    <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
+  
+    <div class="footer">
+      <strong>SYMC</strong>
+    </div>
+  </aside>
+  

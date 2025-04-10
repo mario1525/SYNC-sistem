@@ -23,7 +23,10 @@ export class LoginFormComponent {
       next: () => {
         const userRole = this.authService.getUserRole();
         if (userRole === 'Admin') {
-          this.router.navigate(['/users/profile']);
+          this.router.navigate(['/home']);
+        }
+        if (userRole === 'Admin-Admin') {
+          this.router.navigate(['/companies']);
         }
       },
       error: (error) => {
