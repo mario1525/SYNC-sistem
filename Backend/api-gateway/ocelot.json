@@ -9,7 +9,7 @@
           "Port": 80
         }
       ],
-      "UpstreamPathTemplate": "/apigataway/Auth",
+      "UpstreamPathTemplate": "/apigateway/Auth",
       "UpstreamHttpMethod": [ "POST" ]
     },
     {
@@ -21,7 +21,7 @@
           "Port": 80
         }
       ],
-      "UpstreamPathTemplate": "/apigataway/Credential/{id}",
+      "UpstreamPathTemplate": "/apigateway/Credential/{id}",
       "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
     },
     {
@@ -33,7 +33,7 @@
           "Port": 80
         }
       ],
-      "UpstreamPathTemplate": "/apigataway/Credential",
+      "UpstreamPathTemplate": "/apigateway/Credential",
       "UpstreamHttpMethod": [ "POST" ]
     },
     {
@@ -45,7 +45,7 @@
           "Port": 80
         }
       ],
-      "UpstreamPathTemplate": "/apigataway/Users/{id}",
+      "UpstreamPathTemplate": "/apigateway/Users/{id}",
       "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
     },
     {
@@ -57,7 +57,7 @@
           "Port": 80
         }
       ],
-      "UpstreamPathTemplate": "/apigataway/Users",
+      "UpstreamPathTemplate": "/apigateway/Users",
       "UpstreamHttpMethod": [ "POST" ]
     },
     {

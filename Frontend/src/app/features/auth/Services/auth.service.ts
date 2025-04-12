@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { LoginRequest, LoginResponse, JwtToken } from '../../../../Types/Auth';
 import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../../../environments/environment';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<JwtToken | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private cookieService: CookieService) {
     const token = this.getToken();
     if (token) {
       this.setCurrentUser(token);
@@ -25,7 +26,6 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${environment.apiUrl}/Auth`, credentials)
       .pipe(
         tap(response => {
-          //console.log(response);
           this.setToken(response.token);
           this.setCurrentUser(response.token);
         })
@@ -33,8 +33,8 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
+    this.cookieService.delete(this.TOKEN_KEY);
+    this.cookieService.delete(this.USER_KEY);
     this.currentUserSubject.next(null);
   }
 
@@ -52,18 +52,18 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return this.cookieService.get(this.TOKEN_KEY) || null;
   }
 
   private setToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+    this.cookieService.set(this.TOKEN_KEY, token);
   }
 
   private setCurrentUser(token: string): void {
     try {
       const decodedToken = jwtDecode<JwtToken>(token);
       this.currentUserSubject.next(decodedToken);
-      localStorage.setItem(this.USER_KEY, JSON.stringify(decodedToken));
+      this.cookieService.set(this.USER_KEY, JSON.stringify(decodedToken));
     } catch (error) {
       console.error('Error al decodificar el token:', error);
       this.logout();
@@ -84,4 +84,4 @@ export class AuthService {
     const user = this.currentUserSubject.value;
     return user ? user.IdComp : null;
   }
-} 
+}

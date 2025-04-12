@@ -31,12 +31,13 @@ export class MenuComponent implements OnInit {
 const MENU_ITEMS: Record<string, { label: string; route: string }[]> = {
   Admin: [
     { label: 'Inicio', route: '/home' },
-    { label: 'Equipos', route: '/equipo' },
+    { label: 'Equipos', route: '/equipo/equipo' },
+    { label: 'Compañías', route: '/comp' },
     { label: 'Usuarios', route: '/users/list' },
   ],
   Supervisor: [
     { label: 'Inicio', route: '/home' },
-    { label: 'Equipos', route: '/equipos' },
+    { label: 'Equipos', route: '/equipo/list' },
     { label: 'Usuarios', route: '/users/list' },
   ],
   Mecanico: [

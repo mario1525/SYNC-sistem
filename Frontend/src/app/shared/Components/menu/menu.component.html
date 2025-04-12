@@ -2,9 +2,10 @@
     <nav class="menu-items">
       <a 
         *ngFor="let item of menuItems" 
-        [routerLink]="item.route" 
+        [routerLink]="[item.route]"
         routerLinkActive="active"
         class="menu-link"
+        [routerLinkActiveOptions]="{exact: true}"
       >
         {{ item.label }}
       </a>

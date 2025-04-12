@@ -1,0 +1,46 @@
+<app-logo-header></app-logo-header>
+<app-menu></app-menu>
+
+<div class="container">
+  <div class="header">
+    <h2>Compañías</h2>
+    <button class="btn btn-primary" (click)="navigateToNew()">
+      <i class="fas fa-plus"></i> Nueva Compañía
+    </button>
+  </div>
+
+  <hr />
+
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Direccion</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let comp of comps">
+          <td>{{comp.nombre}}</td>
+          <td>{{comp.direccion}}</td>
+          <td>
+            <span [class]="'badge ' + (comp.estado ? 'bg-success' : 'bg-danger')">
+              {{comp.estado ? 'Activo' : 'Inactivo'}}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-info me-2" (click)="editComp(comp.id)">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="deleteComp(comp.id)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div> 

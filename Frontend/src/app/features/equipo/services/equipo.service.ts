@@ -19,11 +19,15 @@ export class EquipoService {
   constructor(private http: HttpClient) {}
 
   getEquipos(): Observable<Equipo[]> {
-    return this.http.get<Equipo[]>(this.apiUrl);
+    return this.http.get<Equipo[]>(`${this.apiUrl}/Comp`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+      }
+    });
   }
 
   getEquipo(id: number): Observable<Equipo> {
-    return this.http.get<Equipo>(`${this.apiUrl}/${id}`);
+    return this.http.get<Equipo>(`${this.apiUrl}/Comp/${id}`);
   }
 
   createEquipo(equipo: Equipo): Observable<Equipo> {
@@ -31,10 +35,10 @@ export class EquipoService {
   }
 
   updateEquipo(id: number, equipo: Equipo): Observable<Equipo> {
-    return this.http.put<Equipo>(`${this.apiUrl}/${id}`, equipo);
+    return this.http.put<Equipo>(`${this.apiUrl}/Comp/${id}`, equipo);
   }
 
   deleteEquipo(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/Comp/${id}`);
   }
 } 
