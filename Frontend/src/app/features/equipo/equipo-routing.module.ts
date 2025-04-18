@@ -4,14 +4,11 @@ import { EquipoFormComponent } from './pages/equipo-form/equipo-form.component';
 
 const routes: Routes = [
   { path: 'equipo', component: EquipoFormComponent }, // /auth → LoginPage
-  { path: 'editar/:id', component: EquipoFormComponent }
+  { path: 'editar/:id', component: EquipoFormComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class EquipoRoutingModule {}
-
-
-

@@ -8,15 +8,18 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './login-form.component.html',
-  styleUrl: './login-form.component.less'
+  styleUrl: './login-form.component.less',
 })
 export class LoginFormComponent {
   loginRequest: LoginRequest = {
     usuario: '',
-    contrasenia: ''
+    contrasenia: '',
   };
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   onSubmit(): void {
     this.authService.login(this.loginRequest).subscribe({
@@ -31,7 +34,7 @@ export class LoginFormComponent {
       },
       error: (error) => {
         console.error('Error en login:', error);
-      }
+      },
     });
   }
 }

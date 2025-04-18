@@ -8,19 +8,15 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MenuComponent } from '../../shared/Components/menu/menu.component';
 import { LogoHeaderComponent } from '../../shared/Components/logo-header/logo-header.component';
 
-
 @NgModule({
-  declarations: [
-    CompListComponent,
-    CompFormComponent
-  ],
+  declarations: [CompListComponent, CompFormComponent],
   imports: [
     CommonModule,
     CompRoutingModule,
     RouterModule,
     ReactiveFormsModule,
     MenuComponent,
-    LogoHeaderComponent
-  ]
+    LogoHeaderComponent,
+  ],
 })
-export class CompModule { } 
+export class CompModule {}

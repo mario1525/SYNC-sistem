@@ -5,18 +5,14 @@ import { PageRegisterComponent } from './pages/page-register/page-register.compo
 import { PageProfileComponent } from './pages/page-profile/page-profile.component';
 import { UsersRoutingModule } from './users-routing.module';
 
-
-
 @NgModule({
-  declarations: [
-
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     FormRegisterComponent,
     PageRegisterComponent,
     PageProfileComponent,
-    UsersRoutingModule
-  ]
+    UsersRoutingModule,
+  ],
 })
-export class UsersModule { }
+export class UsersModule {}

@@ -11,7 +11,7 @@ export interface Equipo {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EquipoService {
   private apiUrl = `${environment.apiUrl}/equipo`;
@@ -21,8 +21,8 @@ export class EquipoService {
   getEquipos(): Observable<Equipo[]> {
     return this.http.get<Equipo[]>(`${this.apiUrl}/Comp`, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+      },
     });
   }
 
@@ -41,4 +41,4 @@ export class EquipoService {
   deleteEquipo(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/Comp/${id}`);
   }
-} 
+}

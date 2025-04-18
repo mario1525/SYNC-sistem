@@ -2,12 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompService } from '../../services/comp.service';
-import { Comp } from '../../../../../Types/Comp';
 
 @Component({
   selector: 'app-comp-form',
   templateUrl: './comp-form.component.html',
-  styleUrls: ['./comp-form.component.less']
+  styleUrls: ['./comp-form.component.less'],
 })
 export class CompFormComponent implements OnInit {
   compForm: FormGroup;
@@ -18,7 +17,7 @@ export class CompFormComponent implements OnInit {
     private fb: FormBuilder,
     private compService: CompService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {
     this.compForm = this.fb.group({
       nombre: ['', Validators.required],
@@ -26,7 +25,7 @@ export class CompFormComponent implements OnInit {
       nit: ['', Validators.required],
       direccion: ['', Validators.required],
       sector: ['', Validators.required],
-      estado: [true]
+      estado: [true],
     });
   }
 
@@ -62,7 +61,7 @@ export class CompFormComponent implements OnInit {
         // Cuando la petición es exitosa
         next: (response) => {
           // Extrae los datos de la compañía de la respuesta
-          const  comp = response ;
+          const comp = response;
           // Actualiza el formulario con los datos obtenidos
           this.compForm.patchValue(comp);
         },
@@ -72,7 +71,7 @@ export class CompFormComponent implements OnInit {
           console.error('Error al cargar compañía:', error);
           // Regresa a la página anterior
           this.goBack();
-        }
+        },
       });
     }
   }
@@ -83,12 +82,13 @@ export class CompFormComponent implements OnInit {
       if (this.isEditing && this.compId) {
         this.compService.updateComp(this.compId, comp).subscribe({
           next: () => this.goBack(),
-          error: (error) => console.error('Error al actualizar compañía:', error)
+          error: (error) =>
+            console.error('Error al actualizar compañía:', error),
         });
       } else {
         this.compService.createComp(comp).subscribe({
           next: () => this.goBack(),
-          error: (error) => console.error('Error al crear compañía:', error)
+          error: (error) => console.error('Error al crear compañía:', error),
         });
       }
     }
@@ -97,4 +97,4 @@ export class CompFormComponent implements OnInit {
   goBack(): void {
     this.router.navigate(['/comp']);
   }
-} 
+}

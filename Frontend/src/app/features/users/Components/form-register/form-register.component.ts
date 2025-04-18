@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-form-register',
   standalone: true,
   templateUrl: './form-register.component.html',
-  styleUrl: './form-register.component.less'
+  styleUrl: './form-register.component.less',
 })
-export class FormRegisterComponent {
-
-}
+export class FormRegisterComponent {}

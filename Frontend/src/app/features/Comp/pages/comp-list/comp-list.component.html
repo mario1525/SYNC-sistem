@@ -11,7 +11,6 @@
 
   <hr />
 
-
   <div class="table-responsive">
     <table class="table">
       <thead>
@@ -24,15 +23,20 @@
       </thead>
       <tbody>
         <tr *ngFor="let comp of comps">
-          <td>{{comp.nombre}}</td>
-          <td>{{comp.direccion}}</td>
+          <td>{{ comp.nombre }}</td>
+          <td>{{ comp.direccion }}</td>
           <td>
-            <span [class]="'badge ' + (comp.estado ? 'bg-success' : 'bg-danger')">
-              {{comp.estado ? 'Activo' : 'Inactivo'}}
+            <span
+              [class]="'badge ' + (comp.estado ? 'bg-success' : 'bg-danger')"
+            >
+              {{ comp.estado ? "Activo" : "Inactivo" }}
             </span>
           </td>
           <td>
-            <button class="btn btn-sm btn-info me-2" (click)="editComp(comp.id)">
+            <button
+              class="btn btn-sm btn-info me-2"
+              (click)="editComp(comp.id)"
+            >
               <i class="fas fa-edit"></i>
             </button>
             <button class="btn btn-sm btn-danger" (click)="deleteComp(comp.id)">
@@ -43,4 +47,4 @@
       </tbody>
     </table>
   </div>
-</div> 
+</div>

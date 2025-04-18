@@ -3,9 +3,14 @@
 
 <div class="container">
   <div class="header">
-    <h2>{{isEditing ? 'Editar' : 'Nueva'}} Compañía</h2>
-    <button type="submit" class="{{isEditing ? 'btn btn-Tree' : 'btn btn-primary'}}" [disabled]="compForm.invalid">
-      {{isEditing ? 'Actualizar' : 'Crear'}}
+    <h2>{{ isEditing ? "Editar" : "Nueva" }} Compañía</h2>
+    <button
+      type="submit"
+      class="{{ isEditing ? 'btn btn-Tree' : 'btn btn-primary' }}"
+      [disabled]="compForm.invalid"
+      (click)="onSubmit()"
+    >
+      {{ isEditing ? "Actualizar" : "Crear" }}
     </button>
   </div>
 
@@ -15,13 +20,13 @@
     <div class="form-grid">
       <div class="form-group">
         <label for="nombre">Nombre</label>
-        <input 
-          type="text" 
-          id="nombre" 
-          formControlName="nombre" 
+        <input
+          type="text"
+          id="nombre"
+          formControlName="nombre"
           class="form-control"
           [class.is-invalid]="nombre.invalid && nombre.touched"
-        >
+        />
         <div class="invalid-feedback" *ngIf="nombre.invalid && nombre.touched">
           El nombre es requerido
         </div>
@@ -29,27 +34,30 @@
 
       <div class="form-group">
         <label for="ciudad">Ciudad</label>
-        <input 
-          type="text" 
-          id="ciudad" 
-          formControlName="ciudad" 
+        <input
+          type="text"
+          id="ciudad"
+          formControlName="ciudad"
           class="form-control"
           [class.is-invalid]="ciudad?.invalid && ciudad?.touched"
+        />
+        <div
+          class="invalid-feedback"
+          *ngIf="ciudad?.invalid && ciudad?.touched"
         >
-        <div class="invalid-feedback" *ngIf="ciudad?.invalid && ciudad?.touched">
           la ciudad es requerido
         </div>
       </div>
 
       <div class="form-group">
         <label for="nit">NIT</label>
-        <input 
-          type="text" 
-          id="nit" 
-          formControlName="nit" 
+        <input
+          type="text"
+          id="nit"
+          formControlName="nit"
           class="form-control"
           [class.is-invalid]="nit?.invalid && nit?.touched"
-        >
+        />
         <div class="invalid-feedback" *ngIf="nit?.invalid && nit?.touched">
           el NIT es requerido
         </div>
@@ -57,48 +65,50 @@
 
       <div class="form-group">
         <label for="direccion">Direccion</label>
-        <input 
-          type="text" 
-          id="direccion" 
-          formControlName="direccion" 
+        <input
+          type="text"
+          id="direccion"
+          formControlName="direccion"
           class="form-control"
           [class.is-invalid]="direccion?.invalid && direccion?.touched"
+        />
+        <div
+          class="invalid-feedback"
+          *ngIf="direccion?.invalid && direccion?.touched"
         >
-        <div class="invalid-feedback" *ngIf="direccion?.invalid && direccion?.touched">
           la ciudad es requerida
         </div>
       </div>
 
       <div class="form-group">
         <label for="sector">Sector</label>
-        <input 
-          type="text" 
-          id="sector" 
-          formControlName="sector" 
+        <input
+          type="text"
+          id="sector"
+          formControlName="sector"
           class="form-control"
           [class.is-invalid]="sector?.invalid && sector?.touched"
+        />
+        <div
+          class="invalid-feedback"
+          *ngIf="sector?.invalid && sector?.touched"
         >
-        <div class="invalid-feedback" *ngIf="sector?.invalid && sector?.touched">
           el sector es requerido
         </div>
       </div>
-  
- 
-  
+
       <div class="form-group-Check">
         <label class="checkbox-label">
-          <input type="checkbox" formControlName="estado">
+          <input type="checkbox" formControlName="estado" />
           Activo
         </label>
       </div>
-
     </div>
-    
+
     <div class="form-actions">
       <button type="button" class="btn btn-secondary" (click)="goBack()">
         Cancelar
       </button>
-
     </div>
   </form>
-</div> 
+</div>

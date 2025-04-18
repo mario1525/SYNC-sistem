@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-page-register',
   standalone: true,
   templateUrl: './page-register.component.html',
-  styleUrl: './page-register.component.less'
+  styleUrl: './page-register.component.less',
 })
-export class PageRegisterComponent {
-
-}
+export class PageRegisterComponent {}

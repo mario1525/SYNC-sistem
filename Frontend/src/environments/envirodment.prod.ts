@@ -1,4 +1,4 @@
 export const environment = {
-    production: true,
-    apiUrl: 'https://api.tuservidor.com/apigateway'
-  };
+  production: true,
+  apiUrl: 'https://api.tuservidor.com/apigateway',
+};

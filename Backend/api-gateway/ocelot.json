@@ -60,6 +60,19 @@
       "UpstreamPathTemplate": "/apigateway/Users",
       "UpstreamHttpMethod": [ "POST" ]
     },
+
+    {
+      "DownstreamPathTemplate": "/api/Comp",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "docker-maintenace-services-1",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/apigateway/Comp",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
     {
       "DownstreamPathTemplate": "/api/Comp/{id}",
       "DownstreamScheme": "http",
@@ -515,7 +528,7 @@
       ],
       "UpstreamPathTemplate": "/apigateway/Esp/{id}/estado",
       "UpstreamHttpMethod": [ "PATCH" ]
-    }    
+    }
   ],
   "GlobalConfiguration": {
     "BaseUrl": "http://localhost:5000"

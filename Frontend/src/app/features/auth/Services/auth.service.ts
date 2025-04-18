@@ -7,7 +7,7 @@ import { environment } from '../../../../environments/environment';
 import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
@@ -15,7 +15,10 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<JwtToken | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient, private cookieService: CookieService) {
+  constructor(
+    private http: HttpClient,
+    private cookieService: CookieService,
+  ) {
     const token = this.getToken();
     if (token) {
       this.setCurrentUser(token);
@@ -23,12 +26,13 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${environment.apiUrl}/Auth`, credentials)
+    return this.http
+      .post<LoginResponse>(`${environment.apiUrl}/Auth`, credentials)
       .pipe(
-        tap(response => {
+        tap((response) => {
           this.setToken(response.token);
           this.setCurrentUser(response.token);
-        })
+        }),
       );
   }
 
@@ -72,12 +76,18 @@ export class AuthService {
 
   getUserRole(): string | null {
     const user = this.currentUserSubject.value;
-    return user ? user['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] : null;
+    return user
+      ? user['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+      : null;
   }
 
   getUserId(): string | null {
     const user = this.currentUserSubject.value;
-    return user ? user['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] : null;
+    return user
+      ? user[
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'
+        ]
+      : null;
   }
 
   getCompanyId(): string | null {

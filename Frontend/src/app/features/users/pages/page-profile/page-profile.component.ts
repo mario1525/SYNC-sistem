@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-page-profile',
   standalone: true,
   templateUrl: './page-profile.component.html',
-  styleUrl: './page-profile.component.less'
+  styleUrl: './page-profile.component.less',
 })
-export class PageProfileComponent {
-
-}
+export class PageProfileComponent {}

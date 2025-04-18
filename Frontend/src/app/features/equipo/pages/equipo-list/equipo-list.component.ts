@@ -26,19 +26,29 @@ import { EquipoService } from '../../services/equipo.service';
           </thead>
           <tbody>
             <tr *ngFor="let equipo of equipos">
-              <td>{{equipo.id}}</td>
-              <td>{{equipo.nombre}}</td>
-              <td>{{equipo.descripcion}}</td>
+              <td>{{ equipo.id }}</td>
+              <td>{{ equipo.nombre }}</td>
+              <td>{{ equipo.descripcion }}</td>
               <td>
-                <span [class]="'badge ' + (equipo.estado ? 'bg-success' : 'bg-danger')">
-                  {{equipo.estado ? 'Activo' : 'Inactivo'}}
+                <span
+                  [class]="
+                    'badge ' + (equipo.estado ? 'bg-success' : 'bg-danger')
+                  "
+                >
+                  {{ equipo.estado ? 'Activo' : 'Inactivo' }}
                 </span>
               </td>
               <td>
-                <button class="btn btn-sm btn-info me-2" (click)="editEquipo(equipo.id)">
+                <button
+                  class="btn btn-sm btn-info me-2"
+                  (click)="editEquipo(equipo.id)"
+                >
                   <i class="fas fa-edit"></i>
                 </button>
-                <button class="btn btn-sm btn-danger" (click)="deleteEquipo(equipo.id)">
+                <button
+                  class="btn btn-sm btn-danger"
+                  (click)="deleteEquipo(equipo.id)"
+                >
                   <i class="fas fa-trash"></i>
                 </button>
               </td>
@@ -48,68 +58,70 @@ import { EquipoService } from '../../services/equipo.service';
       </div>
     </div>
   `,
-  styles: [`
-    .container {
-      padding: 20px;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .table {
-      width: 100%;
-      margin-bottom: 1rem;
-      background-color: transparent;
-    }
-    .table th,
-    .table td {
-      padding: 0.75rem;
-      vertical-align: top;
-      border-top: 1px solid #dee2e6;
-    }
-    .btn {
-      padding: 0.375rem 0.75rem;
-      border-radius: 0.25rem;
-      cursor: pointer;
-    }
-    .btn-primary {
-      background-color: #007bff;
-      color: white;
-      border: none;
-    }
-    .btn-info {
-      background-color: #17a2b8;
-      color: white;
-      border: none;
-    }
-    .btn-danger {
-      background-color: #dc3545;
-      color: white;
-      border: none;
-    }
-    .badge {
-      padding: 0.25em 0.4em;
-      border-radius: 0.25rem;
-      font-size: 75%;
-    }
-    .bg-success {
-      background-color: #28a745;
-      color: white;
-    }
-    .bg-danger {
-      background-color: #dc3545;
-      color: white;
-    }
-  `]
+  styles: [
+    `
+      .container {
+        padding: 20px;
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        background-color: transparent;
+      }
+      .table th,
+      .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+      }
+      .btn {
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background-color: #007bff;
+        color: white;
+        border: none;
+      }
+      .btn-info {
+        background-color: #17a2b8;
+        color: white;
+        border: none;
+      }
+      .btn-danger {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+      }
+      .badge {
+        padding: 0.25em 0.4em;
+        border-radius: 0.25rem;
+        font-size: 75%;
+      }
+      .bg-success {
+        background-color: #28a745;
+        color: white;
+      }
+      .bg-danger {
+        background-color: #dc3545;
+        color: white;
+      }
+    `,
+  ],
 })
 export class EquipoListComponent implements OnInit {
   equipos: any[] = [];
 
   constructor(
     private equipoService: EquipoService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -123,7 +135,7 @@ export class EquipoListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar equipos:', error);
-      }
+      },
     });
   }
 
@@ -143,8 +155,8 @@ export class EquipoListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al eliminar equipo:', error);
-        }
+        },
       });
     }
   }
-} 
+}

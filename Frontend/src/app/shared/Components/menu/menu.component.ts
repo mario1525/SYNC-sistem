@@ -8,12 +8,15 @@ import { AuthService } from '../../../features/auth/Services/auth.service'; // A
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.less']
+  styleUrls: ['./menu.component.less'],
 })
 export class MenuComponent implements OnInit {
   menuItems: { label: string; route: string }[] = [];
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     const role = this.authService.getUserRole(); // Esto ya lo tienes implementado
@@ -44,5 +47,5 @@ const MENU_ITEMS: Record<string, { label: string; route: string }[]> = {
     { label: 'Inicio', route: '/home' },
     { label: 'Usuarios', route: '/users/profile' },
     { label: 'Equipos', route: '/equipos' },
-  ]
+  ],
 };

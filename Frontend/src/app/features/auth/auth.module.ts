@@ -9,7 +9,7 @@ import { LoginFormComponent } from './Components/login-form/login-form.component
     CommonModule,
     AuthRoutingModule,
     LoginPageComponent, // ✅ standalone component
-    LoginFormComponent  // ✅ standalone component
-  ]
+    LoginFormComponent, // ✅ standalone component
+  ],
 })
 export class AuthModule {}

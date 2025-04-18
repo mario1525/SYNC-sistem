@@ -8,7 +8,7 @@ import { LogoHeaderComponent } from '../../../../shared/Components/logo-header/l
 @Component({
   selector: 'app-equipo-form',
   templateUrl: './equipo-form.component.html',
-  styleUrls: ['./equipo-form.component.less']
+  styleUrls: ['./equipo-form.component.less'],
 })
 export class EquipoFormComponent implements OnInit {
   equipoForm: FormGroup;
@@ -19,12 +19,12 @@ export class EquipoFormComponent implements OnInit {
     private fb: FormBuilder,
     private equipoService: EquipoService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {
     this.equipoForm = this.fb.group({
       nombre: ['', Validators.required],
       descripcion: [''],
-      estado: [true]
+      estado: [true],
     });
   }
 
@@ -49,7 +49,7 @@ export class EquipoFormComponent implements OnInit {
         error: (error) => {
           console.error('Error al cargar equipo:', error);
           this.goBack();
-        }
+        },
       });
     }
   }
@@ -60,12 +60,12 @@ export class EquipoFormComponent implements OnInit {
       if (this.isEditing && this.equipoId) {
         this.equipoService.updateEquipo(this.equipoId, equipo).subscribe({
           next: () => this.goBack(),
-          error: (error) => console.error('Error al actualizar equipo:', error)
+          error: (error) => console.error('Error al actualizar equipo:', error),
         });
       } else {
         this.equipoService.createEquipo(equipo).subscribe({
           next: () => this.goBack(),
-          error: (error) => console.error('Error al crear equipo:', error)
+          error: (error) => console.error('Error al crear equipo:', error),
         });
       }
     }

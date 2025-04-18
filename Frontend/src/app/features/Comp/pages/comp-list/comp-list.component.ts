@@ -6,14 +6,14 @@ import { Comp } from '../../../../../Types/Comp';
 @Component({
   selector: 'app-comp-list',
   templateUrl: './comp-list.component.html',
-  styleUrls: ['./comp-list.component.less']
+  styleUrls: ['./comp-list.component.less'],
 })
 export class CompListComponent implements OnInit {
   comps: Comp[] = [];
 
   constructor(
     private compService: CompService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -27,7 +27,7 @@ export class CompListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar compañías:', error);
-      }
+      },
     });
   }
 
@@ -47,8 +47,8 @@ export class CompListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al eliminar compañía:', error);
-        }
+        },
       });
     }
   }
-} 
+}

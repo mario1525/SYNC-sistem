@@ -7,16 +7,15 @@ import { AuthModule } from './features/auth/auth.module';
 import { UsersModule } from './features/users/users.module';
 import { EquipoModule } from './features/equipo/equipo.module';
 @NgModule({
-  declarations: [      
-  ],
+  declarations: [],
   imports: [
     BrowserModule,
     SharedModule,
     AppComponent,
     AuthModule,
     UsersModule,
-    EquipoModule
+    EquipoModule,
   ],
   providers: [],
- })
-export class AppModule { }
+})
+export class AppModule {}

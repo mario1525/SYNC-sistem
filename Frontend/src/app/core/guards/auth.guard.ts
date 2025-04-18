@@ -4,17 +4,24 @@ import { Observable } from 'rxjs';
 import { AuthService } from '../../features/auth/Services/auth.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthGuard {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
-  canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+  canActivate():
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree>
+    | boolean
+    | UrlTree {
     if (this.authService.isAuthenticated()) {
       return true;
     }
-    
+
     // Redirigir a la página de login si no está autenticado
     return this.router.createUrlTree(['/auth']);
   }
-} 
+}

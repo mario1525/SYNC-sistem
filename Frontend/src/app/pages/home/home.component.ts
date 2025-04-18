@@ -8,6 +8,6 @@ import { MenuComponent } from '../../shared/Components/menu/menu.component';
   standalone: true,
   imports: [CommonModule, LogoHeaderComponent, MenuComponent],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.less']
+  styleUrls: ['./home.component.less'],
 })
 export class HomeComponent {}
