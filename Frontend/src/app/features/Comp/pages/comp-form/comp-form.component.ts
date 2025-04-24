@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompService } from '../../services/comp.service';
+import { EspService } from '../../services/esp.service';
+import { Esp } from '../../../../../Types/esp';
 
 @Component({
   selector: 'app-comp-form',
@@ -10,22 +12,35 @@ import { CompService } from '../../services/comp.service';
 })
 export class CompFormComponent implements OnInit {
   compForm: FormGroup;
+  espForm: FormGroup;
+  Esps: Esp[] = [];
   isEditing = false;
   compId: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private compService: CompService,
+    private espService: EspService,
     private router: Router,
     private route: ActivatedRoute,
   ) {
     this.compForm = this.fb.group({
+      id: [''],
       nombre: ['', Validators.required],
       ciudad: ['', Validators.required],
       nit: ['', Validators.required],
       direccion: ['', Validators.required],
       sector: ['', Validators.required],
       estado: [true],
+      fecha_log: ['2025-03-23T14:30:00Z'],
+    });
+
+    this.espForm = this.fb.group({
+      id: [''],
+      nombre: ['', Validators.required],
+      idComp: [''],
+      estado: [true],
+      fecha_log: ['2025-03-23T14:30:00Z'],
     });
   }
 
@@ -34,6 +49,7 @@ export class CompFormComponent implements OnInit {
     if (this.compId) {
       this.isEditing = true;
       this.loadComp();
+      this.loadEsp();
     }
   }
 
@@ -69,6 +85,31 @@ export class CompFormComponent implements OnInit {
         error: (error) => {
           // Muestra el error en consola
           console.error('Error al cargar compañía:', error);
+          // Regresa a la página anterior
+          this.goBack();
+        },
+      });
+    }
+  }
+
+  loadEsp(): void {
+    // Este método carga los datos de las especialidades existentes de una compania
+    if (this.compId) {
+      // Si existe un ID de compañía, hace una petición al servicio
+      this.espService.getesps(this.compId).subscribe({
+        // Cuando la petición es exitosa
+        next: (response) => {
+          // Extrae los datos de la compañía de la respuesta
+          const esp = response;
+          this.Esps = esp;
+          console.log(esp);
+          // Actualiza el formulario con los datos obtenidos
+          //this.compForm.patchValue(esp);
+        },
+        // Si ocurre un error en la petición
+        error: (error) => {
+          // Muestra el error en consola
+          console.error('Error al cargar las especialidades:', error);
           // Regresa a la página anterior
           this.goBack();
         },

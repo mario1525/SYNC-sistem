@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { LoginRequest, LoginResponse, JwtToken } from '../../../../Types/Auth';
 import { jwtDecode } from 'jwt-decode';
-import { environment } from '../../../../environments/environment';
+import { environment } from '@env/environment';
 import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({

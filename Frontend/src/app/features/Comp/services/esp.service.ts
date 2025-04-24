@@ -1,35 +1,37 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '@env/environment';
-import { Comp, CompResponse } from '../../../../Types/Comp';
+import { Esp, EspResponse } from '../../../../Types/esp';
 import { AuthService } from '../../auth/Services/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CompService {
-  private apiUrl = `${environment.apiUrl}/comp`;
+export class EspService {
+  private apiUrl = `${environment.apiUrl}/esp`;
 
   constructor(
     private http: HttpClient,
     private authService: AuthService,
   ) {}
 
-  getComps(): Observable<Comp[]> {
+  getesps(id: string): Observable<Esp[]> {
     const token = this.authService.getToken();
-    return this.http.get<Comp[]>(this.apiUrl, {
+    const params = new HttpParams().set('IdComp', id).set('Estado', true);
+    return this.http.get<Esp[]>(this.apiUrl, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      params: params,
     });
   }
 
-  getComp(id: string): Observable<Comp> {
+  getEsp(id: string): Observable<Esp> {
     const token = this.authService.getToken();
     return this.http
-      .get<Comp[]>(`${this.apiUrl}/${id}`, {
+      .get<Esp[]>(`${this.apiUrl}/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -39,28 +41,28 @@ export class CompService {
       );
   }
 
-  createComp(comp: Partial<Comp>): Observable<CompResponse> {
+  createEsp(Esp: Partial<Esp>): Observable<EspResponse> {
     const token = this.authService.getToken();
-    console.log(comp);
-    return this.http.post<CompResponse>(this.apiUrl, comp, {
+    console.log(Esp);
+    return this.http.post<EspResponse>(this.apiUrl, Esp, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
   }
 
-  updateComp(id: string, comp: Partial<Comp>): Observable<CompResponse> {
+  updateEsp(id: string, Esp: Partial<Esp>): Observable<EspResponse> {
     const token = this.authService.getToken();
-    return this.http.put<CompResponse>(`${this.apiUrl}/${id}`, comp, {
+    return this.http.put<EspResponse>(`${this.apiUrl}/${id}`, Esp, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
   }
 
-  deleteComp(id: string): Observable<CompResponse> {
+  deleteEsp(id: string): Observable<EspResponse> {
     const token = this.authService.getToken();
-    return this.http.delete<CompResponse>(`${this.apiUrl}/${id}`, {
+    return this.http.delete<EspResponse>(`${this.apiUrl}/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
