@@ -114,36 +114,78 @@
 
   <hr />
 
-  <h4>Especialidades</h4>
+  <div class="tables">
+    <div class="table-esp">
+      <h4>Especialidades</h4>
 
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Estado</th>
-        <th style="width: 50px"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let Esp of Esps; let i = index">
-        <td>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="nombre"
-            placeholder="Nombre"
-          />
-        </td>
-        <td>
-          <button type="button" class="btn btn-danger btn-sm">
-            <i class="fas fa-trash"></i>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <button type="button" class="btn btn-primary">
-    <i class="fas fa-plus"></i> Agregar
-  </button>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th style="width: 50px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let esp of Esps">
+            <td>
+              <input
+                type="text"
+                class="form-control"
+                [value]="esp.nombre"
+                readonly
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <button type="button" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Agregar
+      </button>
+    </div>
+    <div class="table-responsive">
+      <div class="table-header">
+        <h4>Plantas</h4>
+        <button class="btn btn-primary" (click)="navigateToNew()">
+          <i class="fas fa-plus"></i> Nueva Planta
+        </button>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Region</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let plant of Planta">
+            <td>{{ plant.nombre }}</td>
+            <td>{{ plant.region }}</td>
+            <td>
+              <span
+                [class]="'badge ' + (plant.estado ? 'bg-success' : 'bg-danger')"
+              >
+                {{ plant.estado ? "Activo" : "Inactivo" }}
+              </span>
+            </td>
+            <td>
+              <button
+                class="btn btn-sm btn-info me-2"
+                (click)="editPlanta(plant.id)"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="deletePlanta(plant.id)"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

@@ -127,7 +127,7 @@ hr {
 
 // Tabla de Contactos
 table {
-  width: 20%;
+  width: 18%;
   margin-top: 1rem;
   border-collapse: collapse;
   background: white;
@@ -188,5 +188,68 @@ table {
 
   &:hover {
     background-color: #0056b3;
+  }
+}
+
+.tables {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  align-items: flex-start;
+
+  .table-esp {
+    width: 300px;
+    background: white;
+    padding: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    h4 {
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    table {
+      width: 100%;
+      margin: 0;
+    }
+
+    input {
+      margin-bottom: 0.5rem;
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+  }
+
+  .table-responsive {
+    flex: 1;
+    background: white;
+    padding: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    flex: 1;
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      h4 {
+        margin: 0;
+        font-weight: 600;
+      }
+
+      .btn {
+        white-space: nowrap;
+      }
+    }
+    table {
+      width: 100%;
+      margin: 0;
+    }
   }
 }

@@ -7,9 +7,10 @@ import { CompFormComponent } from './pages/comp-form/comp-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MenuComponent } from '../../shared/Components/menu/menu.component';
 import { LogoHeaderComponent } from '../../shared/Components/logo-header/logo-header.component';
+import { PlantaFormComponent } from './pages/planta-form/planta-form.component';
 
 @NgModule({
-  declarations: [CompListComponent, CompFormComponent],
+  declarations: [CompListComponent, CompFormComponent, PlantaFormComponent],
   imports: [
     CommonModule,
     CompRoutingModule,

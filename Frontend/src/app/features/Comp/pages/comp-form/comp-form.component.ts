@@ -3,7 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompService } from '../../services/comp.service';
 import { EspService } from '../../services/esp.service';
+import { PlantaService } from '../../services/planta.service';
 import { Esp } from '../../../../../Types/esp';
+import { Planta } from '../../../../../Types/planta';
 
 @Component({
   selector: 'app-comp-form',
@@ -13,6 +15,8 @@ import { Esp } from '../../../../../Types/esp';
 export class CompFormComponent implements OnInit {
   compForm: FormGroup;
   espForm: FormGroup;
+  //plantForm: FormGroup;
+  Planta: Planta[] = [];
   Esps: Esp[] = [];
   isEditing = false;
   compId: string | null = null;
@@ -21,6 +25,7 @@ export class CompFormComponent implements OnInit {
     private fb: FormBuilder,
     private compService: CompService,
     private espService: EspService,
+    private plantaService: PlantaService,
     private router: Router,
     private route: ActivatedRoute,
   ) {
@@ -50,6 +55,7 @@ export class CompFormComponent implements OnInit {
       this.isEditing = true;
       this.loadComp();
       this.loadEsp();
+      this.loadPlantas(this.compId);
     }
   }
 
@@ -102,7 +108,7 @@ export class CompFormComponent implements OnInit {
           // Extrae los datos de la compañía de la respuesta
           const esp = response;
           this.Esps = esp;
-          console.log(esp);
+          //console.log(esp);
           // Actualiza el formulario con los datos obtenidos
           //this.compForm.patchValue(esp);
         },
@@ -137,5 +143,37 @@ export class CompFormComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/comp']);
+  }
+
+  loadPlantas(idComp: string): void {
+    this.plantaService.getPlantas(idComp).subscribe({
+      next: (response) => {
+        this.Planta = response as Planta[];
+      },
+      error: (error) => {
+        console.error('Error al cargar compañías:', error);
+      },
+    });
+  }
+
+  navigateToNew(): void {
+    this.router.navigate(['/planta/new']);
+  }
+
+  editPlanta(id: string): void {
+    this.router.navigate(['/planta/edit', id]);
+  }
+
+  deletePlanta(id: string): void {
+    if (confirm('¿Está seguro de que desea eliminar esta planta?')) {
+      this.plantaService.deletePlanta(id).subscribe({
+        next: () => {
+          //this.loadPlantas(this.compId);
+        },
+        error: (error) => {
+          console.error('Error al eliminar la panta:', error);
+        },
+      });
+    }
   }
 }
