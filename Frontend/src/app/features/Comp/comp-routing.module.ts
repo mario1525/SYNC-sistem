@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CompListComponent } from './pages/comp-list/comp-list.component';
 import { CompFormComponent } from './pages/comp-form/comp-form.component';
 import { AuthGuard } from '../../core/guards/auth.guard';
+import { PlantaFormComponent } from './pages/planta-form/planta-form.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,16 @@ const routes: Routes = [
   {
     path: 'edit/:id',
     component: CompFormComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'edit/:id/planta/new',
+    component: PlantaFormComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'edit/:companiaId/planta/edit/:plantaId',
+    component: PlantaFormComponent,
     canActivate: [AuthGuard],
   },
 ];

@@ -1,1 +1,63 @@
-<p>planta-form works!</p>
+<div class="container">
+  <app-logo-header></app-logo-header>
+  <app-menu></app-menu>
+  <div class="body">
+    <div class="content">
+        <div class="header">
+            <h2>{{ isEditing ? "Editar" : "Nueva" }} Planta</h2>
+            <button
+              type="submit"
+              class="{{ isEditing ? 'btn btn-Tree' : 'btn btn-primary' }}"
+              [disabled]="plantaForm.invalid"
+              (click)="onSubmit()"
+            >
+              {{ isEditing ? "Actualizar" : "Crear" }}
+            </button>
+          </div>
+
+      <hr />
+      <form [formGroup]="plantaForm" (ngSubmit)="onSubmit()" class="form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input
+              type="text"
+              id="nombre"
+              formControlName="nombre"
+              class="form-control"
+              [class.is-invalid]="nombre.invalid && nombre.touched"
+            />
+            <div
+              class="invalid-feedback"
+              *ngIf="nombre.invalid && nombre.touched"
+            >
+              El nombre es requerido
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Region</label>
+            <input
+              type="text"
+              id="region"
+              formControlName="region"
+              class="form-control"
+              [class.is-invalid]="region.invalid && region.touched"
+            />
+            <div
+              class="invalid-feedback"
+              *ngIf="region.invalid && region.touched"
+            >
+              La region es requerida
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="goBack()">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

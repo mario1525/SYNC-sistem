@@ -1,0 +1,127 @@
+.container {
+    padding: 20px;
+    margin: 0 auto;
+    margin-top: 70px; /* o el alto de tu header */
+    margin-left: 200px;
+    padding: 1rem;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  
+    h2 {
+      margin: 0;
+      color: #2a2a2a;
+    }
+  }
+  
+  hr {
+    border: 2px solid #132240;
+    margin: 15px 0;
+  }
+  
+  .form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  
+    .form-group {
+      display: flex;
+      flex-direction: column;
+  
+      label {
+        font-size: 14px;
+        color: #888;
+      }
+  
+      input {
+        padding: 4px;
+        border: none;
+        border-bottom: 2px solid #ccc;
+        background: transparent;
+        outline: none;
+      }
+    }
+  }
+  
+  .form-group-Check {
+    display: flex;
+    align-items: center; /* centra verticalmente */
+    padding-left: 55px;
+    margin-top: 1.5rem;
+  
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px; /* espacio entre checkbox y texto */
+      font-weight: 500;
+    }
+  
+    input[type="checkbox"] {
+      transform: scale(1.2); /* opcional: agranda un poco el checkbox */
+      cursor: pointer;
+    }
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+  
+    &.is-invalid {
+      border-color: #dc3545;
+    }
+  }
+  
+  .invalid-feedback {
+    color: #dc3545;
+    font-size: 80%;
+    margin-top: 0.25rem;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .btn {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+  
+    &-primary {
+      background-color: #009950;
+      color: white;
+      border: none;
+    }
+  
+    &-secondary {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+    }
+  
+    &-Tree {
+      background-color: #ffc107;
+      color: white;
+      border: none;
+    }
+  
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+  

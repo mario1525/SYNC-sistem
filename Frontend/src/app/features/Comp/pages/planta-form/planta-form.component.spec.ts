@@ -8,10 +8,9 @@ describe('PlantaFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PlantaFormComponent]
-    })
-    .compileComponents();
-    
+      declarations: [PlantaFormComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(PlantaFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

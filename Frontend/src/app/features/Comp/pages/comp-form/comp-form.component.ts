@@ -157,7 +157,7 @@ export class CompFormComponent implements OnInit {
   }
 
   navigateToNew(): void {
-    this.router.navigate(['/planta/new']);
+    this.router.navigate([`planta/new`], { relativeTo: this.route });
   }
 
   editPlanta(id: string): void {
