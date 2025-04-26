@@ -3,8 +3,8 @@ using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Agregar configuración de Ocelot
-builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+// Agregar configuraciï¿½n de Ocelot
+builder.Configuration.AddJsonFile("ocelot.jsonc", optional: false, reloadOnChange: true);
 
 // Configurar servicios
 builder.Services.AddOcelot();
@@ -23,7 +23,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// [OPCIONAL] Forzar redirección HTTPS solo si se está usando HTTPS en el frontend
+// [OPCIONAL] Forzar redirecciï¿½n HTTPS solo si se estï¿½ usando HTTPS en el frontend
 // app.UseHttpsRedirection();
 
 // IMPORTANTE: Usar CORS ANTES de cualquier middleware

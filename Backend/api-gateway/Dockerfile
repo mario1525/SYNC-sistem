@@ -27,6 +27,6 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 # 🔥 Asegurar que el archivo de configuración de Ocelot esté presente
-COPY ocelot.json /app/ocelot.json
+COPY ocelot.jsonc /app/ocelot.jsonc
 
 ENTRYPOINT ["dotnet", "api-gateway.dll"]

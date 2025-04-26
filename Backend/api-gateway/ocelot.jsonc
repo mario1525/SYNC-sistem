@@ -1,174 +1,139 @@
 {
   "Routes": [
-    {
-      "DownstreamPathTemplate": "/api/Auth",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-user-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Auth",
-      "UpstreamHttpMethod": [ "POST" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Credential/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-user-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Credential/{id}",
-      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Credential",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-user-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Credential",
-      "UpstreamHttpMethod": [ "POST" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Users/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-user-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Users/{id}",
-      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Users",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-user-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Users",
-      "UpstreamHttpMethod": [ "POST" ]
-    },
+    // 🚀 User Services
+      // Auth
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-user-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Auth",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Auth",
+        "UpstreamHttpMethod": ["POST"]
+      },
+      // ----------------------------------------------------------------------------------
+      //Credential    
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-user-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Credential/{id}",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Credential/{id}",
+        "UpstreamHttpMethod": ["GET", "PUT", "DELETE"]
+      },
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-user-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Credential",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Credential",
+        "UpstreamHttpMethod": ["POST"]
+      },
+      // ----------------------------------------------------------------------------------
+      // users
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-user-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Users",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Users",
+        "UpstreamHttpMethod": ["POST"]
+      },
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-user-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Users/{id}",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Users/{id}",
+        "UpstreamHttpMethod": ["GET", "PUT", "DELETE"]
+      },
 
-    {
-      "DownstreamPathTemplate": "/api/Comp",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-maintenace-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Comp",
-      "UpstreamHttpMethod": [ "POST" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Comp/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-maintenace-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Comp/{id}",
-      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Planta/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "plant-services",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Planta/{id}",
-      "UpstreamHttpMethod": [ "GET", "POST", "DELETE" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Actividad/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-maintenace-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Actividad/{id}",
-      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Actividad",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-maintenace-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Actividad",
-      "UpstreamHttpMethod": [ "GET", "POST" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Actividad/{id}/estado",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-maintenace-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Actividad/{id}/estado",
-      "UpstreamHttpMethod": [ "PATCH" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Equipo/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-maintenace-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Equipo/{id}",
-      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Equipo",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-maintenace-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Equipo",
-      "UpstreamHttpMethod": [ "GET", "POST" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Equipo/{id}/estado",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "docker-maintenace-services-1",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/apigateway/Equipo/{id}/estado",
-      "UpstreamHttpMethod": [ "PATCH" ]
-    },
+
+//-----------------------------------------------------------------------------------------------      
+    // 🏗️ Maintenance Services
+
+      //Comp
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-maintenace-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Comp",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Comp",
+        "UpstreamHttpMethod": ["POST"]
+      },
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-maintenace-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Comp/{id}",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Comp/{id}",
+        "UpstreamHttpMethod": ["GET", "PUT", "DELETE"]
+      },
+      // ----------------------------------------------------------------------------------
+      // planta
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-maintenace-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Planta",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Planta",
+        "UpstreamHttpMethod": ["GET", "POST"]
+      },
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-maintenace-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Planta/{id}",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Plata/{id}",
+        "UpstreamHttpMethod": ["PUT", "DELETE"]
+      },
+      // ----------------------------------------------------------------------------------
+      // Actividad
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-maintenace-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Actividad",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Actividad",
+        "UpstreamHttpMethod": ["GET", "POST"]
+      },
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-maintenace-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Actividad/{id}",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Actividad/{id}",
+        "UpstreamHttpMethod": ["PUT", "DELETE"]
+      },
+      // ----------------------------------------------------------------------------------
+      // Equipo 
+      {
+        "DownstreamPathTemplate": "/api/Equipo/{id}",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "docker-maintenace-services-1",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Equipo/{id}",
+        "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Equipo",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "docker-maintenace-services-1",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Equipo",
+        "UpstreamHttpMethod": [ "GET", "POST" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/Equipo/{id}/estado",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "docker-maintenace-services-1",
+            "Port": 80
+          }
+        ],
+        "UpstreamPathTemplate": "/apigateway/Equipo/{id}/estado",
+        "UpstreamHttpMethod": [ "PATCH" ]
+      },
+
+
+      
     {
       "DownstreamPathTemplate": "/api/Guia/{id}",
       "DownstreamScheme": "http",

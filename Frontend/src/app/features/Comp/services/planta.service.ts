@@ -30,11 +30,13 @@ export class PlantaService {
 
   getPlanta(id: string): Observable<Planta> {
     const token = this.authService.getToken();
+    const params = new HttpParams().set('id', id).set('Estado', true);
     return this.http
-      .get<Planta[]>(`${this.apiUrl}/${id}`, {
+      .get<Planta[]>(`${this.apiUrl}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: params,
       })
       .pipe(
         map((response) => response[0]), // nos quedamos solo con el primer objeto del array
