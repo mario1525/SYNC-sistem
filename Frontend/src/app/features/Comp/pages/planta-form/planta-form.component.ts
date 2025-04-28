@@ -3,18 +3,17 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 //import { Planta } from '../../../../../Types/planta';
 import { PlantaService } from '../../services/planta.service';
-import { AreaFuncional } from '../../../../../Types/areafuncional';
-import { Bodega } from '../../../../../Types/bodega';
+//import { TabsBodegAreaFunComponent } from '../../components/tabs-bodeg-area-fun/tabs-bodeg-area-fun.component';
 
 @Component({
   selector: 'app-planta-form',
   templateUrl: './planta-form.component.html',
+  //imports: [TabsBodegAreaFunComponent],
   styleUrl: './planta-form.component.less',
 })
 export class PlantaFormComponent implements OnInit {
   plantaForm: FormGroup;
-  areasFuncionales: AreaFuncional[] = [];
-  bodegas: Bodega[] = [];
+
   isEditing = false;
   plantId: string | null = null;
   CompId: string | null = null;
@@ -95,14 +94,4 @@ export class PlantaFormComponent implements OnInit {
   goBack(): void {
     this.router.navigate(['/comp/edit', this.CompId]);
   }
-
-  //
-  navigateToNewArea(): void {}
-  editArea(id: string): void {}
-  deleteArea(id: string): void {}
-
-  navigateToNewBodega(): void {}
-  editBodega(id: string): void {}
-  manageSecciones(id: string): void {}
-  deleteBodega(id: string): void {}
 }

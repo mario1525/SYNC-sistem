@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '@env/environment';
@@ -20,22 +20,28 @@ export class AreaFuncionalService {
     private authService: AuthService,
   ) {}
 
-  getAreaFuncionals(): Observable<AreaFuncional[]> {
+  getAreaFuncionals(idPlant: string): Observable<AreaFuncional[]> {
     const token = this.authService.getToken();
+    const params = new HttpParams()
+      .set('IdPlanta', idPlant)
+      .set('Estado', true);
     return this.http.get<AreaFuncional[]>(this.apiUrl, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      params: params,
     });
   }
 
   getAreaFuncional(id: string): Observable<AreaFuncional> {
     const token = this.authService.getToken();
+    const params = new HttpParams().set('Id', id).set('Estado', true);
     return this.http
-      .get<AreaFuncional[]>(`${this.apiUrl}/${id}`, {
+      .get<AreaFuncional[]>(this.apiUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: params,
       })
       .pipe(
         map((response) => response[0]), // nos quedamos solo con el primer objeto del array

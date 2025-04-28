@@ -8,9 +8,10 @@ describe('BodegaFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [BodegaFormComponent],
-    }).compileComponents();
-
+      declarations: [BodegaFormComponent]
+    })
+    .compileComponents();
+    
     fixture = TestBed.createComponent(BodegaFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -20,7 +20,7 @@
       <form [formGroup]="plantaForm" (ngSubmit)="onSubmit()" class="form">
         <div class="form-grid">
           <div class="form-group">
-            <label>Nombre</label>
+            <label for="nombre">Nombre</label>
             <input
               type="text"
               id="nombre"
@@ -37,7 +37,7 @@
           </div>
 
           <div class="form-group">
-            <label>Region</label>
+            <label for="region">Region</label>
             <input
               type="text"
               id="region"
@@ -62,89 +62,7 @@
     </div>
 
     <hr />
-
     <!-- Tabs para áreas funcionales y bodegas -->
-    <mat-tab-group>
-      <!-- TAB 1: Áreas Funcionales -->
-      <mat-tab label="Áreas Funcionales">
-        <div class="tab-content">
-          <button class="btn btn-primary" (click)="navigateToNewArea()">
-            Agregar Área Funcional
-          </button>
-
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Nombre Área</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let area of areasFuncionales">
-                <td>{{ area.nombre }}</td>
-                <td>
-                  <button
-                    class="btn btn-sm btn-info"
-                    (click)="editArea(area.id)"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    class="btn btn-sm btn-danger"
-                    (click)="deleteArea(area.id)"
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </mat-tab>
-
-      <!-- TAB 2: Bodegas -->
-      <mat-tab label="Bodegas">
-        <div class="tab-content">
-          <button class="btn btn-primary" (click)="navigateToNewBodega()">
-            Agregar Bodega
-          </button>
-
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Nombre Bodega</th>
-                <!-- Sección o Patio -->
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let bodega of bodegas">
-                <td>{{ bodega.nombre }}</td>
-                <td>
-                  <button
-                    class="btn btn-sm btn-info"
-                    (click)="editBodega(bodega.id)"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    class="btn btn-sm btn-warning"
-                    (click)="manageSecciones(bodega.id)"
-                  >
-                    Gestionar Secciones
-                  </button>
-                  <button
-                    class="btn btn-sm btn-danger"
-                    (click)="deleteBodega(bodega.id)"
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
+    <app-tabs-bodeg-area-fun></app-tabs-bodeg-area-fun>
   </div>
 </div>

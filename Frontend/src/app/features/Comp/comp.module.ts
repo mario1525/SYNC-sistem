@@ -11,9 +11,21 @@ import { LogoHeaderComponent } from '../../shared/Components/logo-header/logo-he
 import { PlantaFormComponent } from './pages/planta-form/planta-form.component';
 import { BodegaFormComponent } from './pages/bodega-form/bodega-form.component';
 import { AreaFuncionalFormComponent } from './pages/area-funcional-form/area-funcional-form.component';
+import { TabsBodegAreaFunComponent } from './components/tabs-bodeg-area-fun/tabs-bodeg-area-fun.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
-  declarations: [CompListComponent, CompFormComponent, PlantaFormComponent, BodegaFormComponent, AreaFuncionalFormComponent],
+  declarations: [
+    CompListComponent,
+    CompFormComponent,
+    PlantaFormComponent,
+    BodegaFormComponent,
+    AreaFuncionalFormComponent,
+    TabsBodegAreaFunComponent,
+  ],
   imports: [
     CommonModule,
     MatTabsModule,
@@ -22,6 +34,10 @@ import { AreaFuncionalFormComponent } from './pages/area-funcional-form/area-fun
     ReactiveFormsModule,
     MenuComponent,
     LogoHeaderComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDialogModule,
   ],
 })
 export class CompModule {}
