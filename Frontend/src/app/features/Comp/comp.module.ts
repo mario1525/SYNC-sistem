@@ -16,6 +16,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { BodegaPlantSeccionComponent } from './pages/bodega-plant-seccion/bodega-plant-seccion.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { MatButtonModule } from '@angular/material/button';
     BodegaFormComponent,
     AreaFuncionalFormComponent,
     TabsBodegAreaFunComponent,
+    BodegaPlantSeccionComponent,
   ],
   imports: [
     CommonModule,

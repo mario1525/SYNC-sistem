@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { BodegaService } from '../../services/bodega.service';
 import { AreaFuncionalService } from '../../services/areaFuncional.service';
 import { AreaFuncionalFormComponent } from '../area-funcional-form/area-funcional-form.component';
+import { BodegaFormComponent } from '../bodega-form/bodega-form.component';
 //import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
@@ -63,17 +64,57 @@ export class TabsBodegAreaFunComponent implements OnInit {
     }
   }
 
-  navigateToNewArea(): void {}
+  navigateToNewArea(): void {
+    this.dialog.open(AreaFuncionalFormComponent, {
+      width: '400px',
+      data: { plantaId: this.plantId },
+    });
+  }
   editArea(id: string): void {
     this.dialog.open(AreaFuncionalFormComponent, {
       width: '400px',
       data: { areafunId: id, plantaId: this.plantId },
     });
   }
-  deleteArea(id: string): void {}
+  deleteArea(id: string): void {
+    if (confirm('¿Está seguro de que desea eliminar esta area funcional?')) {
+      this.areaFunService.deleteAreaFuncional(id).subscribe({
+        next: () => {
+          //this.loadPlantas(this.compId);
+        },
+        error: (error) => {
+          console.error('Error al eliminar el area funcional:', error);
+        },
+      });
+    }
+  }
 
-  navigateToNewBodega(): void {}
-  editBodega(id: string): void {}
-  manageSecciones(id: string): void {}
-  deleteBodega(id: string): void {}
+  navigateToNewBodega(): void {
+    this.dialog.open(BodegaFormComponent, {
+      width: '400px',
+      data: { plantaId: this.plantId },
+    });
+  }
+  editBodega(id: string): void {
+    this.dialog.open(BodegaFormComponent, {
+      width: '400px',
+      data: { BodegaId: id, plantaId: this.plantId },
+    });
+  }
+  manageSecciones(id: string): void {
+    this.router.navigate(['bodega', id], { relativeTo: this.route });
+  }
+
+  deleteBodega(id: string): void {
+    if (confirm('¿Está seguro de que desea eliminar esta bodega?')) {
+      this.bodegaService.deleteBodega(id).subscribe({
+        next: () => {
+          //this.loadPlantas(this.compId);
+        },
+        error: (error) => {
+          console.error('Error al eliminar la bodega:', error);
+        },
+      });
+    }
+  }
 }

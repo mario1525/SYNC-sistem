@@ -1,0 +1,89 @@
+<app-logo-header></app-logo-header>
+<app-menu></app-menu>
+<div class="container">
+  <div class="header">
+    <h2>Bodega</h2>
+  </div>
+
+  <hr />
+
+  <div class="table-wrapper">
+    <!-- Tabla de Patio -->
+    <div class="table-section">
+      <div class="section-header">
+        <h4>Patios</h4>
+        <button class="btn btn-primary">
+          <i class="fas fa-plus"></i> Nuevo patio
+        </button>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let comp of patio">
+            <td>{{ comp.nombre }}</td>
+            <td>
+              <span
+                [class]="'badge ' + (comp.estado ? 'bg-success' : 'bg-danger')"
+              >
+                {{ comp.estado ? "Activo" : "Inactivo" }}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-info me-2">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tabla de Sección Bodega -->
+    <div class="table-section">
+      <div class="section-header">
+        <h4>Secciones</h4>
+        <button class="btn btn-primary">
+          <i class="fas fa-plus"></i> Nueva seccion
+        </button>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let comp of seccionBodega">
+            <td>{{ comp.nombre }}</td>
+            <td>
+              <span
+                [class]="'badge ' + (comp.estado ? 'bg-success' : 'bg-danger')"
+              >
+                {{ comp.estado ? "Activo" : "Inactivo" }}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-info me-2">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

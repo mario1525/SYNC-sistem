@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '@env/environment';
@@ -17,12 +17,16 @@ export class PatioService {
     private authService: AuthService,
   ) {}
 
-  getPatios(): Observable<Patio[]> {
+  getPatios(idBodega: string): Observable<Patio[]> {
     const token = this.authService.getToken();
+    const params = new HttpParams()
+      .set('IdBodega', idBodega)
+      .set('Estado', true);
     return this.http.get<Patio[]>(this.apiUrl, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      params: params,
     });
   }
 
