@@ -20,7 +20,7 @@ namespace Services
         {
             try
             {
-                var Actividad = await _daoActividad.GetActividad(actividad.Id, actividad.IdTipoActividad, actividad.IdCuad, actividad.Estado);
+                var Actividad = await _daoActividad.GetActividad(actividad.Id, actividad.IdComp, actividad.IdTipoActividad, actividad.IdCuad, actividad.Estado);
 
                 if (Actividad == null || !Actividad.Any())
                 {

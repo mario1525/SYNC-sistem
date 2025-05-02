@@ -6,6 +6,7 @@ import { EspService } from '../../services/esp.service';
 import { PlantaService } from '../../services/planta.service';
 import { Esp } from '../../../../../Types/esp';
 import { Planta } from '../../../../../Types/planta';
+import { AuthService } from '../../../auth/Services/auth.service';
 
 @Component({
   selector: 'app-comp-form',
@@ -20,9 +21,11 @@ export class CompFormComponent implements OnInit {
   Esps: Esp[] = [];
   isEditing = false;
   compId: string | null = null;
+  role: string | null = null;
 
   constructor(
     private fb: FormBuilder,
+    private authService: AuthService,
     private compService: CompService,
     private espService: EspService,
     private plantaService: PlantaService,
@@ -50,6 +53,7 @@ export class CompFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.role = this.authService.getUserRole();
     this.compId = this.route.snapshot.paramMap.get('id');
     if (this.compId) {
       this.isEditing = true;

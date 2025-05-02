@@ -210,7 +210,7 @@ CREATE TABLE dbo.UbicacionEquipo (
 PRINT 'creacion de la tabla Guia_Equipo'
 IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Guia_Equipo')
 BEGIN
-    CREATE TABLE dbo.Guia_Equipo_(
+    CREATE TABLE dbo.Guia_Equipo(
         Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
         IdGuia          VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Guia*/
         IdEquipo        VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Equipo*/
@@ -247,6 +247,7 @@ IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Actividad')
 BEGIN
     CREATE TABLE dbo.Actividad(
         Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
+        IdComp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
         Descripcion     VARCHAR(max) NOT NULL DEFAULT '',             /*Descripcion de la actividad*/
         IdTipoActividad VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla TipoActividad*/ 
         Ubicacion       VARCHAR(255) NOT NULL DEFAULT '',             /*Ubicacion de la actividad*/
@@ -260,6 +261,8 @@ BEGIN
     ) ON [PRIMARY]
         ALTER TABLE dbo.Actividad ADD CONSTRAINT
         FKActividad_TipoActividad FOREIGN KEY (IdTipoActividad) REFERENCES dbo.TipoActividad(Id)
+        ALTER TABLE dbo.Actividad ADD CONSTRAINT
+        FKActividad_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
 END
 
 -- Actividad_Equipo

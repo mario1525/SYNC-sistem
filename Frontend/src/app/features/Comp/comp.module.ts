@@ -17,6 +17,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { BodegaPlantSeccionComponent } from './pages/bodega-plant-seccion/bodega-plant-seccion.component';
+import { PatioFormComponent } from './components/patio-form/patio-form.component';
+import { SeccionBFormComponent } from './components/seccion-b-form/seccion-b-form.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,8 @@ import { BodegaPlantSeccionComponent } from './pages/bodega-plant-seccion/bodega
     AreaFuncionalFormComponent,
     TabsBodegAreaFunComponent,
     BodegaPlantSeccionComponent,
+    PatioFormComponent,
+    SeccionBFormComponent,
   ],
   imports: [
     CommonModule,

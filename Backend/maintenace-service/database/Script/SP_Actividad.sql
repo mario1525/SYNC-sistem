@@ -6,20 +6,21 @@
 -- ========================================================
 
 PRINT 'Creación de procedimientos para la tabla Actividad'
-IF EXISTS(SELECT NAME FROM SYSOBJECTS WHERE NAME LIKE 'db_Sp_Guia_Actividad_%')
+IF EXISTS(SELECT NAME FROM SYSOBJECTS WHERE NAME LIKE 'db_Sp_Actividad_%')
 BEGIN
-    DROP PROCEDURE dbo.db_Sp_Guia_Actividad_Get
-    DROP PROCEDURE dbo.db_Sp_Guia_Actividad_Set
-    DROP PROCEDURE dbo.db_Sp_Guia_Actividad_Del
-    DROP PROCEDURE dbo.db_Sp_Guia_Actividad_Active
+    DROP PROCEDURE dbo.db_Sp_Actividad_Get
+    DROP PROCEDURE dbo.db_Sp_Actividad_Set
+    DROP PROCEDURE dbo.db_Sp_Actividad_Del
+    DROP PROCEDURE dbo.db_Sp_Actividad_Active
 END
 GO
 
 -- Procedimiento para obtener los datos
 PRINT 'Creación del procedimiento Actividad Get'
 GO
-CREATE PROCEDURE dbo.db_Sp_Guia_Actividad_Get
+CREATE PROCEDURE dbo.db_Sp_Actividad_Get
     @Id              VARCHAR(36) = NULL,
+    @IdComp          VARCHAR(36) = NULL,
     @IdTipoActividad VARCHAR(36) = NULL,
     @IdCuad          VARCHAR(36) = NULL,
     @Estado          INT = NULL
@@ -38,8 +39,9 @@ GO
 -- Procedimiento para insertar o actualizar los datos
 PRINT 'Creación del procedimiento Actividad Set'
 GO
-CREATE PROCEDURE dbo.db_Sp_Guia_Actividad_Set
+CREATE PROCEDURE dbo.db_Sp_Actividad_Set
     @Id              VARCHAR(36),
+    @IdComp          VARCHAR(36),
     @Descripcion     VARCHAR(max),
     @IdTipoActividad VARCHAR(36),
     @Ubicacion       VARCHAR(255),
@@ -53,13 +55,13 @@ AS
 BEGIN
     IF @Operacion = 'I'
     BEGIN
-        INSERT INTO dbo.Actividad(Id, Descripcion, IdTipoActividad, Ubicacion, FechaEjecucion, IdCuad, Detalle, Intervalo, Estado, Eliminado, Fecha_log)
-        VALUES(@Id, @Descripcion, @IdTipoActividad, @Ubicacion, @FechaEjecucion, @IdCuad, @Detalle, @Intervalo, @Estado, 0, DEFAULT)
+        INSERT INTO dbo.Actividad(Id, IdComp, Descripcion, IdTipoActividad, Ubicacion, FechaEjecucion, IdCuad, Detalle, Intervalo, Estado, Eliminado, Fecha_log)
+        VALUES(@Id, @IdComp, @Descripcion, @IdTipoActividad, @Ubicacion, @FechaEjecucion, @IdCuad, @Detalle, @Intervalo, @Estado, 0, DEFAULT)
     END
     ELSE IF @Operacion = 'A'
     BEGIN
         UPDATE dbo.Actividad
-        SET Descripcion = @Descripcion, IdTipoActividad = @IdTipoActividad, Ubicacion = @Ubicacion, FechaEjecucion = @FechaEjecucion, IdCuad = @IdCuad, Detalle = @Detalle, Intervalo = @Intervalo, Estado = @Estado
+        SET IdComp = @IdComp, Descripcion = @Descripcion, IdTipoActividad = @IdTipoActividad, Ubicacion = @Ubicacion, FechaEjecucion = @FechaEjecucion, IdCuad = @IdCuad, Detalle = @Detalle, Intervalo = @Intervalo, Estado = @Estado
         WHERE Id = @Id
     END
 END
@@ -68,7 +70,7 @@ GO
 -- Procedimiento para eliminar los datos (marcar como eliminado)
 PRINT 'Creación del procedimiento Actividad Del'
 GO
-CREATE PROCEDURE dbo.db_Sp_Guia_Actividad_Del
+CREATE PROCEDURE dbo.db_Sp_Actividad_Del
     @Id VARCHAR(36)
 AS
 BEGIN
@@ -87,7 +89,7 @@ GO
 -- Procedimiento para activar o desactivar los datos
 PRINT 'Creación del procedimiento Actividad Active'
 GO
-CREATE PROCEDURE dbo.db_Sp_Guia_Actividad_Active
+CREATE PROCEDURE dbo.db_Sp_Actividad_Active
     @Id VARCHAR(36),
     @Estado BIT
 AS

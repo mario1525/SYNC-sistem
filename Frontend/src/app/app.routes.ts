@@ -25,5 +25,11 @@ export const routes: Routes = [
       import('./features/Comp/comp.module').then((m) => m.CompModule),
     canActivate: [AuthGuard],
   },
+  {
+    path: 'guia',
+    loadChildren: () =>
+      import('./features/guia/guia.module').then((m) => m.GuiaModule),
+    canActivate: [AuthGuard],
+  },
   { path: '**', redirectTo: 'auth' },
 ];

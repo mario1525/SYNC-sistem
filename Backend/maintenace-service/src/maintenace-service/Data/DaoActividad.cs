@@ -15,7 +15,7 @@ namespace Data
         }
 
         // Método para obtener los registros de la tabla Actividad
-        public async Task<List<Actividad>> GetActividad(string id, string idTipoActividad, string idCuad, bool estado)
+        public async Task<List<Actividad>> GetActividad(string id, string idComp, string idTipoActividad, string idCuad, bool estado)
         {
             try
             {
@@ -26,6 +26,7 @@ namespace Data
                 var parameters = new[]
                 {
                     new SqlParameter("@Id", id),
+                    new SqlParameter("@IdComp", idComp),
                     new SqlParameter("@IdTipoActividad", idTipoActividad),
                     new SqlParameter("@IdCuad", idCuad),
                     new SqlParameter("@Estado", estado)
@@ -59,6 +60,7 @@ namespace Data
                 SqlParameter[] parameters =
                 {
                     new SqlParameter("@Id", actividad.Id),
+                    new SqlParameter("@IdComp", actividad.IdComp),
                     new SqlParameter("@Descripcion", actividad.Descripcion),
                     new SqlParameter("@IdTipoActividad", actividad.IdTipoActividad),
                     new SqlParameter("@Ubicacion", actividad.Ubicacion),
@@ -129,6 +131,7 @@ namespace Data
                 Actividad actividad = new Actividad
                 {
                     Id = row["Id"].ToString(),
+                    IdComp = row["IdComp"].ToString(),
                     Descripcion = row["Descripcion"].ToString(),
                     IdTipoActividad = row["IdTipoActividad"].ToString(),
                     Ubicacion = row["Ubicacion"].ToString(),

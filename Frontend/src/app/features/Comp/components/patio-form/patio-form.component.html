@@ -1,0 +1,43 @@
+<div class="modal-header">
+  <h2 mat-dialog-title>
+    {{ PatioId ? "Actualizar patio" : "Agregar Nuevo patio" }}
+  </h2>
+</div>
+
+<div mat-dialog-content>
+  <form (ngSubmit)="onSubmit()" class="form">
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input
+        type="text"
+        id="nombre"
+        formControlName="nombre"
+        class="form-control"
+        [class.is-invalid]="nombre.invalid && nombre.touched"
+      />
+      <div class="invalid-feedback" *ngIf="nombre.invalid && nombre.touched">
+        El nombre es requerido
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button
+        mat-button
+        type="button"
+        class="btn btn-secondary"
+        (click)="closeModal()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        mat-button
+        type="submit"
+        class="{{ isEditing ? 'btn btn-Tree' : 'btn btn-primary' }}"
+        [disabled]="PatioForm.invalid"
+      >
+        {{ isEditing ? "Actualizar" : "Crear" }}
+      </button>
+    </div>
+  </form>
+</div>

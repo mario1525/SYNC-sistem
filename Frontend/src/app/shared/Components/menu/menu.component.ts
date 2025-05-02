@@ -12,6 +12,7 @@ import { AuthService } from '../../../features/auth/Services/auth.service'; // A
 })
 export class MenuComponent implements OnInit {
   menuItems: { label: string; route: string }[] = [];
+  idComp: string | null = null;
 
   constructor(
     private authService: AuthService,
@@ -19,9 +20,10 @@ export class MenuComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const role = this.authService.getUserRole(); // Esto ya lo tienes implementado
-    if (role && MENU_ITEMS[role]) {
-      this.menuItems = MENU_ITEMS[role];
+    const role = this.authService.getUserRole();
+    this.idComp = this.authService.getCompanyId();
+    if (role) {
+      this.menuItems = getMenuItems(role, this.idComp);
     }
   }
 
@@ -31,21 +33,31 @@ export class MenuComponent implements OnInit {
   }
 }
 
-const MENU_ITEMS: Record<string, { label: string; route: string }[]> = {
-  Admin: [
-    { label: 'Inicio', route: '/home' },
-    { label: 'Equipos', route: '/equipo/equipo' },
-    { label: 'Compañías', route: '/comp' },
-    { label: 'Usuarios', route: '/users/list' },
-  ],
-  Supervisor: [
-    { label: 'Inicio', route: '/home' },
-    { label: 'Equipos', route: '/equipo/list' },
-    { label: 'Usuarios', route: '/users/list' },
-  ],
-  Mecanico: [
-    { label: 'Inicio', route: '/home' },
-    { label: 'Usuarios', route: '/users/profile' },
-    { label: 'Equipos', route: '/equipos' },
-  ],
-};
+function getMenuItems(role: string, idComp: string | null) {
+  const routes: Record<string, { label: string; route: string }[]> = {
+    Root: [
+      { label: 'Inicio', route: '/home' },
+      { label: 'Compañías', route: '/comp' },
+      { label: 'Usuarios', route: '/user' },
+    ],
+    Admin: [
+      { label: 'Inicio', route: '/home' },
+      { label: 'Equipos', route: '/equipo/equipo' },
+      { label: 'Compañía', route: `/comp/edit/${idComp ?? ''}` },
+      { label: 'Guias', route: '/guia' },
+      { label: 'Usuarios', route: '/users/list' },
+    ],
+    Supervisor: [
+      { label: 'Inicio', route: '/home' },
+      { label: 'Equipos', route: '/equipo/list' },
+      { label: 'Usuarios', route: '/users/list' },
+    ],
+    Mecanico: [
+      { label: 'Inicio', route: '/home' },
+      { label: 'Usuario', route: '/users/profile' },
+      { label: 'Equipos', route: '/equipos' },
+    ],
+  };
+
+  return routes[role] || [];
+}

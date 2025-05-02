@@ -8,7 +8,7 @@
         public string? Proceso { get; set; }         // Proceso de la guia
         public string? Inspeccion { get; set; }      // Inspeccion de la guia
         public string? Herramientas { get; set; }    // Herramientas de la guia
-        public string? IdComp { get; set; }          // FK de la tabla Compania
+        public string IdComp { get; set; }          // FK de la tabla Compania
         public string? IdEsp { get; set; }           // FK de la tabla Especialidad
         public string? SeguridadInd { get; set; }    // Seguridad industrial de la guia
         public string? SeguridadAmb { get; set; }    // Seguridad ambiental de la guia
@@ -23,7 +23,7 @@
         public string? CreatedBy { get; set; }       // Usuario que creo la guia
         public string? UpdatedBy { get; set; }       // Usuario que actualizo la guia
         public DateTime?  FechaUpdate { get; set; }   // Fecha de actualizacion de la guia
-        public bool? Estado { get; set; }            // Estado
+        public bool Estado { get; set; }            // Estado
         public DateTime? Fecha_log { get; set; }     // Log fecha
     }
 
@@ -50,7 +50,7 @@
         public string? CreatedBy { get; set; }       // Usuario que creo la guia
         public string? UpdatedBy { get; set; }       // Usuario que actualizo la guia
         public DateTime?  FechaUpdate { get; set; }  // Fecha de actualizacion de la guia
-        public bool? Estado { get; set; }            // Estado
+        public bool Estado { get; set; }            // Estado
         public DateTime? Fecha_log { get; set; }     // Log fecha
         public ProcedC[] proced { get; set; }
     }

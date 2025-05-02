@@ -5,6 +5,7 @@
   <div class="header">
     <h2>{{ isEditing ? "Editar" : "Nueva" }} Compañía</h2>
     <button
+      *ngIf="role === 'Root'"
       type="submit"
       class="{{ isEditing ? 'btn btn-Tree' : 'btn btn-primary' }}"
       [disabled]="compForm.invalid"
@@ -106,7 +107,12 @@
     </div>
 
     <div class="form-actions">
-      <button type="button" class="btn btn-secondary" (click)="goBack()">
+      <button
+        *ngIf="role === 'Root'"
+        type="button"
+        class="btn btn-secondary"
+        (click)="goBack()"
+      >
         Cancelar
       </button>
     </div>
