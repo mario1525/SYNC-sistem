@@ -1,3 +1,20 @@
+export interface Valid {
+  id: string;
+  idGuia: string;
+  nombre: string;
+  descripcion: string;
+  estado: boolean;
+  fecha_log: string;
+}
+export interface Proced {
+  id: string;
+  idGuia: string;
+  nombre: string;
+  descripcion: string;
+  estado: boolean;
+  fecha_log: string;
+  valid: Valid[];
+}
 export interface Guia {
   id: string;
   nombre: string;
@@ -22,6 +39,7 @@ export interface Guia {
   fechaUpdate: string;
   estado: boolean;
   fecha_log: string;
+  proced: Proced[];
 }
 
 export interface GuiaResponse {

@@ -1,1 +1,215 @@
-<p>guia-form works!</p>
+<app-logo-header></app-logo-header>
+<app-menu></app-menu>
+<div class="body">
+  <div class="content">
+    <div class="title-bar">
+      <h2>Guia de mantenimiento</h2>
+      <button class="generate-btn">Guardar Guia</button>
+    </div>
+
+    <hr />
+
+    <form [formGroup]="guiaForm" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nombre">Nombre</label>
+          <input
+            formControlName="nombre"
+            class="form-control"
+            id="nombre"
+            type="text"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripcion</label>
+          <input
+            formControlName="descripcion"
+            class="form-control"
+            id="descripcion"
+            type="text"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="proceso">Proceso</label>
+          <input
+            formControlName="proceso"
+            class="form-control"
+            id="proceso"
+            type="text"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="inspeccion">Inspeccion</label>
+          <input
+            formControlName="inspeccion"
+            class="form-control"
+            id="inspeccion"
+            type="text"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="herramientas">Herramientas</label>
+          <input
+            formControlName="herramientas"
+            class="form-control"
+            id="herramientas"
+            type="text"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="seguridadInd">Seguridad Industrial</label>
+          <input
+            formControlName="seguridadInd"
+            class="form-control"
+            id="seguridadInd"
+            type="text"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="seguridadAmb">Seguridad Ambiental</label>
+          <input
+            formControlName="seguridadAmb"
+            class="form-control"
+            id="seguridadAmb"
+            type="text"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="intervalo">Intervalo en meses</label>
+          <input
+            formControlName="intervalo"
+            class="form-control"
+            for="intervalo"
+            type="number"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="importante">Importante</label>
+          <input
+            formControlName="importante"
+            class="form-control"
+            id="importante"
+            type="text"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="insumos">Insumos</label>
+          <input
+            formControlName="insumo"
+            class="form-control"
+            id="insumos"
+            type="text"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="personal">Numero de personas</label>
+          <input
+            formControlName="personal"
+            class="form-control"
+            id="personal"
+            type="number"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="duracion">Duracion en Minutos</label>
+          <input
+            formControlName="duracion"
+            class="form-control"
+            id="duracion"
+            type="number"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="logistica">Logistica</label>
+          <input
+            formControlName="logistica"
+            class="form-control"
+            id="logistica"
+            type="text"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="situacion">Situacion</label>
+          <input
+            formControlName="situacion"
+            class="form-control"
+            id="situacion"
+            type="text"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="notas">notas</label>
+          <input
+            formControlName="notas"
+            class="form-control"
+            id="notas"
+            type="text"
+          />
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="procedimiento-container">
+        <h4>Procedimientos</h4>
+        <button type="button" (click)="addProced()" class="btn btn-primary">
+          Agregar Procedimiento
+        </button>
+
+        <div
+          formArrayName="proced"
+          *ngFor="let proc of proced.controls; let i = index"
+          [formGroupName]="i"
+        >
+          <hr />
+          <div class="form-group">
+            <label for="nombre">Nombre del Procedimiento</label>
+            <input formControlName="nombre" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="descripcion">Descripcion</label>
+            <input formControlName="descripcion" class="form-control" />
+          </div>
+
+          <h5>Validaciones</h5>
+          <button
+            type="button"
+            (click)="addValid(i)"
+            class="btn btn-info btn-sm"
+          >
+            Agregar Validación
+          </button>
+
+          <div
+            formArrayName="valid"
+            *ngFor="let val of getValidControls(i).controls; let j = index"
+            [formGroupName]="j"
+          >
+            <div class="form-group">
+              <label for="descripcion">Nombre Validación</label>
+              <input formControlName="nombre" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label for="descripcion">Descripcion</label>
+              <input formControlName="descripcion" class="form-control" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

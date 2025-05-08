@@ -2,23 +2,15 @@
 {
     public class Proced
     {
-        public string? Id { get; set; }              // Id interno del registro
-        public string IdGuia { get; set; }          // FK de la tabla Guia
-        public string? Nombre { get; set; }          // Nombre del procedimiento
-        public string? Descripcion { get; set; }     // Descripcion del procedimiento
-        public bool Estado { get; set; }            // Estado        
-        public DateTime? Fecha_log { get; set; }     // Log fecha
-    }
+        public string? Id { get; set; }
+        public string IdGuia { get; set; }
+        public string? Nombre { get; set; }
+        public string? Descripcion { get; set; }
+        public bool Estado { get; set; }
+        public DateTime? Fecha_log { get; set; }
 
-     public class ProcedC
-    {
-        public string Id { get; set; }              // Id interno del registro
-        public string IdGuia { get; set; }          // FK de la tabla Guia
-        public string Nombre { get; set; }          // Nombre del procedimiento
-        public string Descripcion { get; set; }     // Descripcion del procedimiento
-        public bool Estado { get; set; }            // Estado         
-        public DateTime Fecha_log { get; set; }     // Log fecha
-        public Valid[] valid { get; set; }
+        // Opcional: solo se usa si se necesita
+        public List<Valid>? valid { get; set; }
     }
 
 }

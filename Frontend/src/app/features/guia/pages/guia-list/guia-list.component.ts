@@ -38,11 +38,11 @@ export class GuiaListComponent implements OnInit {
   }
 
   navigateToNew(): void {
-    this.router.navigate(['/Guia/new']);
+    this.router.navigate(['/guia/new']);
   }
 
   editGuia(id: string): void {
-    this.router.navigate(['/Guia/edit', id]);
+    this.router.navigate(['/guia/edit', id]);
   }
 
   deleteGuia(id: string): void {

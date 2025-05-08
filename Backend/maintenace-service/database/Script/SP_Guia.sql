@@ -15,6 +15,23 @@ BEGIN
 END
 GO
 
+CREATE TYPE ValidType AS TABLE
+(
+    Id NVARCHAR(36),
+	IdProced NVARCHAR(36),
+    Nombre NVARCHAR(36),
+	Estado          BIT,
+    Descripcion VARCHAR(max)      
+);
+
+CREATE TYPE ProcedType AS TABLE
+(
+    Id               NVARCHAR(36),
+    Nombre           NVARCHAR(36),
+	Estado           BIT,
+    Descripcion      VARCHAR(max)       
+);
+
 -- Procedimiento para obtener los datos
 PRINT 'Creación del procedimiento Guia Get'
 GO
@@ -26,14 +43,84 @@ CREATE PROCEDURE dbo.db_Sp_Guia_Get
     @Estado      INT = NULL
 AS 
 BEGIN
-    SELECT Id, Nombre, Descripcion, Proceso, Inspeccion, Herramientas, IdComp, IdEsp, SeguridadInd, SeguridadAmb, Intervalo, Importante, Insumos, Personal, Duracion, Logistica, Situacion, Notas, CreatedBy, UpdatedBy, FechaUpdate, Estado, Fecha_log     
-    FROM dbo.Guia
-    WHERE Id = CASE WHEN ISNULL(@Id,'')='' THEN Id ELSE @Id END
-    AND Nombre LIKE CASE WHEN ISNULL(@Nombre,'')='' THEN Nombre ELSE '%'+@Nombre+'%' END    
-    AND IdComp = CASE WHEN ISNULL(@IdComp,'')='' THEN IdComp ELSE @IdComp END
-    AND IdEsp = CASE WHEN ISNULL(@IdEsp,'')='' THEN IdEsp ELSE @IdEsp END
-    AND Estado = CASE WHEN ISNULL(@Estado,0) = 1 THEN 1 ELSE 0 END
-    AND Eliminado = 0
+    SET NOCOUNT ON;
+
+    IF ISNULL(@Id, '') <> ''
+    BEGIN
+	    -- Primer resultset: datos de la guía
+		SELECT
+			Id, 
+			Nombre, 
+			Descripcion, 
+			Proceso, 
+			Inspeccion, 
+			Herramientas, 
+			IdComp, 
+			IdEsp, 
+			SeguridadInd, 
+			SeguridadAmb, 
+			Intervalo, 
+			Importante, 
+			Insumos, 
+			Personal, 
+			Duracion, 
+			Logistica, 
+			Situacion, 
+			Notas, 
+			CreatedBy, 
+			UpdatedBy, 
+			FechaUpdate, 
+			Estado, 
+			Fecha_log     
+		FROM Guia 
+		WHERE Id = @Id AND Eliminado = 0;
+
+		-- Segundo resultset: proced
+		SELECT 
+			Id, 
+			Nombre, 
+			IdGuia,
+			Descripcion,
+			Estado,
+			Fecha_log
+		FROM Proced 
+		WHERE IdGuia = @Id AND Eliminado = 0;
+
+		-- Tercer resultset: valid
+		SELECT 
+			Id, 
+			Nombre, 
+			IdProced,
+			Descripcion,
+			Estado, 
+			Fecha_log
+		FROM Valid
+		WHERE IdProced IN (SELECT Id 
+								FROM Proced 
+								WHERE IdGuia = @Id AND Eliminado = 0
+						   ) 
+						AND Eliminado = 0;
+	END
+    ELSE
+    BEGIN
+        -- Retorna solo campos básicos si no se envía el Id
+        SELECT 
+            Id, 
+			Nombre, 
+			IdEsp, 
+			Intervalo, 
+			Personal, 
+			Duracion, 
+			CreatedBy, 
+			Estado 
+        FROM dbo.Guia
+		WHERE Id = CASE WHEN ISNULL(@Id,'')='' THEN Id ELSE @Id END
+		AND Nombre LIKE CASE WHEN ISNULL(@Nombre,'')='' THEN Nombre ELSE '%'+@Nombre+'%' END    
+		AND IdComp = CASE WHEN ISNULL(@IdComp,'')='' THEN IdComp ELSE @IdComp END
+		AND IdEsp = CASE WHEN ISNULL(@IdEsp,'')='' THEN IdEsp ELSE @IdEsp END
+		AND Estado = CASE WHEN ISNULL(@Estado,0) = 1 THEN 1 ELSE 0 END
+		AND Eliminado = 0
+    END
 END
 GO
 
@@ -62,6 +149,8 @@ CREATE PROCEDURE dbo.db_Sp_Guia_Set
     @CreatedBy       VARCHAR(36),
     @UpdatedBy       VARCHAR(36),
     @Estado          BIT,
+    @Proced          ProcedType READONLY,
+    @Valid           ValidType READONLY,   
     @Operacion       VARCHAR(1)
 AS
 BEGIN
@@ -78,14 +167,66 @@ BEGIN
 
         -- Generar el nuevo Id con el formato deseado
         SET @Id = @Prefijo + @Consecutivo;
-        INSERT INTO dbo.Guia(Id, Nombre, Descripcion, Proceso, Inspeccion, Herramientas, IdComp, IdEsp, SeguridadInd, SeguridadAmb, Intervalo, Importante, Insumos, Personal, Duracion, Logistica, Situacion, Notas, CreatedBy, UpdatedBy, FechaUpdate, Estado, Eliminado, Fecha_log)
-        VALUES(@Id, @Nombre, @Descripcion, @Proceso, @Inspeccion, @Herramientas, @IdComp, @IdEsp, @SeguridadInd, @SeguridadAmb, @Intervalo, @Importante, @Insumos, @Personal, @Duracion, @Logistica, @Situacion, @Notas, @CreatedBy, @UpdatedBy, DEFAULT, @Estado, 0, DEFAULT)
+        BEGIN TRANSACTION;
+
+            INSERT INTO dbo.Guia(Id, Nombre, Descripcion, Proceso, Inspeccion, Herramientas, IdComp, IdEsp, SeguridadInd, SeguridadAmb, Intervalo, Importante, Insumos, Personal, Duracion, Logistica, Situacion, Notas, CreatedBy, UpdatedBy, FechaUpdate, Estado, Eliminado, Fecha_log)
+            VALUES(@Id, @Nombre, @Descripcion, @Proceso, @Inspeccion, @Herramientas, @IdComp, @IdEsp, @SeguridadInd, @SeguridadAmb, @Intervalo, @Importante, @Insumos, @Personal, @Duracion, @Logistica, @Situacion, @Notas, @CreatedBy, @UpdatedBy, DEFAULT, @Estado, 0, DEFAULT)
+
+            -- Insertar PROCED
+            INSERT INTO dbo.Proced(Id, IdGuia, Nombre, Descripcion, Estado, Eliminado, Fecha_log)
+            SELECT Id, @Id, Nombre, Descripcion, @Estado, 0, GETDATE()
+            FROM @Proced;
+
+            -- Insertar VALID
+            INSERT INTO dbo.Valid(Id, IdProced, Nombre, Descripcion, Estado, Eliminado, Fecha_log)
+            SELECT Id, IdProced, Nombre, Descripcion, @Estado, 0, GETDATE()
+            FROM @Valid;         
+
+        COMMIT;    
     END
     ELSE IF @Operacion = 'A'
     BEGIN
+
         UPDATE dbo.Guia
-        SET Nombre = @Nombre, Descripcion = @Descripcion, Proceso = @Proceso, Inspeccion = @Inspeccion, Herramientas = @Herramientas, IdComp = @IdComp, IdEsp = @IdEsp, SeguridadInd = @SeguridadInd, SeguridadAmb = @SeguridadAmb, Intervalo = @Intervalo, Importante = @Importante, Insumos = @Insumos, Personal = @Personal, Duracion = @Duracion, Logistica = @Logistica, Situacion = @Situacion, Notas = @Notas, UpdatedBy = @UpdatedBy, FechaUpdate = DEFAULT, Estado = @Estado
+        SET 
+			Nombre = @Nombre, 
+			Descripcion = @Descripcion, 
+			Proceso = @Proceso, 
+			Inspeccion = @Inspeccion, 
+			Herramientas = @Herramientas, 
+			IdComp = @IdComp, 
+			IdEsp = @IdEsp, 
+			SeguridadInd = @SeguridadInd, 
+			SeguridadAmb = @SeguridadAmb, 
+			Intervalo = @Intervalo, 
+			Importante = @Importante, 
+			Insumos = @Insumos, 
+			Personal = @Personal, 
+			Duracion = @Duracion,
+			Logistica = @Logistica, 
+			Situacion = @Situacion, 
+			Notas = @Notas, 
+			UpdatedBy = @UpdatedBy, 
+			FechaUpdate = DEFAULT, 
+			Estado = @Estado
         WHERE Id = @Id
+        -- Actualizar PROCED
+        UPDATE p
+        SET 
+            p.Nombre = pr.Nombre,
+            p.Descripcion = pr.Descripcion,
+            p.Estado = pr.Estado           
+        FROM dbo.Proced p
+        JOIN @Proced pr ON p.Id = pr.Id AND p.IdGuia = @Id;
+
+        -- Actualizar VALID
+        UPDATE v
+        SET 
+            v.Nombre = val.Nombre,
+            v.Descripcion = val.Descripcion,
+            v.Estado = val.Estado
+        FROM dbo.Valid v
+        JOIN @Valid val ON v.Id = val.Id AND v.IdProced = val.IdProced;
     END
 END
 GO

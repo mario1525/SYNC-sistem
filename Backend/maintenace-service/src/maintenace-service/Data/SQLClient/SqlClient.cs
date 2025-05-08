@@ -34,5 +34,30 @@ namespace Data.SQLClient
                 }
             }
         }
+
+        public async Task<DataSet> ExecuteStoredProcedureMultiResult(string procedureName, SqlParameter[] parameters = null)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (SqlCommand command = new SqlCommand(procedureName, connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                if (parameters != null)
+                    command.Parameters.AddRange(parameters);
+
+                await connection.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    var dataSet = new DataSet();
+                    do
+                    {
+                        var dt = new DataTable();
+                        dt.Load(reader);
+                        dataSet.Tables.Add(dt);
+                    } while (!reader.IsClosed);
+
+                    return dataSet;
+                }
+            }
+        }
     }
 }

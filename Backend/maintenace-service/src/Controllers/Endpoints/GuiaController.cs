@@ -20,10 +20,22 @@ namespace Controllers.Endpoints
         // GET: api/Guia
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<List<Guia>>> Get([FromQuery] Guia guia)
+        public async Task<ActionResult<List<Guia>>> Gets([FromQuery] Guia guia)
         {
             var result = await _guiaLogical.GetGuias(guia);
             if (result == null || result.Count == 0)
+                return NotFound("No se encontraron guías.");
+
+            return Ok(result);
+        }
+
+        // GET: api/Guia/:5
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<Guia>> Get(string id)
+        {
+            var result = await _guiaLogical.GetGuiaById(id);
+            if (result == null)
                 return NotFound("No se encontraron guías.");
 
             return Ok(result);

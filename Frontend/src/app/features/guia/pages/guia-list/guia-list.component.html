@@ -16,6 +16,9 @@
       <thead>
         <tr>
           <th>Nombre</th>
+          <th>Intervalo</th>
+          <th>Personal</th>
+          <th>Duracion</th>
           <th>Creado por</th>
           <th>Estado</th>
           <th>Acciones</th>
@@ -24,6 +27,9 @@
       <tbody>
         <tr *ngFor="let comp of Guias">
           <td>{{ comp.nombre }}</td>
+          <td>{{ comp.intervalo }}</td>
+          <td>{{ comp.personal }}</td>
+          <td>{{ comp.duracion }}</td>
           <td>{{ comp.createdBy }}</td>
           <td>
             <span
