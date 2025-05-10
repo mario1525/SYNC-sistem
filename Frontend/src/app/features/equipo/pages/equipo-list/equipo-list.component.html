@@ -3,9 +3,9 @@
 
 <div class="container">
   <div class="header">
-    <h2>Guias de mantenimiento</h2>
+    <h2>Equipos</h2>
     <button class="btn btn-primary" (click)="navigateToNew()">
-      <i class="fas fa-plus"></i> Nueva Guia
+      <i class="fas fa-plus"></i> Nuevo Equipo
     </button>
   </div>
 
@@ -17,22 +17,20 @@
         <tr>
           <th>ID</th>
           <th>Nombre</th>
-          <th>Intervalo</th>
-          <th>Personal</th>
-          <th>Duracion</th>
-          <th>Creado por</th>
+          <th>Modelo</th>
+          <th>N Serie</th>
+          <th>Marca</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let comp of Guias">
+        <tr *ngFor="let comp of equipos">
           <td>{{ comp.id }}</td>
           <td>{{ comp.nombre }}</td>
-          <td>{{ comp.intervalo }}</td>
-          <td>{{ comp.personal }}</td>
-          <td>{{ comp.duracion }}</td>
-          <td>{{ comp.createdBy }}</td>
+          <td>{{ comp.modelo }}</td>
+          <td>{{ comp.nSerie }}</td>
+          <td>{{ comp.marca }}</td>
           <td>
             <span
               [class]="'badge ' + (comp.estado ? 'bg-success' : 'bg-danger')"
@@ -43,11 +41,14 @@
           <td>
             <button
               class="btn btn-sm btn-info me-2"
-              (click)="editGuia(comp.id)"
+              (click)="editequipo(comp.id)"
             >
               <i class="fas fa-edit"></i>
             </button>
-            <button class="btn btn-sm btn-danger" (click)="deleteGuia(comp.id)">
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="deleteEquipo(comp.id)"
+            >
               <i class="fas fa-trash"></i>
             </button>
           </td>

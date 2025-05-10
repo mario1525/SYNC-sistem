@@ -1,101 +1,297 @@
+<app-logo-header></app-logo-header>
+<app-menu></app-menu>
 <div class="container">
-  <app-logo-header></app-logo-header>
-  <app-menu></app-menu>
-  <div class="body">
-    <div class="content">
-      <div class="title-bar">
-        <h2>Equipo</h2>
-        <button class="generate-btn">Generar</button>
+  <div class="header">
+    <h2>{{ isEditing ? "Editar" : "Nueva" }} Equipo</h2>
+    <button
+      *ngIf="role === 'Admin'"
+      type="submit"
+      class="{{ isEditing ? 'btn btn-Tree' : 'btn btn-primary' }}"
+      [disabled]="equipoForm.invalid"
+      (click)="onSubmit()"
+    >
+      {{ isEditing ? "Actualizar" : "Crear" }}
+    </button>
+  </div>
+
+  <hr />
+
+  <form [formGroup]="equipoForm" (ngSubmit)="onSubmit()" class="form">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input
+          type="text"
+          id="nombre"
+          formControlName="nombre"
+          class="form-control"
+          [class.is-invalid]="nombre.invalid && nombre.touched"
+        />
+        <div class="invalid-feedback" *ngIf="nombre.invalid && nombre.touched">
+          El nombre es requerido
+        </div>
       </div>
 
-      <hr />
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="nombre">Nombre</label>
-          <input id="nombre" type="date" />
+      <div class="form-group">
+        <label for="descripcion">Descripcion</label>
+        <input
+          type="text"
+          id="descripcion"
+          formControlName="descripcion"
+          class="form-control"
+          [class.is-invalid]="descripcion.invalid && descripcion.touched"
+        />
+        <div
+          class="invalid-feedback"
+          *ngIf="descripcion.invalid && descripcion.touched"
+        >
+          la descripcion es requerida
         </div>
+      </div>
 
-        <div class="form-group">
-          <label for="descripcion">Descripcion</label>
-          <input id="descripcion" type="text" />
+      <div class="form-group">
+        <label for="modelo">Modelo</label>
+        <input
+          type="text"
+          id="modelo"
+          formControlName="modelo"
+          class="form-control"
+          [class.is-invalid]="modelo.invalid && modelo.touched"
+        />
+        <div class="invalid-feedback" *ngIf="modelo.invalid && modelo.touched">
+          El modelo es requerido
         </div>
+      </div>
 
-        <div class="form-group">
-          <label for="modelo">Modelo</label>
-          <input id="modelo" type="text" />
+      <div class="form-group">
+        <label for="nSerie">N.Serie</label>
+        <input
+          type="text"
+          id="nSerie"
+          formControlName="nSerie"
+          class="form-control"
+          [class.is-invalid]="nSerie.invalid && nSerie.touched"
+        />
+        <div class="invalid-feedback" *ngIf="nSerie.invalid && nSerie.touched">
+          El numero de serie es requerido
         </div>
+      </div>
 
-        <div class="form-group">
-          <label for="nserie">N.Serie</label>
-          <input id="nserie" type="text" />
+      <div class="form-group">
+        <label for="fab">Fabricante</label>
+        <input
+          type="text"
+          id="nSerie"
+          formControlName="nSerie"
+          class="form-control"
+          [class.is-invalid]="nSerie.invalid && nSerie.touched"
+        />
+        <div class="invalid-feedback" *ngIf="nSerie.invalid && nSerie.touched">
+          El numero de serie es requerido
         </div>
+      </div>
 
-        <div class="form-group">
-          <label for="fab">Fabricante</label>
-          <input id="fab" type="text" />
+      <div class="form-group">
+        <label for="marca">Marca</label>
+        <input
+          type="text"
+          id="marca"
+          formControlName="marca"
+          class="form-control"
+          [class.is-invalid]="marca.invalid && marca.touched"
+        />
+        <div class="invalid-feedback" *ngIf="marca.invalid && marca.touched">
+          La marca es requerida
         </div>
+      </div>
 
-        <div class="form-group">
-          <label for="marca">Marca</label>
-          <input id="marca" type="text" />
-        </div>
+      <div class="form-group">
+        <label for="funcion">Funcion</label>
+        <input
+          type="text"
+          id="funcion"
+          formControlName="funcion"
+          class="form-control"
+        />
+      </div>
 
-        <div class="form-group">
-          <label for="funcion">Funcion</label>
-          <input id="funcion" type="text" />
-        </div>
+      <div class="form-group">
+        <label for="peso">Peso KG</label>
+        <input
+          type="number"
+          id="peso"
+          formControlName="peso"
+          class="form-control"
+        />
+      </div>
 
-        <div class="form-group">
-          <label for="Peso">Peso</label>
-          <input for="Peso" type="number" />
-        </div>
+      <div class="form-group">
+        <label for="cilindraje">Cilindraje CC</label>
+        <input
+          type="number"
+          id="cilindraje"
+          formControlName="cilindraje"
+          class="form-control"
+        />
+      </div>
 
-        <div class="form-group">
-          <label for="cilindraje">Cilindraje</label>
-          <input id="cilindraje" type="number" />
-        </div>
+      <div class="form-group">
+        <label for="potencia">Potencia CV</label>
+        <input
+          type="number"
+          id="potencia"
+          formControlName="potencia"
+          class="form-control"
+        />
+      </div>
 
-        <div class="form-group">
-          <label for="potencia">Potencia CV</label>
-          <input id="potencia" type="number" />
-        </div>
+      <div class="form-group">
+        <label for="ancho">Ancho Cm</label>
+        <input
+          type="number"
+          id="ancho"
+          formControlName="ancho"
+          class="form-control"
+        />
+      </div>
 
-        <div class="form-group">
-          <label for="ancho">Ancho Cm</label>
-          <input id="ancho" type="text" />
-        </div>
+      <div class="form-group">
+        <label for="alto">Alto CM</label>
+        <input
+          type="number"
+          id="alto"
+          formControlName="alto"
+          class="form-control"
+        />
+      </div>
 
-        <div class="form-group">
-          <label for="alto">Alto</label>
-          <input id="alto" type="number" />
-        </div>
+      <div class="form-group">
+        <label for="largo">Largo CM</label>
+        <input
+          type="number"
+          id="largo"
+          formControlName="largo"
+          class="form-control"
+        />
+      </div>
 
-        <div class="form-group">
-          <label for="largo">Largo</label>
-          <input id="largo" type="number" />
-        </div>
+      <div class="form-group">
+        <label for="capacidad">Capacidad</label>
+        <input
+          type="text"
+          id="capacidad"
+          formControlName="capacidad"
+          class="form-control"
+        />
+      </div>
 
-        <div class="form-group">
-          <label for="capacidad">Capacidad</label>
-          <input id="capacidad" type="number" />
+      <div class="form-group">
+        <label for="anioFabricacion">Año de fabricación</label>
+        <input
+          type="date"
+          id="anioFabricacion"
+          formControlName="anioFabricacion"
+          class="form-control"
+          [class.is-invalid]="
+            anioFabricacion.invalid && anioFabricacion.touched
+          "
+        />
+        <div
+          class="invalid-feedback"
+          *ngIf="anioFabricacion.invalid && anioFabricacion.touched"
+        >
+          El año de fabricacion es requerido
         </div>
+      </div>
 
-        <div class="form-group">
-          <label for="fabricacion">Año de fabricación</label>
-          <input id="fabricacion" type="date" />
-        </div>
+      <div class="form-group">
+        <label for="caracteristicas">Características</label>
+        <input
+          type="text"
+          id="caracteristicas"
+          formControlName="caracteristicas"
+          class="form-control"
+        />
+      </div>
 
-        <div class="form-group">
-          <label for="caracteristicas">Características</label>
-          <input id="caracteristicas" type="text" />
-        </div>
-
-        <div class="form-group">
-          <label for="seccion">Sección</label>
-          <input id="seccion" type="text" />
-        </div>
+      <div class="form-group">
+        <label for="seccion">Sección</label>
+        <input
+          type="text"
+          id="seccion"
+          formControlName="seccion"
+          class="form-control"
+        />
       </div>
     </div>
-  </div>
+    <div class="form-ubicacion">
+      <h5>Ubicacion</h5>
+      <div class="form-group">
+        <label for="idPlanta">Planta</label>
+        <select
+          formControlName="idPlanta"
+        >
+          <option *ngFor="let tipo of Planta" [value]="tipo.id">
+            {{ tipo.nombre }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="tipoUbicacion">Tipo de Ubicación</label>
+        <select formControlName="tipoUbicacion">
+          <option *ngFor="let tipo of tipoUbicacionOptions" [value]="tipo">
+            {{ tipo }}
+          </option>
+        </select>
+      </div>
+
+      <div class="bodega">
+        <div class="form-group">
+          <label for="idBodega">Bodega</label>
+          <select formControlName="idBodega">
+            <option *ngFor="let tipo of Bodega" [value]="tipo.id">
+              {{ tipo.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="idSeccionBodega">Seccion Bodega</label>
+          <select formControlName="idSeccionBodega">
+            <option *ngFor="let tipo of SeccionBodega" [value]="tipo.id">
+              {{ tipo.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="idPatio">Patio</label>
+          <select formControlName="idPatio">
+            <option *ngFor="let tipo of Patio" [value]="tipo.id">
+              {{ tipo.nombre }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="idAreaFuncional">Area funcional</label>
+        <select formControlName="idAreaFuncional">
+          <option *ngFor="let tipo of AreaFuncional" [value]="tipo.id">
+            {{ tipo.nombre }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button
+        *ngIf="role === 'Admin'"
+        type="button"
+        class="btn btn-secondary"
+        (click)="goBack()"
+      >
+        Cancelar
+      </button>
+    </div>
+  </form>
 </div>

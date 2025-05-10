@@ -42,10 +42,10 @@ function getMenuItems(role: string, idComp: string | null) {
     ],
     Admin: [
       { label: 'Inicio', route: '/home' },
-      { label: 'Equipos', route: '/equipo/equipo' },
+      { label: 'Equipos', route: '/equipo' },
       { label: 'Compañía', route: `/comp/edit/${idComp ?? ''}` },
       { label: 'Guias', route: '/guia' },
-      { label: 'Usuarios', route: '/users/list' },
+      { label: 'Usuarios', route: '/users' },
     ],
     Supervisor: [
       { label: 'Inicio', route: '/home' },
