@@ -32,14 +32,30 @@
         "DownstreamPathTemplate": "/api/Users",
         "DownstreamScheme": "http",
         "UpstreamPathTemplate": "/apigateway/Users",
-        "UpstreamHttpMethod": ["POST"]
+        "UpstreamHttpMethod": ["GET", "POST"]
       },
       {
         "DownstreamHostAndPorts": [{ "Host": "docker-user-services-1", "Port": 80 }],
         "DownstreamPathTemplate": "/api/Users/{id}",
         "DownstreamScheme": "http",
         "UpstreamPathTemplate": "/apigateway/Users/{id}",
-        "UpstreamHttpMethod": ["GET", "PUT", "DELETE"]
+        "UpstreamHttpMethod": ["PUT", "DELETE"]
+      },
+      // ----------------------------------------------------------------------------------
+      // Cuad
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-user-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Cuad",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Cuad",
+        "UpstreamHttpMethod": ["GET", "POST"]
+      },
+      {
+        "DownstreamHostAndPorts": [{ "Host": "docker-user-services-1", "Port": 80 }],
+        "DownstreamPathTemplate": "/api/Cuad/{id}",
+        "DownstreamScheme": "http",
+        "UpstreamPathTemplate": "/apigateway/Cuad/{id}",
+        "UpstreamHttpMethod": ["PUT", "DELETE"]
       },
 
 

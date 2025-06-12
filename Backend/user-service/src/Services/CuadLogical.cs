@@ -14,15 +14,9 @@ namespace Services
 
         }
 
-        public async Task<List<Cuad>> Getcuad(String Id)
+        public async Task<List<Cuad>> Getcuad(Cuad cuad)
         {
-            return await _daoCuad.Getcuad(Id);
-        }
-
-
-        public async Task<List<Cuad>> GetCuad(String Id)
-        {
-            return await _daoCuad.GetCuad(Id);
+            return await _daoCuad.GetCuad(cuad);
         }
 
         public Mensaje CreateCuad(Cuad Cuad)

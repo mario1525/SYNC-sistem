@@ -19,7 +19,7 @@ namespace Controllers.Endpoints
 
         // GET: api/Esp
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<List<Esp>>> Get([FromQuery] Esp esp)
         {
             var result = await _espLogical.GetEsps(esp);
@@ -31,7 +31,7 @@ namespace Controllers.Endpoints
 
         // POST api/Esp
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Post([FromBody] Esp esp)
         {
             if (esp == null)
@@ -43,7 +43,7 @@ namespace Controllers.Endpoints
 
         // PUT api/Esp/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Put(string id, [FromBody] Esp esp)
         {
             if (string.IsNullOrEmpty(id))
@@ -56,7 +56,7 @@ namespace Controllers.Endpoints
 
         // DELETE api/Esp/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -68,7 +68,7 @@ namespace Controllers.Endpoints
 
         // PATCH api/Esp/5/estado
         [HttpPatch("{id}/estado")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> PatchEstado(string id, [FromBody] int estado)
         {
             if (string.IsNullOrEmpty(id))

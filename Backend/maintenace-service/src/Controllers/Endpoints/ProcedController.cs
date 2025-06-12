@@ -18,7 +18,7 @@ namespace Controllers.Endpoints
 
         // GET: api/Proced
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<List<Proced>>> Get([FromQuery] Proced proced)
         {
             var result = await _procedLogical.GetProceds(proced);
@@ -30,7 +30,7 @@ namespace Controllers.Endpoints
 
         // POST api/Proced
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Post([FromBody] Proced proced)
         {
             if (proced == null)
@@ -42,7 +42,7 @@ namespace Controllers.Endpoints
 
         // PUT api/Proced/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Put(string id, [FromBody] Proced proced)
         {
             if (string.IsNullOrEmpty(id))
@@ -55,7 +55,7 @@ namespace Controllers.Endpoints
 
         // DELETE api/Proced/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -67,7 +67,7 @@ namespace Controllers.Endpoints
 
         // PATCH api/Proced/5/estado
         [HttpPatch("{id}/estado")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> PatchEstado(string id, [FromBody] int estado)
         {
             if (string.IsNullOrEmpty(id))

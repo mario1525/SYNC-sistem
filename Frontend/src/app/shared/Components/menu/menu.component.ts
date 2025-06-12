@@ -13,6 +13,7 @@ import { AuthService } from '../../../features/auth/Services/auth.service'; // A
 export class MenuComponent implements OnInit {
   menuItems: { label: string; route: string }[] = [];
   idComp: string | null = null;
+  idUser: string | null = null;
 
   constructor(
     private authService: AuthService,
@@ -21,9 +22,10 @@ export class MenuComponent implements OnInit {
 
   ngOnInit(): void {
     const role = this.authService.getUserRole();
+    this.idUser = this.authService.getUserId();
     this.idComp = this.authService.getCompanyId();
     if (role) {
-      this.menuItems = getMenuItems(role, this.idComp);
+      this.menuItems = getMenuItems(role, this.idComp, this.idUser);
     }
   }
 
@@ -33,29 +35,40 @@ export class MenuComponent implements OnInit {
   }
 }
 
-function getMenuItems(role: string, idComp: string | null) {
+function getMenuItems(
+  role: string,
+  idComp: string | null,
+  idUser: string | null,
+) {
   const routes: Record<string, { label: string; route: string }[]> = {
     Root: [
       { label: 'Inicio', route: '/home' },
       { label: 'Compañías', route: '/comp' },
-      { label: 'Usuarios', route: '/user' },
+      { label: 'Usuarios', route: '/users' },
     ],
     Admin: [
       { label: 'Inicio', route: '/home' },
       { label: 'Equipos', route: '/equipo' },
       { label: 'Compañía', route: `/comp/edit/${idComp ?? ''}` },
+      { label: 'Actividades', route: '/actividad' },
       { label: 'Guias', route: '/guia' },
-      { label: 'Usuarios', route: '/users' },
+      { label: 'Cuadrilla', route: '/cuadrilla' },
+      { label: 'Usuarios', route: `/users/list/${idComp ?? ''}` },
     ],
     Supervisor: [
       { label: 'Inicio', route: '/home' },
+      { label: 'Actividades', route: '/actividad' },
+      { label: 'Perfil', route: `/users/profile/${idUser ?? ''}` },
+      { label: 'Guias', route: '/guia' },
       { label: 'Equipos', route: '/equipo/list' },
       { label: 'Usuarios', route: '/users/list' },
     ],
     Mecanico: [
       { label: 'Inicio', route: '/home' },
-      { label: 'Usuario', route: '/users/profile' },
-      { label: 'Equipos', route: '/equipos' },
+      { label: 'Perfil', route: `/users/profile/${idUser ?? ''}` },
+      { label: 'Actividades', route: '/actividad' },
+      { label: 'Guias', route: '/guia' },
+      { label: 'Equipos', route: '/equipo/list' },
     ],
   };
 

@@ -228,9 +228,7 @@
       <h5>Ubicacion</h5>
       <div class="form-group">
         <label for="idPlanta">Planta</label>
-        <select
-          formControlName="idPlanta"
-        >
+        <select formControlName="idPlanta">
           <option *ngFor="let tipo of Planta" [value]="tipo.id">
             {{ tipo.nombre }}
           </option>

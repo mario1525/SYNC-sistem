@@ -18,7 +18,7 @@ namespace Controllers.Endpoint
 
         // GET: api/Comp
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root")]
         public async Task<ActionResult<List<Comp>>> Get()
         {
             var result = await _CompLogical.GetComps();
@@ -30,7 +30,7 @@ namespace Controllers.Endpoint
 
         // GET: api/Comp/5
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,Admin-Comp")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<List<Comp>>> Get(string id)
         {
             var result = await _CompLogical.GetComp(id);
@@ -42,7 +42,7 @@ namespace Controllers.Endpoint
 
         // POST api/Comp
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root")]
         public async Task<ActionResult<Mensaje>> Post([FromBody] Comp comp)
         {
             if (comp == null)
@@ -54,7 +54,7 @@ namespace Controllers.Endpoint
 
         // PUT api/Comp/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Put(string id, [FromBody] Comp comp)
         {
             if (string.IsNullOrEmpty(id))
@@ -67,7 +67,7 @@ namespace Controllers.Endpoint
 
         // DELETE api/Comp/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root")]
         public async Task<ActionResult<Mensaje>> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))

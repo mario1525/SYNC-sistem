@@ -22,7 +22,7 @@ namespace Controllers.Endpoint
         // GET: api/Credential/id
         // validar si el Users ya tiene credenciales asociadas
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,Admin-Compania")]
+        [Authorize(Roles = "Admin,Root,Supervisor,Mecanico")]
         public async Task<bool> Get(string id)
         {
             return await _UserLogical.ValidCredential(id);
@@ -30,7 +30,7 @@ namespace Controllers.Endpoint
 
         // POST api/Credential
         [HttpPost]
-        [Authorize(Roles = "Admin,Admin-Compania")]
+        [Authorize(Roles = "Admin,Root")]
         public Task<Mensaje> Post([FromBody] UsuarioCredential value)
         {
            return _UserLogical.CreateUsers(value);
@@ -38,7 +38,7 @@ namespace Controllers.Endpoint
 
         // PUT api/Credential/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Admin-Compania")]
+        [Authorize(Roles = "Admin,Root,Supervisor,Mecanico")]
         public Mensaje Put(string id, [FromBody] UsuarioCredential value)
         {
             value.Id = id;
@@ -47,7 +47,7 @@ namespace Controllers.Endpoint
 
         // DELETE api/Credential/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Admin-Compania")]
+        [Authorize(Roles = "Admin,Root")]
         public Mensaje Delete(string id)
         {
             return _UserLogical.DeleteUsers(id);

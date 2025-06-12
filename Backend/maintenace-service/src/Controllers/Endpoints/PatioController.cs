@@ -18,7 +18,7 @@ namespace Controllers.Endpoint
 
         // GET: api/Patio
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<List<Patio>>> Get([FromQuery] Patio patio)
         {
             var result = await _patioLogical.GetPatios(patio);
@@ -30,7 +30,7 @@ namespace Controllers.Endpoint
 
         // POST api/Patio
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Post([FromBody] Patio patio)
         {
             if (patio == null)
@@ -42,7 +42,7 @@ namespace Controllers.Endpoint
 
         // PUT api/Patio/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Put(string id, [FromBody] Patio patio)
         {
             if (string.IsNullOrEmpty(id))
@@ -55,7 +55,7 @@ namespace Controllers.Endpoint
 
         // DELETE api/Patio/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -67,7 +67,7 @@ namespace Controllers.Endpoint
 
         // PATCH api/Patio/5/estado
         [HttpPatch("{id}/estado")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> PatchEstado(string id, [FromBody] bool estado)
         {
             if (string.IsNullOrEmpty(id))

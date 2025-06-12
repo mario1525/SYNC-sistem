@@ -29,7 +29,7 @@ namespace Services
                 if (acep)
                 {
                     List<UsuarioCredential> credetial = await _daoCredential.GetUserName(login.Usuario);
-                    List<Users> Users = await _DaoUsers.GetUser(credetial[0].IdUser);
+                    List<Users> Users = await _DaoUsers.GetUserValid(credetial[0].IdUser);
                     Token token = _Token.GenerateJwtToken(Users[0]);
                     return token;
                 }   

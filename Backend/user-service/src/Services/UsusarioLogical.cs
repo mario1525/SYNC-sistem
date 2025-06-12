@@ -13,16 +13,12 @@ namespace Services
             
         }
 
-        public async Task<List<Users>> GetUser(String Id)
+        public async Task<List<Users>> GetUser(Users Users)
         {            
-            return await _daoUsers.GetUser(Id);
-        }      
+            return await _daoUsers.GetUser(Users);
+        } 
         
 
-        public async Task<List<Users>> GetUsers(String Id)
-        {
-            return await _daoUsers.GetUsers(Id);
-        }
 
         public Mensaje CreateUsers(Users Users)
         {

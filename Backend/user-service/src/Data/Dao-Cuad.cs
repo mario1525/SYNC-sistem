@@ -17,7 +17,7 @@ namespace Data
         }
 
         // metodo get 
-        public async Task<List<Cuad>> GetCuadList(Cuad cuad)
+        public async Task<List<Cuad>> GetCuad(Cuad cuad)
         {
             try
             {
@@ -29,69 +29,7 @@ namespace Data
                 {
                 new SqlParameter("@Id", cuad.Id),
                 new SqlParameter("@Nombre", cuad.Nombre),                
-                new SqlParameter("@IdEsp", cuad.IdComp),                
-                new SqlParameter("@Estado", 1)
-                };
-
-                // Ejecutar el procedimiento almacenado
-                DataTable dataTable = await _sqlClient.ExecuteStoredProcedure(procedureName, parameters);
-
-                List<Cuad> ListaCompania = MapDataTableToList(dataTable);
-                return ListaCompania;
-            }
-            catch (Exception ex)
-            {
-                // Manejar errores aquí
-                Console.WriteLine($"Error al obtener Cuads: {ex.Message}");
-                throw;
-            }
-        }
-
-        public async Task<List<Cuad>> GetCuad(string Comp)
-        {
-            try
-            {
-                // Nombre del procedimiento almacenado
-                const string procedureName = "dbo.db_Sp_Cuad_Get";
-
-                // Definición de parámetros
-                var parameters = new[]
-                {
-                new SqlParameter("@Id", ""),
-                new SqlParameter("@Nombre", ""),
-                new SqlParameter("@IdComp", Comp),
-                new SqlParameter("@Estado", 1)
-                };
-
-                // Ejecutar el procedimiento almacenado
-                DataTable dataTable = await _sqlClient.ExecuteStoredProcedure(procedureName, parameters);
-
-                List<Cuad> ListaCompania = MapDataTableToList(dataTable);
-                return ListaCompania;
-            }
-            catch (Exception ex)
-            {
-                // Manejar errores aquí
-                Console.WriteLine($"Error al obtener Cuads: {ex.Message}");
-                throw;
-            }
-        }
-
-
-        public async Task<List<Cuad>> Getcuad(string cuad)
-
-        {
-            try
-            {
-                // Nombre del procedimiento almacenado
-                const string procedureName = "dbo.db_Sp_Cuad_Get";
-
-                // Definición de parámetros
-                var parameters = new[]
-                {
-                new SqlParameter("@Id", cuad),
-                new SqlParameter("@Nombre", ""),
-                new SqlParameter("@IdComp", ""),
+                new SqlParameter("@IdComp", cuad.IdComp),                
                 new SqlParameter("@Estado", 1)
                 };
 

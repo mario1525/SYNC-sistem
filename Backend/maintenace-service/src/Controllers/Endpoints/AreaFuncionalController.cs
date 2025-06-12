@@ -18,7 +18,7 @@ namespace Controllers.Endpoint
 
         // GET: api/AreaFuncional
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<List<AreaFuncional>>> Get([FromQuery] AreaFuncional areaFuncional)
         {
             var result = await _areaFuncionalLogical.GetAreaFuncionales(areaFuncional);
@@ -30,7 +30,7 @@ namespace Controllers.Endpoint
 
         // POST api/AreaFuncional
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Post([FromBody] AreaFuncional areaFuncional)
         {
             if (areaFuncional == null)
@@ -42,7 +42,7 @@ namespace Controllers.Endpoint
 
         // PUT api/AreaFuncional/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Put(string id, [FromBody] AreaFuncional areaFuncional)
         {
             if (string.IsNullOrEmpty(id))
@@ -55,7 +55,7 @@ namespace Controllers.Endpoint
 
         // DELETE api/AreaFuncional/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -67,7 +67,7 @@ namespace Controllers.Endpoint
 
         // PATCH api/AreaFuncional/5/estado
         [HttpPatch("{id}/estado")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> PatchEstado(string id, [FromBody] bool estado)
         {
             if (string.IsNullOrEmpty(id))

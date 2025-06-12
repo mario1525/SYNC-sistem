@@ -1,0 +1,58 @@
+<app-logo-header></app-logo-header>
+<app-menu></app-menu>
+
+<div class="container">
+  <div class="header">
+    <h2>Usuarios</h2>
+    <button class="btn btn-primary" (click)="navigateToNew()">
+      <i class="fas fa-plus"></i> Nuevo
+    </button>
+  </div>
+
+  <hr />
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>identificacion</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Correo</th>
+          <th>Cargo</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let comp of Usuarios">
+          <td>{{ comp.identificacion }}</td>
+          <td>{{ comp.nombre }}</td>
+          <td>{{ comp.apellido }}</td>
+          <td>{{ comp.correo }}</td>
+          <td>{{ comp.cargo }}</td>
+          <td>{{ comp.rol }}</td>
+          <td>
+            <span
+              [class]="'badge ' + (comp.estado ? 'bg-success' : 'bg-danger')"
+            >
+              {{ comp.estado ? "Activo" : "Inactivo" }}
+            </span>
+          </td>
+          <td>
+            <button
+              class="btn btn-sm btn-info me-2"
+              (click)="editGuia(comp.id)"
+            >
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="deleteGuia(comp.id)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

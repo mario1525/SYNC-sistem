@@ -18,7 +18,7 @@ namespace Controllers.Endpoint
 
         // GET: api/SeccionBodega
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<List<SeccionBodega>>> Get([FromQuery] SeccionBodega seccionBodega)
         {
             var result = await _seccionBodegaLogical.GetSeccionBodegas(seccionBodega);
@@ -30,7 +30,7 @@ namespace Controllers.Endpoint
 
         // POST api/SeccionBodega
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Post([FromBody] SeccionBodega seccionBodega)
         {
             if (seccionBodega == null)
@@ -42,7 +42,7 @@ namespace Controllers.Endpoint
 
         // PUT api/SeccionBodega/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Put(string id, [FromBody] SeccionBodega seccionBodega)
         {
             if (string.IsNullOrEmpty(id))
@@ -55,7 +55,7 @@ namespace Controllers.Endpoint
 
         // DELETE api/SeccionBodega/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -67,7 +67,7 @@ namespace Controllers.Endpoint
 
         // PATCH api/SeccionBodega/5/estado
         [HttpPatch("{id}/estado")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> PatchEstado(string id, [FromBody] bool estado)
         {
             if (string.IsNullOrEmpty(id))

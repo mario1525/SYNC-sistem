@@ -19,7 +19,7 @@ namespace Data
         }        
 
         // metodo get 
-        public async Task<List<Users>> GetUsersList(Users user)
+        public async Task<List<Users>> GetUser(Users user)
         {
             try
             {
@@ -29,53 +29,16 @@ namespace Data
                 // Definición de parámetros
                 var parameters = new[]
                 {
-                new SqlParameter("@Id", user.Id),
-                new SqlParameter("@Nombre", user.Nombre),
-                new SqlParameter("@Apellido", user.Apellido),
-                new SqlParameter("@Identificacion", user.Identificacion),
-                new SqlParameter("@Correo", user.Correo),
-                new SqlParameter("@IdComp", user.IdComp),
-                new SqlParameter("@IdCuad", user.IdCuad),
-                new SqlParameter("@IdEsp", user.IdComp),
-                new SqlParameter("@Cargo", user.Cargo),
-                new SqlParameter("@Rol", user.Rol),
-                new SqlParameter("@Estado", 1)
-                };
-
-                // Ejecutar el procedimiento almacenado
-                DataTable dataTable = await _sqlClient.ExecuteStoredProcedure(procedureName, parameters);
-
-                List<Users> ListaCompania = MapDataTableToList(dataTable);
-                return ListaCompania;
-            }
-            catch (Exception ex)
-            {
-                // Manejar errores aquí
-                Console.WriteLine($"Error al obtener Userss: {ex.Message}");
-                throw;
-            }
-        }       
-
-        public async Task<List<Users>> GetUsers(string Comp)
-        {
-            try
-            {
-                // Nombre del procedimiento almacenado
-                const string procedureName = "dbo.db_Sp_Users_Get";
-
-                // Definición de parámetros
-                var parameters = new[]
-                {
-                new SqlParameter("@Id", ""),
-                new SqlParameter("@Nombre", ""),
-                new SqlParameter("@Apellido", ""),
-                new SqlParameter("@Identificacion", ""),
-                new SqlParameter("@Correo", ""),
-                new SqlParameter("@IdComp", Comp),
-                new SqlParameter("@IdCuad", "" ),
-                new SqlParameter("@IdEsp", ""),
-                new SqlParameter("@Cargo", ""),
-                new SqlParameter("@Rol", ""),
+                new SqlParameter("@Id", user.Id ?? (object)DBNull.Value),
+                new SqlParameter("@Nombre", user.Nombre ?? (object)DBNull.Value),
+                new SqlParameter("@Apellido", user.Apellido ??(object) DBNull.Value),
+                new SqlParameter("@Identificacion", user.Identificacion ?? (object)DBNull.Value),
+                new SqlParameter("@Correo", user.Correo ?? (object)DBNull.Value),
+                new SqlParameter("@IdComp", user.IdComp ?? (object)DBNull.Value),
+                new SqlParameter("@IdCuad", user.IdCuad ?? (object)DBNull.Value),
+                new SqlParameter("@IdEsp", user.IdComp ?? (object)DBNull.Value),
+                new SqlParameter("@Cargo", user.Cargo ?? (object)DBNull.Value),
+                new SqlParameter("@Rol", user.Rol ?? (object)DBNull.Value),
                 new SqlParameter("@Estado", 1)
                 };
 
@@ -93,9 +56,7 @@ namespace Data
             }
         }
 
-
-        public async Task<List<Users>> GetUser(string user)
-
+        public async Task<List<Users>> GetUserValid(string id)
         {
             try
             {
@@ -105,13 +66,13 @@ namespace Data
                 // Definición de parámetros
                 var parameters = new[]
                 {
-                new SqlParameter("@Id", user),
+                new SqlParameter("@Id", id),
                 new SqlParameter("@Nombre", ""),
                 new SqlParameter("@Apellido", ""),
                 new SqlParameter("@Identificacion", ""),
                 new SqlParameter("@Correo", ""),
                 new SqlParameter("@IdComp", ""),
-                new SqlParameter("@IdCuad", "" ),
+                new SqlParameter("@IdCuad", ""),
                 new SqlParameter("@IdEsp", ""),
                 new SqlParameter("@Cargo", ""),
                 new SqlParameter("@Rol", ""),

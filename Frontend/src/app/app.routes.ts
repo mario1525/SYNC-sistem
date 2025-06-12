@@ -31,5 +31,13 @@ export const routes: Routes = [
       import('./features/guia/guia.module').then((m) => m.GuiaModule),
     canActivate: [AuthGuard],
   },
+  {
+    path: 'actividad',
+    loadChildren: () =>
+      import('./features/actividad/actividad.module').then(
+        (m) => m.ActividadModule,
+      ),
+    canActivate: [AuthGuard],
+  },
   { path: '**', redirectTo: 'auth' },
 ];

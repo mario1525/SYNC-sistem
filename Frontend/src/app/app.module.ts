@@ -6,6 +6,7 @@ import { SharedModule } from './shared/shared.module';
 import { AuthModule } from './features/auth/auth.module';
 import { UsersModule } from './features/users/users.module';
 import { EquipoModule } from './features/equipo/equipo.module';
+import { ActividadModule } from './features/actividad/actividad.module';
 @NgModule({
   declarations: [],
   imports: [
@@ -15,6 +16,7 @@ import { EquipoModule } from './features/equipo/equipo.module';
     AuthModule,
     UsersModule,
     EquipoModule,
+    ActividadModule,
   ],
   providers: [],
 })

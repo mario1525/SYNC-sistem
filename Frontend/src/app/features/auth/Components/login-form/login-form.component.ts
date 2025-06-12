@@ -28,8 +28,14 @@ export class LoginFormComponent {
         if (userRole === 'Admin') {
           this.router.navigate(['/home']);
         }
-        if (userRole === 'Admin-Admin') {
-          this.router.navigate(['/companies']);
+        if (userRole === 'Root') {
+          this.router.navigate(['/home']);
+        }
+        if (userRole === 'Supervisor') {
+          this.router.navigate(['/home']);
+        }
+        if (userRole === 'Mecanico') {
+          this.router.navigate(['/home']);
         }
       },
       error: (error) => {

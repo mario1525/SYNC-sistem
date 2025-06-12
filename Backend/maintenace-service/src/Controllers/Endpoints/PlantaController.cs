@@ -18,7 +18,7 @@ namespace Controllers.Endpoint
 
         // GET: api/Planta
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<List<Planta>>> Get([FromQuery] Planta planta)
         {
             var result = await _plantaLogical.GetPlantas(planta);
@@ -30,7 +30,7 @@ namespace Controllers.Endpoint
 
         // POST api/Planta
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Post([FromBody] Planta planta)
         {
             if (planta == null)
@@ -42,7 +42,7 @@ namespace Controllers.Endpoint
 
         // PUT api/Planta/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Put(string id, [FromBody] Planta planta)
         {
             if (string.IsNullOrEmpty(id))
@@ -55,7 +55,7 @@ namespace Controllers.Endpoint
 
         // DELETE api/Planta/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -67,7 +67,7 @@ namespace Controllers.Endpoint
 
         // PATCH api/Planta/5/estado
         [HttpPatch("{id}/estado")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> PatchEstado(string id, [FromBody] bool estado)
         {
             if (string.IsNullOrEmpty(id))

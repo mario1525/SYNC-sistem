@@ -20,25 +20,17 @@ namespace Controllers.Endpoint
             _UserLogical = Userslogical;
         }
 
-        // GET api/Users/5
-        [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,Admin-Compania")]
-        public async Task<List<Users>> Get(string id)
+        // GET api/Users
+        [HttpGet]
+        [Authorize(Roles = "Admin,Root")]
+        public async Task<List<Users>> Get([FromQuery] Users user )
         {
-            return await _UserLogical.GetUser(id);
-        }
-
-        // GET api/Users/Comp/5
-        [HttpGet("Comp/{id}")]
-        [Authorize(Roles = "Admin,Admin-Compania")]
-        public async Task<List<Users>> Gets(string id)
-        {
-            return await _UserLogical.GetUsers(id) ;
+            return await _UserLogical.GetUser(user);
         }
 
         // POST api/Users
         [HttpPost]
-        [Authorize(Roles = "Admin,Admin-Compania")]
+        [Authorize(Roles = "Admin,Root")]
         public Mensaje Post([FromBody] Users value)
         {
             return _UserLogical.CreateUsers(value);
@@ -46,7 +38,7 @@ namespace Controllers.Endpoint
 
         // PUT api/Users/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Admin-Compania")]
+        [Authorize(Roles = "Admin,Root")]
         public  Mensaje Put(string id, [FromBody] Users value)
         {
             value.Id = id;
@@ -55,7 +47,7 @@ namespace Controllers.Endpoint
 
         // DELETE api/Users/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Admin-Compania")]
+        [Authorize(Roles = "Admin,Root")]
         public Mensaje Delete(string id)
         {
             return _UserLogical.DeleteUsers(id);

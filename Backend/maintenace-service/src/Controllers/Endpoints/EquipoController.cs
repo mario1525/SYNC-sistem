@@ -19,7 +19,7 @@ namespace Controllers.Endpoints
 
         // GET: api/Equipo
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<List<Equipo>>> Get([FromQuery] string? Id, string? Nombre, string? IdComp, string? Marca, string? NSerie)
         {
             var result = await _equipoLogical.GetEquipos(Id, Nombre, IdComp, Marca, NSerie, true);
@@ -31,7 +31,7 @@ namespace Controllers.Endpoints
 
         // POST api/Equipo
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Post([FromBody] EquipoC equipo)
         {
             if (equipo == null)
@@ -43,7 +43,7 @@ namespace Controllers.Endpoints
 
         // PUT api/Equipo/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Put(string id, [FromBody] EquipoC equipo)
         {
             if (string.IsNullOrEmpty(id))
@@ -56,7 +56,7 @@ namespace Controllers.Endpoints
 
         // DELETE api/Equipo/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -68,7 +68,7 @@ namespace Controllers.Endpoints
 
         // PATCH api/Equipo/5/estado
         [HttpPatch("{id}/estado")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Root,Admin")]
         public async Task<ActionResult<Mensaje>> PatchEstado(string id, [FromBody] int estado)
         {
             if (string.IsNullOrEmpty(id))

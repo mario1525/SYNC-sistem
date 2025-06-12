@@ -19,9 +19,7 @@ export class GuiaService {
 
   getGuias(idPlant: string): Observable<Guia[]> {
     const token = this.authService.getToken();
-    const params = new HttpParams()
-      .set('IdPlanta', idPlant)
-      .set('Estado', true);
+    const params = new HttpParams().set('IdComp', idPlant).set('Estado', true);
     return this.http.get<Guia[]>(this.apiUrl, {
       headers: {
         Authorization: `Bearer ${token}`,
