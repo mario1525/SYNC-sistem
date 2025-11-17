@@ -69,7 +69,7 @@ namespace Controllers.Endpoints
         // PATCH api/Equipo/5/estado
         [HttpPatch("{id}/estado")]
         [Authorize(Roles = "Root,Admin")]
-        public async Task<ActionResult<Mensaje>> PatchEstado(string id, [FromBody] int estado)
+        public async Task<ActionResult<Mensaje>> PatchEstado(string id, [FromBody] bool estado)
         {
             if (string.IsNullOrEmpty(id))
                 return BadRequest("El ID no puede estar vacío.");

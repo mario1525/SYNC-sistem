@@ -5,288 +5,681 @@
 -- Description: Creation of the DB DB_SYNC
 -- ===================================================================================
 
-PRINT 'Creating the DB'
-IF NOT EXISTS(SELECT NAME FROM SYSDATABASES WHERE NAME = 'DB_SYNC')
-BEGIN
-    CREATE DATABASE DB_SYNC
-END
-GO  
 
-USE DB_SYNC
+------------------------------------------------------------
+--   CREACIÓN DE BASE DE DATOS
+------------------------------------------------------------
+PRINT 'Creating the DB'
+IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = 'DB_SYNC')
+BEGIN
+    CREATE DATABASE DB_SYNC;
+END
 GO
 
--- Table Comp
-PRINT 'Creating the table Comp'
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Comp')
+USE DB_SYNC;
+GO
+
+
+------------------------------------------------------------
+--   TABLA: Comp
+------------------------------------------------------------
+PRINT 'Creating table Comp'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Comp' AND type = 'U')
 BEGIN
     CREATE TABLE dbo.Comp(
-        Id            VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',            /* Internal record ID */
-        Nombre        VARCHAR(255) NOT NULL DEFAULT '',                       /* Company name */
-        City          VARCHAR(255) NOT NULL DEFAULT '',                       /* City where the main office is located */
-        NIT           VARCHAR(255) NOT NULL DEFAULT '',                       /* Company registration number */
-        Direccion     VARCHAR(255) NOT NULL DEFAULT '',                       /* Company address */ 
-        Sector        VARCHAR(255) NOT NULL DEFAULT '',                       /* Sector in which the company operates */
-        Estado        BIT NOT NULL DEFAULT 1,                                 /* Status */
-        Deleted       BIT NOT NULL DEFAULT 0,                                 /* Deleted */
-        LogDate       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP                 /* Log date */
-    ) 
+        Id            VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        Nombre        VARCHAR(255) NOT NULL DEFAULT '',
+        Ciudad        VARCHAR(255) NOT NULL DEFAULT '',
+        NIT           VARCHAR(255) NOT NULL DEFAULT '',
+        Direccion     VARCHAR(255) NOT NULL DEFAULT '',
+        Sector        VARCHAR(255) NOT NULL DEFAULT '',
+        Estado        BIT NOT NULL DEFAULT 1,
+        Eliminado     BIT NOT NULL DEFAULT 0,
+        Fecha_log     SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 END
 GO
 
--- Tabla Cuad_
-PRINT 'creacion de la tabla Cuad'
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Cuad')
-BEGIN
-    CREATE TABLE dbo.Cuad(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre de la cuadrilla*/
-        IdComp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
-        Estado		    BIT NOT NULL DEFAULT 1,                       /*Estado*/
-		Eliminado	    BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-    ALTER TABLE dbo.Cuad ADD CONSTRAINT
-		FKCuad_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
-END
-GO
-
--- Tabla Esp_
-PRINT 'creacion de la tabla Esp'
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Esp')
+------------------------------------------------------------
+--   TABLA: Esp (Especialidad)
+------------------------------------------------------------
+PRINT 'Creating table Esp'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Esp' AND type = 'U')
 BEGIN
     CREATE TABLE dbo.Esp(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre de la cuadrilla*/
-        IdComp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
-        Estado		    BIT NOT NULL DEFAULT 1,                       /*Estado*/
-		Eliminado	    BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-    ALTER TABLE dbo.Esp ADD CONSTRAINT
-		FKEsp_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
+        Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        Nombre      VARCHAR(255) NOT NULL DEFAULT '',
+        Descripcion VARCHAR(MAX) NOT NULL,
+        Estado      BIT NOT NULL DEFAULT 1,
+        Eliminado   BIT NOT NULL DEFAULT 0,
+        Fecha_log   SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 END
 GO
 
-
--- Tabla User_
-PRINT 'creacion de la tabla User_'
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'User')
+------------------------------------------------------------
+--   TABLA: CompEsp  (Relación Compañía – Especialidad)
+------------------------------------------------------------
+PRINT 'Creating table CompEsp'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'CompEsp' AND type = 'U')
 BEGIN
-    CREATE TABLE dbo.User(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre del usuario*/
-        Apellido        VARCHAR(255) NOT NULL DEFAULT '',             /*Apellido del usuario*/
-        Identificacion  BIGINT        NOT NULL DEFAULT 0,             /*numero de indentificacion del usuario*/
-        Correo          VARCHAR(255) NOT NULL DEFAULT '',             /*Apellido del usuario*/
-        IdComp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
-        IdCuad  	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Cuadrilla*/
-        IdEsp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Especialidad*/
-        Cargo           VARCHAR(60) NOT NULL DEFAULT '',              /*Cargo interno en la compania*/
-        Rol             VARCHAR(60) NOT NULL DEFAULT 'Usuario',       /*Rol del usuario*/
-        Estado		    BIT NOT NULL DEFAULT 1,                       /*Estado del Usuario*/
-		Eliminado	    BIT NOT NULL DEFAULT 0,                       /*Eliminado usuario*/
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-    ALTER TABLE dbo.User ADD CONSTRAINT
-		FKUser_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
-    ALTER TABLE dbo.User ADD CONSTRAINT
-		FKUser_Cuad FOREIGN KEY (IdCuad) REFERENCES dbo.Cuad(Id)
+    CREATE TABLE dbo.CompEsp (
+        Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        IdComp      VARCHAR(36) NOT NULL,
+        IdEsp       VARCHAR(36) NOT NULL,
+        Estado      BIT NOT NULL DEFAULT 1,
+        Eliminado   BIT NOT NULL DEFAULT 0,
+        Fecha_log   SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+
+        CONSTRAINT FK_CompEsp_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id) ON DELETE CASCADE,
+        CONSTRAINT FK_CompEsp_Esp  FOREIGN KEY (IdEsp)  REFERENCES dbo.Esp(Id)  ON DELETE CASCADE
+    );
 END
 GO
 
--- User_Cred
-PRINT 'creacion de la tabla User_Cred '
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'User_Cred')
+------------------------------------------------------------
+--   TABLA: Cuad (Cuadrilla)
+------------------------------------------------------------
+PRINT 'Creating table Cuad'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Cuad' AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.Cuad(
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        Nombre          VARCHAR(255) NOT NULL DEFAULT '',
+        IdComp          VARCHAR(36) NOT NULL DEFAULT '',
+        Estado          BIT NOT NULL DEFAULT 1,
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+END
+GO
+
+-- agregar FK Cuad -> Comp
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Cuad' AND type = 'U')
+AND NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Cuad') AND name = 'FKCuad_Comp')
+BEGIN
+    ALTER TABLE dbo.Cuad 
+        ADD CONSTRAINT FKCuad_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: Users
+------------------------------------------------------------
+PRINT 'Creating table Users'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Users' AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.Users(
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        Nombre          VARCHAR(255) NOT NULL DEFAULT '',
+        Apellido        VARCHAR(255) NOT NULL DEFAULT '',
+        Identificacion  BIGINT        NOT NULL DEFAULT 0,
+        Correo          VARCHAR(255) NOT NULL DEFAULT '',
+        IdComp          VARCHAR(36) NOT NULL DEFAULT '',
+        IdCuad          VARCHAR(36) NOT NULL DEFAULT '',
+        IdEsp           VARCHAR(36) NOT NULL DEFAULT '',
+        Cargo           VARCHAR(60) NOT NULL DEFAULT '',
+        Rol             VARCHAR(60) NOT NULL DEFAULT 'Usuario',
+        Estado          BIT NOT NULL DEFAULT 1,
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+END
+GO
+
+-- agregar FKs Users -> Comp, Cuad, Esp
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Users' AND type = 'U')
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Users') AND name = 'FKUsers_Comp')
+        ALTER TABLE dbo.Users ADD CONSTRAINT FKUsers_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id);
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Users') AND name = 'FKUsers_Cuad')
+        ALTER TABLE dbo.Users ADD CONSTRAINT FKUsers_Cuad FOREIGN KEY (IdCuad) REFERENCES dbo.Cuad(Id);
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Users') AND name = 'FKUsers_Esp')
+        ALTER TABLE dbo.Users ADD CONSTRAINT FKUsers_Esp FOREIGN KEY (IdEsp) REFERENCES dbo.Esp(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: User_Cred
+------------------------------------------------------------
+PRINT 'Creating table User_Cred'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'User_Cred' AND type = 'U')
 BEGIN
     CREATE TABLE dbo.User_Cred(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        Usuario         VARCHAR(255) NOT NULL DEFAULT '',            /*Nombre de Usuario para logearse*/ 
-        Contrasenia     VARCHAR(255) NOT NULL DEFAULT '',           /*Contraseña*/
-        IdUser         VARCHAR(36) NOT NULL DEFAULT '',           /*FK de la Tabla usuario*/
-        Estado			BIT NOT NULL DEFAULT 1,                   /*Estado del Usuario*/
-		Eliminado		BIT NOT NULL DEFAULT 0,                  /*Eliminado usuario*/        
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP /*log fecha*/
-    ) ON [PRIMARY]
-        ALTER TABLE dbo.User_Cred ADD CONSTRAINT
-		FKUser_Cred FOREIGN KEY (IdUser) REFERENCES dbo.User(Id)
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        Usuario         VARCHAR(255) NOT NULL DEFAULT '',
+        Contrasenia     VARCHAR(255) NOT NULL DEFAULT '',
+        IdUser          VARCHAR(36) NOT NULL DEFAULT '',
+        Estado          BIT NOT NULL DEFAULT 1,
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 END
 GO
 
--- Guia
-PRINT 'creacion de la tabla Guia_ '
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Guia')
+-- agregar FK User_Cred -> Users
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'User_Cred' AND type = 'U')
+AND NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.User_Cred') AND name = 'FKUser_Cred_User')
 BEGIN
-    CREATE TABLE dbo.Guia(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre de la guia*/
-        Descripcion     VARCHAR(max) NOT NULL DEFAULT '',             /*Descripcion de la guia*/
-        Proceso         VARCHAR(max) NOT NULL DEFAULT '',             /*Proceso de la guia*/
-        Inspeccion      VARCHAR(max) NOT NULL DEFAULT '',             /*Inspeccion de la guia*/
-        Herramientas    VARCHAR(max) NOT NULL DEFAULT '',             /*Herramientas de la guia*/
-        IdComp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
-        IdEsp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Especialidad*/
-        SeguridadInd    VARCHAR(max) NOT NULL DEFAULT '',             /*Seguridad industrial de la guia*/
-        SeguridadAmb    VARCHAR(max) NOT NULL DEFAULT '',             /*Seguridad ambiental de la guia*/
-        Intervalo       INT NOT NULL DEFAULT 0,                       /*Intervalo de la guia*/ 
-        Importante      VARCHAR(max) NOT NULL DEFAULT '',             /*Informacion importante de la guia*/ 
-        Insumos         VARCHAR(max) NOT NULL DEFAULT '',             /*Insumos de la guia*/
-        Personal        INT NOT NULL DEFAULT 0,                       /*N personas necesarias para ejecutar la guia*/
-        Duracion        INT NOT NULL DEFAULT 0,                       /*Duracion de la guia en horas*/ 
-        Logistica       VARCHAR(max) NOT NULL DEFAULT '',             /*Logistica de la guia*/
-        Situacion       VARCHAR(255) NOT NULL DEFAULT '',             /*Situacion*/  
-        Notas           VARCHAR(max) NOT NULL DEFAULT '',             /*Notas de la guia*/
-        CreatedBy       VARCHAR(36) NOT NULL DEFAULT '',              /*Usuario que creo la guia*/
-        UpdatedBy       VARCHAR(36) NOT NULL DEFAULT '',              /*Usuario que actualizo la guia*/ 
-        FechaUpdate     SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,      /*Fecha de actualizacion de la guia*/        Estado			BIT NOT NULL DEFAULT 1,                       /*Estado*/
-		Eliminado		BIT NOT NULL DEFAULT 0,                       /*Eliminado*/        
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-        ALTER TABLE dbo.Guia ADD CONSTRAINT
-		FKGuia_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
+    ALTER TABLE dbo.User_Cred
+        ADD CONSTRAINT FKUser_Cred_User FOREIGN KEY (IdUser) REFERENCES dbo.Users(Id);
 END
 GO
 
--- Procedimiento
-PRINT 'creacion de la tabla Proced '
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Proced')
+
+------------------------------------------------------------
+--   TABLA: Turno
+------------------------------------------------------------
+PRINT 'Creating table Turno'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Turno' AND type = 'U')
 BEGIN
-    CREATE TABLE dbo.Proced(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        IdGuia          VARCHAR(36) NOT NULL DEFAULT '',             /*FK de la tabla Guia*/
-        Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre del procedimiento*/
-        Descripcion     VARCHAR(max) NOT NULL DEFAULT '',             /*Descripcion del procedimiento*/
-        Estado          BIT NOT NULL DEFAULT 1,                       /*Estado*/
-        Eliminado		BIT NOT NULL DEFAULT 0,                       /*Eliminado*/        
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-        ALTER TABLE dbo.Proced ADD CONSTRAINT
-        FKProced_Guia FOREIGN KEY (IdGuia) REFERENCES dbo.Guia(Id)
+    CREATE TABLE dbo.Turno(
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        Nombre          VARCHAR(255) NOT NULL DEFAULT '',
+        IdComp          VARCHAR(36) NOT NULL DEFAULT '',
+        HoraInicio      TIME NOT NULL DEFAULT '00:00:00',
+        HoraFin         TIME NOT NULL DEFAULT '00:00:00',
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 END
+GO
 
--- Validacion
-PRINT 'creacion de la tabla Valid '    
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Valid')
+-- FK Turno -> Comp
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Turno' AND type = 'U')
+AND NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Turno') AND name = 'FKTurno_Comp')
 BEGIN
-    CREATE TABLE dbo.Valid(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        IdProced        VARCHAR(36) NOT NULL DEFAULT '',             /*FK de la tabla Procedimiento*/
-        Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre de la validacion*/
-        Descripcion     VARCHAR(max) NOT NULL DEFAULT '',             /*Descripcion de la validacion*/
-        Estado          BIT NOT NULL DEFAULT 1,                       /*Estado*/
-        Eliminado		BIT NOT NULL DEFAULT 0,                       /*Eliminado*/        
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-        ALTER TABLE dbo.Valid ADD CONSTRAINT
-        FKValid_Proced FOREIGN KEY (IdProced) REFERENCES dbo.Proced(Id)
+    ALTER TABLE dbo.Turno
+        ADD CONSTRAINT FKTurno_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id);
 END
+GO
 
 
--- Equipo
-PRINT 'creacion de la tabla Equipo '   
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Equipo')
+------------------------------------------------------------
+--   TABLA: Horario
+------------------------------------------------------------
+PRINT 'Creating table Horario'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Horario' AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.Horario(
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        IdTurno         VARCHAR(36) NOT NULL DEFAULT '',
+        IdCuad          VARCHAR(36) NOT NULL DEFAULT '',
+        DiaSemana       INT NOT NULL DEFAULT 0,
+        EsFestivo       BIT NOT NULL DEFAULT 0,
+        Estado          BIT NOT NULL DEFAULT 1,
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+END
+GO
+
+-- FKs Horario -> Turno, Cuad
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Horario' AND type = 'U')
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Horario') AND name = 'FKHorario_Turno')
+        ALTER TABLE dbo.Horario ADD CONSTRAINT FKHorario_Turno FOREIGN KEY (IdTurno) REFERENCES dbo.Turno(Id);
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Horario') AND name = 'FKHorario_Cuad')
+        ALTER TABLE dbo.Horario ADD CONSTRAINT FKHorario_Cuad FOREIGN KEY (IdCuad) REFERENCES dbo.Cuad(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: Planta
+------------------------------------------------------------
+PRINT 'Creating table Planta'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Planta' AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.Planta (
+        Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        Nombre      VARCHAR(255) NOT NULL,
+        Region      VARCHAR(255) NOT NULL,
+        IdComp      VARCHAR(36) NOT NULL DEFAULT '',
+        Estado      BIT NOT NULL DEFAULT 1,
+        Fecha_log   SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+END
+GO
+
+-- FK Planta -> Comp
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Planta' AND type = 'U')
+AND NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Planta') AND name = 'FKPlanta_Comp')
+BEGIN
+    ALTER TABLE dbo.Planta 
+        ADD CONSTRAINT FKPlanta_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: TipoArea (ID consecutivo)
+------------------------------------------------------------
+PRINT 'Creating table TipoArea'
+IF NOT EXISTS(
+    SELECT name 
+    FROM sys.objects 
+    WHERE name = 'TipoArea' 
+      AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.TipoArea (
+        Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        Nombre      VARCHAR(255) NOT NULL,
+        Descripcion VARCHAR(255) NULL,
+        Estado      BIT NOT NULL DEFAULT 1,
+        Fecha_log   SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: Area
+--   Nota: Mantuvimos Area.TipoArea como VARCHAR(36) (sin FK a TipoArea) por petición.
+------------------------------------------------------------
+PRINT 'Creating table Area'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Area' AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.Area (
+        Id          VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        IdPlanta    VARCHAR(36) NOT NULL DEFAULT '',
+        Nombre      VARCHAR(255) NOT NULL,
+        TipoArea    VARCHAR(36) NOT NULL DEFAULT '',  -- conserva VARCHAR(36) por tu pedido
+        Estado      BIT NOT NULL DEFAULT 1,
+        Fecha_log   SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+END
+GO
+
+-- FK Area -> Planta (ON DELETE CASCADE)
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Area' AND type = 'U')
+AND NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Area') AND name = 'FKArea_Planta')
+BEGIN
+    ALTER TABLE dbo.Area
+        ADD CONSTRAINT FKArea_Planta FOREIGN KEY (IdPlanta) REFERENCES dbo.Planta(Id) ON DELETE CASCADE;
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: SeccionArea
+------------------------------------------------------------
+PRINT 'Creating table SeccionArea'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'SeccionArea' AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.SeccionArea (
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        IdArea          VARCHAR(36) NOT NULL DEFAULT '',
+        Nombre          VARCHAR(255) NOT NULL,
+        Estado          BIT NOT NULL DEFAULT 1,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+END
+GO
+
+-- FK SeccionArea -> Area
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'SeccionArea' AND type = 'U')
+AND NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.SeccionArea') AND name = 'FKSeccion_Area')
+BEGIN
+    ALTER TABLE dbo.SeccionArea
+        ADD CONSTRAINT FKSeccion_Area FOREIGN KEY (IdArea) REFERENCES dbo.Area(Id) ON DELETE CASCADE;
+END
+GO
+
+-- FK Area -> TipoArea
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Area' AND type = 'U')
+AND EXISTS(SELECT 1 FROM sys.objects WHERE name = 'TipoArea' AND type = 'U')
+AND NOT EXISTS(
+    SELECT 1 
+    FROM sys.foreign_keys 
+    WHERE name = 'FKArea_TipoArea'
+)
+BEGIN
+    ALTER TABLE dbo.Area
+        ADD CONSTRAINT FKArea_TipoArea 
+        FOREIGN KEY (TipoArea) 
+        REFERENCES dbo.TipoArea(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: Equipo
+------------------------------------------------------------
+PRINT 'Creating table Equipo'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Equipo' AND type = 'U')
 BEGIN
     CREATE TABLE dbo.Equipo(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre del equipo*/
-        Descripcion     VARCHAR(max) NOT NULL DEFAULT '',             /*Descripcion del equipo*/
-        IdComp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
-        Modelo          VARCHAR(255) NOT NULL DEFAULT '',             /*Modelo del equipo*/
-        NSerie          VARCHAR(255) NOT NULL DEFAULT '',             /*Numero de serie del equipo*/
-        Ubicacion       VARCHAR(255) NOT NULL DEFAULT '',             /*Ubicacion del equipo*/  
-        Fabricante      VARCHAR(255) NOT NULL DEFAULT '',             /*Fabricante del equipo*/
-        Marca           VARCHAR(255) NOT NULL DEFAULT '',             /*Marca del equipo*/
-        Funcion         VARCHAR(max) NOT NULL DEFAULT '',             /*Funcion del equipo*/
-        peso            INT NOT NULL DEFAULT 0,                       /*Peso del equipo*/
-        Cilindraje      INT NOT NULL DEFAULT 0,                       /*Cilindraje del equipo*/
-        Potencia        INT NOT NULL DEFAULT 0,                       /*Potencia del equipo*/
-        Ancho           INT NOT NULL DEFAULT 0,                       /*Ancho del equipo*/
-        Alto            INT NOT NULL DEFAULT 0,                       /*Alto del equipo*/
-        Largo           INT NOT NULL DEFAULT 0,                       /*Largo del equipo*/
-        Capacidad       INT NOT NULL DEFAULT 0,                       /*Capacidad del equipo*/
-        AnioFabricacion INT NOT NULL DEFAULT 0,                       /*Año de fabricacion del equipo*/
-        Caracteristicas VARCHAR(max) NOT NULL DEFAULT '',             /*Caracteristicas del equipo*/
-        Seccion         VARCHAR(255) NOT NULL DEFAULT '',             /*Seccion del equipo*/
-        Estado			BIT NOT NULL DEFAULT 1,                       /*Estado*/
-        Eliminado		BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-        ALTER TABLE dbo.Equipo ADD CONSTRAINT
-        FKEquipo_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        Nombre          VARCHAR(255) NOT NULL DEFAULT '',
+        Descripcion     VARCHAR(MAX) NOT NULL,
+        IdComp          VARCHAR(36) NOT NULL DEFAULT '',
+        Modelo          VARCHAR(255) NOT NULL DEFAULT '',
+        NSerie          VARCHAR(255) NOT NULL DEFAULT '',
+        Fabricante      VARCHAR(255) NOT NULL DEFAULT '',
+        Marca           VARCHAR(255) NOT NULL DEFAULT '',
+        Funcion         VARCHAR(MAX) NOT NULL,
+        Peso            INT NOT NULL DEFAULT 0,
+        Cilindraje      INT NOT NULL DEFAULT 0,
+        Potencia        INT NOT NULL DEFAULT 0,
+        Ancho           INT NOT NULL DEFAULT 0,
+        Alto            INT NOT NULL DEFAULT 0,
+        Largo           INT NOT NULL DEFAULT 0,
+        Capacidad       INT NOT NULL DEFAULT 0,
+        AnioFabricacion INT NOT NULL DEFAULT 0,
+        Caracteristicas VARCHAR(MAX) NOT NULL,
+        Seccion         VARCHAR(255) NOT NULL DEFAULT '',
+        Estado          BIT NOT NULL DEFAULT 1,
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 END
+GO
 
--- Guia_Equipo
-PRINT 'creacion de la tabla Guia_Equipo'
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Guia_Equipo')
+-- FK Equipo -> Comp
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Equipo' AND type = 'U')
+AND NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Equipo') AND name = 'FKEquipo_Comp')
 BEGIN
-    CREATE TABLE dbo.Guia_Equipo_(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        IdGuia          VARCHAR(36) NOT NULL DEFAULT '',             /*FK de la tabla Guia*/
-        IdEquipo        VARCHAR(36) NOT NULL DEFAULT '',             /*FK de la tabla Equipo*/
-        Estado			BIT NOT NULL DEFAULT 1,                       /*Estado*/
-        Eliminado		BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-        ALTER TABLE dbo.Guia_Equipo ADD CONSTRAINT
-        FKGuia_Equipo_Guia FOREIGN KEY (IdGuia) REFERENCES dbo.Guia_(Id)
-        ALTER TABLE dbo.Guia_Equipo ADD CONSTRAINT
-        FKGuia_Equipo_Equipo FOREIGN KEY (IdEquipo) REFERENCES dbo.Equipo(Id)
+    ALTER TABLE dbo.Equipo 
+        ADD CONSTRAINT FKEquipo_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id);
 END
+GO
 
--- TipoActividad
-PRINT 'creacion de la tabla TipoActividad_ '
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'TipoActividad')
+
+------------------------------------------------------------
+--   TABLA: UbicacionEquipo (solo referencia a SeccionArea para inferir Area/Planta)
+------------------------------------------------------------
+PRINT 'Creating table UbicacionEquipo'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'UbicacionEquipo' AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.UbicacionEquipo (
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        IdEquipo        VARCHAR(36) NOT NULL DEFAULT '',
+        TipoUbicacion   VARCHAR(50) NOT NULL CHECK (TipoUbicacion IN ('Almacen', 'Produccion')),
+        IdSeccionArea   VARCHAR(36) NULL,
+        Estado          BIT NOT NULL DEFAULT 1,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+END
+GO
+
+-- FKs UbicacionEquipo
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'UbicacionEquipo' AND type = 'U')
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.UbicacionEquipo') AND name = 'FKUbicacionEquipo_Equipo')
+        ALTER TABLE dbo.UbicacionEquipo ADD CONSTRAINT FKUbicacionEquipo_Equipo FOREIGN KEY (IdEquipo) REFERENCES dbo.Equipo(Id) ON DELETE CASCADE;
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.UbicacionEquipo') AND name = 'FKUbicacionEquipo_SeccionArea')
+        ALTER TABLE dbo.UbicacionEquipo ADD CONSTRAINT FKUbicacionEquipo_SeccionArea FOREIGN KEY (IdSeccionArea) REFERENCES dbo.SeccionArea(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: Guia
+------------------------------------------------------------
+PRINT 'Creating table Guia'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Guia' AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.Guia(
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        Nombre          VARCHAR(255) NOT NULL DEFAULT '',
+        Descripcion     VARCHAR(MAX) NOT NULL,
+        Proceso         VARCHAR(MAX) NOT NULL,
+        Inspeccion      VARCHAR(MAX) NOT NULL,
+        Herramientas    VARCHAR(MAX) NOT NULL,
+        IdComp          VARCHAR(36) NOT NULL DEFAULT '',
+        IdEsp           VARCHAR(36) NOT NULL DEFAULT '',
+        SeguridadInd    VARCHAR(MAX) NOT NULL,
+        SeguridadAmb    VARCHAR(MAX) NOT NULL,
+        Intervalo       INT NOT NULL DEFAULT 0,
+        Importante      VARCHAR(MAX) NOT NULL,
+        Insumos         VARCHAR(MAX) NOT NULL,
+        Personal        INT NOT NULL DEFAULT 0,
+        Duracion        INT NOT NULL DEFAULT 0,
+        Logistica       VARCHAR(MAX) NOT NULL,
+        Situacion       VARCHAR(255) NOT NULL DEFAULT '',
+        Notas           VARCHAR(MAX) NOT NULL,
+        CreatedBy       VARCHAR(36) NOT NULL DEFAULT '',
+        UpdatedBy       VARCHAR(36) NOT NULL DEFAULT '',
+        FechaUpdate     SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+        Estado          BIT NOT NULL DEFAULT 1,
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+END
+GO
+
+-- FKs Guia -> Comp, Esp
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Guia' AND type = 'U')
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Guia') AND name = 'FKGuia_Comp')
+        ALTER TABLE dbo.Guia ADD CONSTRAINT FKGuia_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id);
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Guia') AND name = 'FKGuia_Esp')
+        ALTER TABLE dbo.Guia ADD CONSTRAINT FKGuia_Esp FOREIGN KEY (IdEsp) REFERENCES dbo.Esp(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: Proced
+------------------------------------------------------------
+PRINT 'Creating table Proced'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Proced' AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.Proced(
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        IdGuia          VARCHAR(36) NOT NULL DEFAULT '',
+        Nombre          VARCHAR(255) NOT NULL DEFAULT '',
+        Descripcion     VARCHAR(MAX) NOT NULL,
+        Estado          BIT NOT NULL DEFAULT 1,
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+END
+GO
+
+-- FK Proced -> Guia
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Proced' AND type = 'U')
+AND NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Proced') AND name = 'FKProced_Guia')
+BEGIN
+    ALTER TABLE dbo.Proced 
+        ADD CONSTRAINT FKProced_Guia FOREIGN KEY (IdGuia) REFERENCES dbo.Guia(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: Valid
+------------------------------------------------------------
+PRINT 'Creating table Valid'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Valid' AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.Valid(
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        IdProced        VARCHAR(36) NOT NULL DEFAULT '',
+        Nombre          VARCHAR(255) NOT NULL DEFAULT '',
+        Descripcion     VARCHAR(MAX) NOT NULL,
+        Estado          BIT NOT NULL DEFAULT 1,
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+END
+GO
+
+-- FK Valid -> Proced
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Valid' AND type = 'U')
+AND NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Valid') AND name = 'FKValid_Proced')
+BEGIN
+    ALTER TABLE dbo.Valid 
+        ADD CONSTRAINT FKValid_Proced FOREIGN KEY (IdProced) REFERENCES dbo.Proced(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: Guia_Equipo
+------------------------------------------------------------
+PRINT 'Creating table Guia_Equipo'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Guia_Equipo' AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.Guia_Equipo(
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        IdGuia          VARCHAR(36) NOT NULL DEFAULT '',
+        IdEquipo        VARCHAR(36) NOT NULL DEFAULT '',
+        Estado          BIT NOT NULL DEFAULT 1,
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+END
+GO
+
+-- FKs Guia_Equipo -> Guia, Equipo
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Guia_Equipo' AND type = 'U')
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Guia_Equipo') AND name = 'FKGuia_Equipo_Guia')
+        ALTER TABLE dbo.Guia_Equipo ADD CONSTRAINT FKGuia_Equipo_Guia FOREIGN KEY (IdGuia) REFERENCES dbo.Guia(Id);
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Guia_Equipo') AND name = 'FKGuia_Equipo_Equipo')
+        ALTER TABLE dbo.Guia_Equipo ADD CONSTRAINT FKGuia_Equipo_Equipo FOREIGN KEY (IdEquipo) REFERENCES dbo.Equipo(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: TipoActividad
+------------------------------------------------------------
+PRINT 'Creating table TipoActividad'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'TipoActividad' AND type = 'U')
 BEGIN
     CREATE TABLE dbo.TipoActividad(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        IdComp   	    VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Compania*/
-        Nombre          VARCHAR(255) NOT NULL DEFAULT '',             /*Nombre del tipo de actividad*/
-        Descripcion     VARCHAR(max) NOT NULL DEFAULT '',             /*Descripcion del tipo de actividad*/
-        Estado			BIT NOT NULL DEFAULT 1,                       /*Estado*/
-        Eliminado		BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-        ALTER TABLE dbo.TipoActividad ADD CONSTRAINT
-        FKTipoActividad_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id)
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        IdComp          VARCHAR(36) NOT NULL DEFAULT '',
+        Nombre          VARCHAR(255) NOT NULL DEFAULT '',
+        Descripcion     VARCHAR(MAX) NOT NULL,
+        Estado          BIT NOT NULL DEFAULT 1,
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 END
+GO
 
--- Actividad    
-PRINT 'creacion de la tabla Actividad '
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Actividad')
+-- FK TipoActividad -> Comp
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'TipoActividad' AND type = 'U')
+AND NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.TipoActividad') AND name = 'FKTipoActividad_Comp')
+BEGIN
+    ALTER TABLE dbo.TipoActividad 
+        ADD CONSTRAINT FKTipoActividad_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: Actividad
+------------------------------------------------------------
+PRINT 'Creating table Actividad'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Actividad' AND type = 'U')
 BEGIN
     CREATE TABLE dbo.Actividad(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        Descripcion     VARCHAR(max) NOT NULL DEFAULT '',             /*Descripcion de la actividad*/
-        IdTipoActividad VARCHAR(36) NOT NULL DEFAULT '',             /*FK de la tabla TipoActividad*/ 
-        Ubicacion       VARCHAR(255) NOT NULL DEFAULT '',             /*Ubicacion de la actividad*/
-        FechaEjecucion  SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,      /*Fecha de Ejecucion de la actividad*/
-        IdCuad          VARCHAR(36) NOT NULL DEFAULT '',              /*FK de la tabla Cuadrilla*/
-        Detalle         VARCHAR(max) NOT NULL DEFAULT '',             /*Detalle de la actividad*/
-        Intervalo       INT NOT NULL DEFAULT 0,                       /*Intervalo de la actividad*/
-        Estado			BIT NOT NULL DEFAULT 1,                       /*Estado*/
-        Eliminado		BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-        ALTER TABLE dbo.Actividad ADD CONSTRAINT
-        FKActividad_TipoActividad FOREIGN KEY (IdTipoActividad) REFERENCES dbo.TipoActividad(Id)
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        IdComp          VARCHAR(36) NOT NULL DEFAULT '',
+        Descripcion     VARCHAR(MAX) NOT NULL,
+        IdTipoActividad VARCHAR(36) NOT NULL DEFAULT '',
+        Ubicacion       VARCHAR(255) NOT NULL DEFAULT '',
+        FechaEjecucion  SMALLDATETIME DEFAULT CURRENT_TIMESTAMP,
+        IdCuad          VARCHAR(36) NOT NULL DEFAULT '',
+        Detalle         VARCHAR(MAX) NOT NULL,
+        Intervalo       INT NOT NULL DEFAULT 0,
+        Estado          BIT NOT NULL DEFAULT 1,
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 END
+GO
 
--- Actividad_Equipo
-PRINT 'creacion de la tabla Actividad_Equipo '
-IF NOT EXISTS(SELECT NAME FROM sysobjects WHERE NAME = 'Actividad_Equipo')
+-- FKs Actividad -> TipoActividad, Comp
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Actividad' AND type = 'U')
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Actividad') AND name = 'FKActividad_TipoActividad')
+        ALTER TABLE dbo.Actividad ADD CONSTRAINT FKActividad_TipoActividad FOREIGN KEY (IdTipoActividad) REFERENCES dbo.TipoActividad(Id);
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Actividad') AND name = 'FKActividad_Comp')
+        ALTER TABLE dbo.Actividad ADD CONSTRAINT FKActividad_Comp FOREIGN KEY (IdComp) REFERENCES dbo.Comp(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   TABLA: Actividad_Equipo
+------------------------------------------------------------
+PRINT 'Creating table Actividad_Equipo'
+IF NOT EXISTS(SELECT name FROM sys.objects WHERE name = 'Actividad_Equipo' AND type = 'U')
 BEGIN
     CREATE TABLE dbo.Actividad_Equipo(
-        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',  /*id interno del registro*/
-        IdActividad     VARCHAR(36) NOT NULL DEFAULT '',             /*FK de la tabla Actividad*/
-        IdEquipo        VARCHAR(36) NOT NULL DEFAULT '',             /*FK de la tabla Equipo*/
-        IdGuia          VARCHAR(36) NOT NULL DEFAULT '',             /*FK de la tabla Guia*/
-        Estado			BIT NOT NULL DEFAULT 1,                       /*Estado*/
-        Eliminado		BIT NOT NULL DEFAULT 0,                       /*Eliminado*/
-        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP       /*log fecha*/
-    ) ON [PRIMARY]
-        ALTER TABLE dbo.Actividad_Equipo ADD CONSTRAINT
-        FKActividad_Equipo_Actividad FOREIGN KEY (IdActividad) REFERENCES dbo.Actividad(Id)
-        ALTER TABLE dbo.Actividad_Equipo ADD CONSTRAINT
-        FKActividad_Equipo_Equipo FOREIGN KEY (IdEquipo) REFERENCES dbo.Equipo(Id)
-        ALTER TABLE dbo.Actividad_Equipo ADD CONSTRAINT
-        FKActividad_Equipo_Guia FOREIGN KEY (IdGuia) REFERENCES dbo.Guia(Id)
+        Id              VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT '',
+        IdActividad     VARCHAR(36) NOT NULL DEFAULT '',
+        IdEquipo        VARCHAR(36) NOT NULL DEFAULT '',
+        IdGuia          VARCHAR(36) NOT NULL DEFAULT '',
+        Estado          BIT NOT NULL DEFAULT 1,
+        Eliminado       BIT NOT NULL DEFAULT 0,
+        Fecha_log       SMALLDATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 END
+GO
+
+-- FKs Actividad_Equipo -> Actividad, Equipo, Guia
+IF EXISTS(SELECT 1 FROM sys.objects WHERE name = 'Actividad_Equipo' AND type = 'U')
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Actividad_Equipo') AND name = 'FKActividad_Equipo_Actividad')
+        ALTER TABLE dbo.Actividad_Equipo ADD CONSTRAINT FKActividad_Equipo_Actividad FOREIGN KEY (IdActividad) REFERENCES dbo.Actividad(Id);
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Actividad_Equipo') AND name = 'FKActividad_Equipo_Equipo')
+        ALTER TABLE dbo.Actividad_Equipo ADD CONSTRAINT FKActividad_Equipo_Equipo FOREIGN KEY (IdEquipo) REFERENCES dbo.Equipo(Id);
+    IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID('dbo.Actividad_Equipo') AND name = 'FKActividad_Equipo_Guia')
+        ALTER TABLE dbo.Actividad_Equipo ADD CONSTRAINT FKActividad_Equipo_Guia FOREIGN KEY (IdGuia) REFERENCES dbo.Guia(Id);
+END
+GO
+
+
+------------------------------------------------------------
+--   ÍNDICES RECOMENDADOS (FKs)
+--   (Mejoran rendimiento en joins/integridad)
+------------------------------------------------------------
+PRINT 'Creating recommended indexes (if not exist)'
+
+IF OBJECT_ID('dbo.Cuad','U') IS NOT NULL
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM sys.indexes WHERE name = 'IX_Cuad_IdComp' AND object_id = OBJECT_ID('dbo.Cuad'))
+        CREATE INDEX IX_Cuad_IdComp ON dbo.Cuad(IdComp);
+END
+
+IF OBJECT_ID('dbo.Users','U') IS NOT NULL
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM sys.indexes WHERE name = 'IX_Users_IdComp' AND object_id = OBJECT_ID('dbo.Users'))
+        CREATE INDEX IX_Users_IdComp ON dbo.Users(IdComp);
+    IF NOT EXISTS(SELECT 1 FROM sys.indexes WHERE name = 'IX_Users_IdCuad' AND object_id = OBJECT_ID('dbo.Users'))
+        CREATE INDEX IX_Users_IdCuad ON dbo.Users(IdCuad);
+END
+
+IF OBJECT_ID('dbo.User_Cred','U') IS NOT NULL
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM sys.indexes WHERE name = 'IX_User_Cred_IdUser' AND object_id = OBJECT_ID('dbo.User_Cred'))
+        CREATE INDEX IX_User_Cred_IdUser ON dbo.User_Cred(IdUser);
+END
+
+IF OBJECT_ID('dbo.Turno','U') IS NOT NULL
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM sys.indexes WHERE name = 'IX_Turno_IdComp' AND object_id = OBJECT_ID('dbo.Turno'))
+        CREATE INDEX IX_Turno_IdComp ON dbo.Turno(IdComp);
+END
+
+IF OBJECT_ID('dbo.Horario','U') IS NOT NULL
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM sys.indexes WHERE name = 'IX_Horario_IdTurno' AND object_id = OBJECT_ID('dbo.Horario'))
+        CREATE INDEX IX_Horario_IdTurno ON dbo.Horario(IdTurno);
+    IF NOT EXISTS(SELECT 1 FROM sys.indexes WHERE name = 'IX_Horario_IdCuad' AND object_id = OBJECT_ID('dbo.Horario'))
+        CREATE INDEX IX_Horario_IdCuad ON dbo.Horario(IdCuad);
+END
+
+GO
+
+PRINT 'Script execution completed.'
+

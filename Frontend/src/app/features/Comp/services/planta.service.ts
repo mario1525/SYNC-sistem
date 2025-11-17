@@ -4,73 +4,40 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '@env/environment';
 import { Planta, PlantaResponse } from '../../../../Types/planta';
-import { AuthService } from '../../auth/Services/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PlantaService {
-  private apiUrl = `${environment.apiUrl}/Planta`;
+  private apiUrl = `${environment.apiUrl}/planta`;
 
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   getPlantas(idComp: string): Observable<Planta[]> {
-    const token = this.authService.getToken();
     const params = new HttpParams().set('IdComp', idComp).set('Estado', true);
-    return this.http.get<Planta[]>(this.apiUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      params: params,
-    });
+    return this.http.get<Planta[]>(this.apiUrl, { params });
   }
 
   getPlanta(id: string): Observable<Planta> {
-    const token = this.authService.getToken();
-    const params = new HttpParams().set('id', id).set('Estado', true);
+    const params = new HttpParams().set('Id', id).set('Estado', true);
     return this.http
-      .get<Planta[]>(`${this.apiUrl}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: params,
-      })
-      .pipe(
-        map((response) => response[0]), // nos quedamos solo con el primer objeto del array
-      );
+      .get<Planta[]>(`${this.apiUrl}`, { params })
+      .pipe(map((response) => response[0]));
   }
 
   createPlanta(Planta: Partial<Planta>): Observable<PlantaResponse> {
-    const token = this.authService.getToken();
     console.log(Planta);
-    return this.http.post<PlantaResponse>(this.apiUrl, Planta, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return this.http.post<PlantaResponse>(this.apiUrl, Planta);
   }
 
   updatePlanta(
     id: string,
     Planta: Partial<Planta>,
   ): Observable<PlantaResponse> {
-    const token = this.authService.getToken();
-    return this.http.put<PlantaResponse>(`${this.apiUrl}/${id}`, Planta, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return this.http.put<PlantaResponse>(`${this.apiUrl}/${id}`, Planta);
   }
 
   deletePlanta(id: string): Observable<PlantaResponse> {
-    const token = this.authService.getToken();
-    return this.http.delete<PlantaResponse>(`${this.apiUrl}/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return this.http.delete<PlantaResponse>(`${this.apiUrl}/${id}`);
   }
 }

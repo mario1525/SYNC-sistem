@@ -21,11 +21,7 @@ namespace Services
                     ubicacionEquipo.Id,
                     ubicacionEquipo.IdEquipo,
                     ubicacionEquipo.TipoUbicacion,
-                    ubicacionEquipo.IdPlanta,
-                    ubicacionEquipo.IdAreaFuncional,
-                    ubicacionEquipo.IdBodega,
                     ubicacionEquipo.IdSeccionBodega,
-                    ubicacionEquipo.IdPatio,
                     ubicacionEquipo.Estado
                 );
 

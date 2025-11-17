@@ -15,7 +15,7 @@ namespace Data
         }
 
         // Método para obtener los registros de la tabla Planta
-        public async Task<List<Planta>> GetPlanta(string id, string nombre, string region, bool? estado)
+        public async Task<List<Planta>> GetPlanta(string id, string nombre, string region, string? idComp, bool? estado)
         {
             try
             {
@@ -26,6 +26,7 @@ namespace Data
                     new SqlParameter("@Id", id ?? (object)DBNull.Value),
                     new SqlParameter("@Nombre", nombre ?? (object)DBNull.Value),
                     new SqlParameter("@Region", region ?? (object)DBNull.Value),
+                    new SqlParameter("@IdComp", idComp ?? (object)DBNull.Value),
                     new SqlParameter("@Estado", estado.HasValue ? (object)estado.Value : DBNull.Value)
                 };
 

@@ -19,13 +19,14 @@ namespace Data
         {
             try
             {
-                const string procedureName = "dbo.db_Sp_AreaFuncional_Get";
+                const string procedureName = "dbo.db_Sp_Area_Get";
 
                 var parameters = new[]
                 {
                     new SqlParameter("@Id", id ?? (object)DBNull.Value),
                     new SqlParameter("@IdPlanta", idPlanta ?? (object)DBNull.Value),
                     new SqlParameter("@Nombre", nombre ?? (object)DBNull.Value),
+                    new SqlParameter("@TipoArea", DBNull.Value),
                     new SqlParameter("@Estado", estado.HasValue ? (object)estado.Value : DBNull.Value)
                 };
 
@@ -50,13 +51,14 @@ namespace Data
                     throw new ArgumentNullException(nameof(areaFuncional));
                 }
 
-                const string procedureName = "dbo.db_Sp_AreaFuncional_Set";
+                const string procedureName = "dbo.db_Sp_Area_Set";
 
                 var parameters = new[]
                 {
                     new SqlParameter("@Id", areaFuncional.Id),
                     new SqlParameter("@IdPlanta", areaFuncional.IdPlanta),
                     new SqlParameter("@Nombre", areaFuncional.Nombre),
+                    new SqlParameter("@TipoArea", DBNull.Value),
                     new SqlParameter("@Estado", areaFuncional.Estado),
                     new SqlParameter("@Operacion", operacion)
                 };
@@ -75,7 +77,7 @@ namespace Data
         {
             try
             {
-                const string procedureName = "dbo.db_Sp_AreaFuncional_Del";
+                const string procedureName = "dbo.db_Sp_Area_Del";
 
                 var parameters = new[]
                 {
@@ -96,7 +98,7 @@ namespace Data
         {
             try
             {
-                const string procedureName = "dbo.db_Sp_AreaFuncional_Active";
+                const string procedureName = "dbo.db_Sp_Area_Active";
 
                 var parameters = new[]
                 {

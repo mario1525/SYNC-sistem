@@ -19,12 +19,12 @@ namespace Data
         {
             try
             {
-                const string procedureName = "dbo.db_Sp_SeccionBodega_Get";
+                const string procedureName = "dbo.db_Sp_SeccionArea_Get";
 
                 var parameters = new[]
                 {
                     new SqlParameter("@Id", id ?? (object)DBNull.Value),
-                    new SqlParameter("@IdBodega", idBodega ?? (object)DBNull.Value),
+                    new SqlParameter("@IdArea", idBodega ?? (object)DBNull.Value),
                     new SqlParameter("@Nombre", nombre ?? (object)DBNull.Value),
                     new SqlParameter("@Estado", estado.HasValue ? (object)estado.Value : DBNull.Value)
                 };
@@ -50,12 +50,12 @@ namespace Data
                     throw new ArgumentNullException(nameof(seccionBodega));
                 }
 
-                const string procedureName = "dbo.db_Sp_SeccionBodega_Set";
+                const string procedureName = "dbo.db_Sp_SeccionArea_Set";
 
                 var parameters = new[]
                 {
                     new SqlParameter("@Id", seccionBodega.Id),
-                    new SqlParameter("@IdBodega", seccionBodega.IdBodega),
+                    new SqlParameter("@IdArea", seccionBodega.IdBodega),
                     new SqlParameter("@Nombre", seccionBodega.Nombre),
                     new SqlParameter("@Estado", seccionBodega.Estado),
                     new SqlParameter("@Operacion", operacion)
@@ -75,7 +75,7 @@ namespace Data
         {
             try
             {
-                const string procedureName = "dbo.db_Sp_SeccionBodega_Del";
+                const string procedureName = "dbo.db_Sp_SeccionArea_Del";
 
                 var parameters = new[]
                 {
@@ -96,7 +96,7 @@ namespace Data
         {
             try
             {
-                const string procedureName = "dbo.db_Sp_SeccionBodega_Active";
+                const string procedureName = "dbo.db_Sp_SeccionArea_Active";
 
                 var parameters = new[]
                 {
@@ -123,7 +123,7 @@ namespace Data
                 var seccionBodega = new SeccionBodega
                 {
                     Id = row["Id"].ToString(),
-                    IdBodega = row["IdBodega"].ToString(),
+                    IdBodega = row["IdArea"].ToString(),
                     Nombre = row["Nombre"].ToString(),
                     Estado = Convert.ToBoolean(row["Estado"]),
                     Fecha_log = Convert.ToDateTime(row["Fecha_log"])

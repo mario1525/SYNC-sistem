@@ -17,7 +17,7 @@ namespace Services
         {
             try
             {
-                var plantas = await _daoPlanta.GetPlanta(planta.Id, planta.Nombre, planta.Region, planta.Estado);
+                var plantas = await _daoPlanta.GetPlanta(planta.Id, planta.Nombre, planta.Region, planta.IdComp, planta.Estado);
 
                 if (plantas == null || !plantas.Any())
                 {

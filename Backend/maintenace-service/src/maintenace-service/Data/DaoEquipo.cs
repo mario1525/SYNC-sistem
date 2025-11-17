@@ -15,7 +15,7 @@ namespace Data
         }
 
         // Método para obtener los registros de la tabla Equipo
-        public async Task<List<Equipo>> GetEquipo(string id, string nombre, string idComp, string marca, string nSerie, bool estado)
+        public async Task<List<Equipo>> GetEquipo(string id, string nombre, string idComp, string marca, string nSerie, bool? estado)
         {
             try
             {
@@ -25,12 +25,12 @@ namespace Data
                 // Definición de parámetros
                 var parameters = new[]
                 {
-                    new SqlParameter("@Id", id),
-                    new SqlParameter("@Nombre", nombre),
-                    new SqlParameter("@IdComp", idComp),
-                    new SqlParameter("@Marca", marca),
-                    new SqlParameter("@NSerie", nSerie),
-                    new SqlParameter("@Estado", estado)
+                    new SqlParameter("@Id", id ?? (object)DBNull.Value),
+                    new SqlParameter("@Nombre", nombre ?? (object)DBNull.Value),
+                    new SqlParameter("@IdComp", idComp ?? (object)DBNull.Value),
+                    new SqlParameter("@Marca", marca ?? (object)DBNull.Value),
+                    new SqlParameter("@NSerie", nSerie ?? (object)DBNull.Value),
+                    new SqlParameter("@Estado", estado.HasValue ? (object)estado.Value : DBNull.Value)
                 };
 
                 // Ejecutar el procedimiento almacenado
@@ -57,30 +57,9 @@ namespace Data
                     throw new ArgumentNullException(nameof(equipo));
                 }
 
-                DataTable camposTable = new DataTable();
-                camposTable.Columns.Add("Id", typeof(string));
-                camposTable.Columns.Add("TipoUbicacion", typeof(string));
-                camposTable.Columns.Add("IdPlanta", typeof(string));
-                camposTable.Columns.Add("IdAreaFuncional", typeof(string));
-                camposTable.Columns.Add("IdBodega", typeof(string));
-                camposTable.Columns.Add("IdSeccionBodega", typeof(string));
-                camposTable.Columns.Add("IdPatio", typeof(string));
-
-                // Recorrer el array de campos y agregar cada campo como una fila al DataTable
-                if (operacion == "I")
-                {                    
-                    
-                   camposTable.Rows.Add(
-                       equipo.Ubicacion.Id, 
-                       equipo.Ubicacion.TipoUbicacion,
-                       equipo.Ubicacion.IdPlanta, 
-                       equipo.Ubicacion.IdAreaFuncional, 
-                       equipo.Ubicacion.IdBodega, 
-                       equipo.Ubicacion.IdSeccionBodega, 
-                       equipo.Ubicacion.IdPatio
-                       );                  
-
-                }
+                // Ubicación de equipo se maneja ahora con dbo.db_Sp_UbicacionEquipo_*.
+                // No se envía TVP ni parámetros de ubicación en db_Sp_Equipo_Set.
+                // Persistir UbicacionEquipo con DaoUbicacionEquipo después de crear/actualizar Equipo si aplica.
 
                 string procedureName = "dbo.db_Sp_Equipo_Set";
                 SqlParameter[] parameters =
@@ -91,11 +70,6 @@ namespace Data
                     new SqlParameter("@IdComp", equipo.IdComp),
                     new SqlParameter("@Modelo", equipo.Modelo),
                     new SqlParameter("@NSerie", equipo.NSerie),
-                    new SqlParameter{
-                        ParameterName = "@Ubicacion",
-                        SqlDbType = SqlDbType.Structured,
-                        Value = camposTable // Pasar el DataTable como parámetro
-                    },
                     new SqlParameter("@Fabricante", equipo.Fabricante),
                     new SqlParameter("@Marca", equipo.Marca),
                     new SqlParameter("@Funcion", equipo.Funcion),
@@ -143,7 +117,7 @@ namespace Data
         }
 
         // Método para activar o desactivar los registros de la tabla Equipo
-        public async void ActiveEquipo(string equipoId, int estado)
+        public async void ActiveEquipo(string equipoId, bool estado)
         {
             try
             {

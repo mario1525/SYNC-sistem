@@ -16,8 +16,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:4200")
               .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials(); // necesario si usas cookies o auth
+              .AllowAnyHeader();
+        // Nota: No se usan credenciales (cookies). Autenticación por Authorization Bearer.
     });
 });
 

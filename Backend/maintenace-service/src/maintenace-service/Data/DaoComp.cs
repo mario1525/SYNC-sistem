@@ -136,9 +136,9 @@ namespace Data
                     NIT = row["NIT"].ToString(),
                     Direccion = row["Direccion"].ToString(),
                     Sector = row["Sector"].ToString(),
-                    Ciudad = row["City"].ToString(),
-                    Estado = Convert.ToBoolean(row["Estado"]), 
-                    Fecha_log = Convert.ToDateTime(row["LogDate"])
+                    Ciudad = row["Ciudad"].ToString(),
+                    Estado = Convert.ToBoolean(row["Estado"]),
+                    Fecha_log = Convert.ToDateTime(row["Fecha_log"])
                 };
                 CompsList.Add(comp);
             }

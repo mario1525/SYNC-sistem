@@ -26,6 +26,7 @@ builder.Services.AddSingleton<SqlClient>(new SqlClient(connectionString));
 //DATA
 builder.Services.AddSingleton<DaoUsers>();
 builder.Services.AddSingleton<DaoUsuarioCredential>();
+builder.Services.AddSingleton<Dao_Cuad>();
 
 // ENTITY
 builder.Services.AddSingleton<Users>(); 
@@ -42,6 +43,7 @@ builder.Services.AddSingleton<Turno>();
 // SERVICES
 builder.Services.AddSingleton<UsersLogical>();
 builder.Services.AddSingleton<UsersCredentialLogical>();
+builder.Services.AddSingleton<CuadLogical>();
 
 //Middlewares
 builder.Services.AddSingleton<HashPassword>();
@@ -94,7 +96,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 
-app.UseHttpsRedirection();
+ // app.UseHttpsRedirection(); // deshabilitado en contenedor para evitar 307 detrás del gateway
 app.UseStaticFiles();
 
 app.UseRouting();               // 1️⃣ Primero enrutar
@@ -108,9 +110,7 @@ app.MapRazorPages();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+app.MapControllers();
+app.MapGet("/health", () => Results.Ok("OK")).AllowAnonymous();
 
 app.Run();

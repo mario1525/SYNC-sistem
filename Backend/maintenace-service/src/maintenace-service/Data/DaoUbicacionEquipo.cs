@@ -15,7 +15,7 @@ namespace Data
         }
 
         // Método para obtener los registros de la tabla UbicacionEquipo
-        public async Task<List<UbicacionEquipo>> GetUbicacionEquipo(string id, string idEquipo, string tipoUbicacion, string idPlanta, string idAreaFuncional, string idBodega, string idSeccionBodega, string idPatio, bool? estado)
+        public async Task<List<UbicacionEquipo>> GetUbicacionEquipo(string id, string idEquipo, string tipoUbicacion, string idSeccionBodega, bool? estado)
         {
             try
             {
@@ -26,11 +26,7 @@ namespace Data
                     new SqlParameter("@Id", id ?? (object)DBNull.Value),
                     new SqlParameter("@IdEquipo", idEquipo ?? (object)DBNull.Value),
                     new SqlParameter("@TipoUbicacion", tipoUbicacion ?? (object)DBNull.Value),
-                    new SqlParameter("@IdPlanta", idPlanta ?? (object)DBNull.Value),
-                    new SqlParameter("@IdAreaFuncional", idAreaFuncional ?? (object)DBNull.Value),
-                    new SqlParameter("@IdBodega", idBodega ?? (object)DBNull.Value),
-                    new SqlParameter("@IdSeccionBodega", idSeccionBodega ?? (object)DBNull.Value),
-                    new SqlParameter("@IdPatio", idPatio ?? (object)DBNull.Value),
+                    new SqlParameter("@IdSeccionArea", idSeccionBodega ?? (object)DBNull.Value),
                     new SqlParameter("@Estado", estado.HasValue ? (object)estado.Value : DBNull.Value)
                 };
 
@@ -62,11 +58,7 @@ namespace Data
                     new SqlParameter("@Id", ubicacionEquipo.Id),
                     new SqlParameter("@IdEquipo", ubicacionEquipo.IdEquipo),
                     new SqlParameter("@TipoUbicacion", ubicacionEquipo.TipoUbicacion),
-                    new SqlParameter("@IdPlanta", ubicacionEquipo.IdPlanta),
-                    new SqlParameter("@IdAreaFuncional", ubicacionEquipo.IdAreaFuncional ?? (object)DBNull.Value),
-                    new SqlParameter("@IdBodega", ubicacionEquipo.IdBodega ?? (object)DBNull.Value),
-                    new SqlParameter("@IdSeccionBodega", ubicacionEquipo.IdSeccionBodega ?? (object)DBNull.Value),
-                    new SqlParameter("@IdPatio", ubicacionEquipo.IdPatio ?? (object)DBNull.Value),
+                    new SqlParameter("@IdSeccionArea", ubicacionEquipo.IdSeccionBodega ?? (object)DBNull.Value),
                     new SqlParameter("@Estado", ubicacionEquipo.Estado),
                     new SqlParameter("@Operacion", operacion)
                 };
@@ -135,11 +127,7 @@ namespace Data
                     Id = row["Id"].ToString(),
                     IdEquipo = row["IdEquipo"].ToString(),
                     TipoUbicacion = row["TipoUbicacion"].ToString(),
-                    IdPlanta = row["IdPlanta"].ToString(),
-                    IdAreaFuncional = row["IdAreaFuncional"]?.ToString(),
-                    IdBodega = row["IdBodega"]?.ToString(),
-                    IdSeccionBodega = row["IdSeccionBodega"]?.ToString(),
-                    IdPatio = row["IdPatio"]?.ToString(),
+                    IdSeccionBodega = row.Table.Columns.Contains("IdSeccionArea") ? row["IdSeccionArea"]?.ToString() : null,
                     Estado = Convert.ToBoolean(row["Estado"]),
                     Fecha_log = Convert.ToDateTime(row["Fecha_log"])
                 };

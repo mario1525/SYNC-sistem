@@ -143,9 +143,7 @@ app.UseSwaggerUI();
 
 
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+app.MapControllers();
+app.MapGet("/health", () => Results.Ok("OK")).AllowAnonymous();
 
 app.Run();

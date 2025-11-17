@@ -4,68 +4,36 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '@env/environment';
 import { Guia, GuiaResponse } from '../../../../Types/guia';
-import { AuthService } from '../../auth/Services/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GuiaService {
-  private apiUrl = `${environment.apiUrl}/Guia`;
+  private apiUrl = `${environment.apiUrl}/guia`;
 
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   getGuias(idPlant: string): Observable<Guia[]> {
-    const token = this.authService.getToken();
     const params = new HttpParams().set('IdComp', idPlant).set('Estado', true);
-    return this.http.get<Guia[]>(this.apiUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      params: params,
-    });
+    return this.http.get<Guia[]>(this.apiUrl, { params });
   }
 
   getGuia(id: string): Observable<Guia> {
-    const token = this.authService.getToken();
     return this.http
-      .get<Guia[]>(`${this.apiUrl}/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .pipe(
-        map((response) => response[0]), // nos quedamos solo con el primer objeto del array
-      );
+      .get<Guia[]>(`${this.apiUrl}/${id}`)
+      .pipe(map((response) => response[0]));
   }
 
   createGuia(Guia: Partial<Guia>): Observable<GuiaResponse> {
-    const token = this.authService.getToken();
     console.log(Guia);
-    return this.http.post<GuiaResponse>(this.apiUrl, Guia, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return this.http.post<GuiaResponse>(this.apiUrl, Guia);
   }
 
   updateGuia(id: string, Guia: Partial<Guia>): Observable<GuiaResponse> {
-    const token = this.authService.getToken();
-    return this.http.put<GuiaResponse>(`${this.apiUrl}/${id}`, Guia, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return this.http.put<GuiaResponse>(`${this.apiUrl}/${id}`, Guia);
   }
 
   deleteGuia(id: string): Observable<GuiaResponse> {
-    const token = this.authService.getToken();
-    return this.http.delete<GuiaResponse>(`${this.apiUrl}/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return this.http.delete<GuiaResponse>(`${this.apiUrl}/${id}`);
   }
 }

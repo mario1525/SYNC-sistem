@@ -94,7 +94,7 @@ namespace Services
         }
 
         // Activar/desactivar equipo
-        public async Task<Mensaje> ActiveEquipo(string id, int estado)
+        public async Task<Mensaje> ActiveEquipo(string id, bool estado)
         {
             try
             {
