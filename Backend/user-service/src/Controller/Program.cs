@@ -1,116 +1,43 @@
-﻿using Data;
-using Entity;
-using System.Text;
+using System.Threading.RateLimiting;
+using Data;
 using Services;
-using Data.SQLClient;
-using Middlewares;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using Sync.Common.Web;
 
-
-// Configuraci?n de las variables de entorno 
-IConfiguration configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .Build();
-
-string connectionString = configuration["Configuracion:connectionString"];
-string SecretKey = configuration["Jwt:SecretKey"];
-string Issuer = configuration["Jwt:Issuer"];
-string Audience = configuration["Jwt:Audience"];
+// =====================================================================================
+// SYNC user-service: autenticación (JWT), usuarios, credenciales, cuadrillas, turnos y horarios.
+// Configuración por appsettings + variables de entorno:
+//   ConnectionStrings__DefaultConnection, Jwt__SecretKey, Jwt__Issuer, Jwt__Audience, Cors__Origins
+// =====================================================================================
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddSyncDefaults();
 
-builder.Services.AddSingleton<SqlClient>(new SqlClient(connectionString));
+// Límite de intentos de login por IP (mitiga fuerza bruta)
+builder.Services.AddRateLimiter(o =>
+{
+    o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    o.AddPolicy("login", ctx => RateLimitPartition.GetFixedWindowLimiter(
+        ctx.Request.Headers["X-Forwarded-For"].FirstOrDefault() ?? ctx.Connection.RemoteIpAddress?.ToString() ?? "anon",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1) }));
+});
 
-//DATA
+// Data
 builder.Services.AddSingleton<DaoUsers>();
 builder.Services.AddSingleton<DaoUsuarioCredential>();
+builder.Services.AddSingleton<DaoCuad>();
+builder.Services.AddSingleton<DaoTurno>();
+builder.Services.AddSingleton<DaoHorario>();
 
-// ENTITY
-builder.Services.AddSingleton<Users>(); 
-builder.Services.AddSingleton<Mensaje>();
-builder.Services.AddSingleton<UsuarioCredential>();
-builder.Services.AddSingleton<Login>();
-builder.Services.AddSingleton<Token>();
-builder.Services.AddSingleton<Cuad>();
-builder.Services.AddSingleton<Horario>();
-builder.Services.AddSingleton<Turno>();
-
-
-
-// SERVICES
+// Lógica
+builder.Services.AddSingleton<TokenService>();
 builder.Services.AddSingleton<UsersLogical>();
-builder.Services.AddSingleton<UsersCredentialLogical>();
-
-//Middlewares
-builder.Services.AddSingleton<HashPassword>();
-builder.Services.AddSingleton<GenerateToken>(new GenerateToken(SecretKey, Issuer, Audience));
-
-// Add services to the container.
-builder.Services.AddRazorPages();
-builder.Services.AddControllers();
-
-// Add Cors
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("MyPolicy", policy =>
-    {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials(); // Agrega esto si usas cookies o tokens por cabecera
-    });
-});
-
-// swagger 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Configuraci?n de la autenticaci?n JWT
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = Issuer,
-            ValidAudience = Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey))
-        };
-    });
+builder.Services.AddSingleton<CredentialLogical>();
+builder.Services.AddSingleton<CuadLogical>();
+builder.Services.AddSingleton<TurnoLogical>();
+builder.Services.AddSingleton<HorarioLogical>();
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();               // 1️⃣ Primero enrutar
-app.UseCors("MyPolicy");        // 2️⃣ Luego aplicar CORS justo después de routing
-app.UseAuthentication();        // 3️⃣ Luego autenticación
-app.UseAuthorization();         // 4️⃣ Finalmente autorización
-
-app.MapRazorPages();
-
-// swagger 
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
-
+app.UseSyncDefaults(a => a.UseRateLimiter());
 app.Run();
+
+public partial class Program;

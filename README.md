@@ -1,201 +1,89 @@
-# SYNC - Sistema de Información y Coordinación de Mantenimiento
+# SYNC — Sistema de Información y Coordinación de Mantenimiento
 
-# SYNC (Sistema de Información y Coordinación de Mantenimiento)
+Gestión de mantenimiento de equipos industriales: compañías y plantas, ubicación de activos,
+guías de mantenimiento con checklist, actividades programadas, cuadrillas, turnos y usuarios.
+Multi-compañía: cada usuario solo ve los datos de su compañía (salvo el rol Root).
 
-Sistema integral para la gestión de actividades de mantenimiento de equipos industriales, diseñado como una Progressive Web Application (PWA) con capacidades offline y multiplataforma.
+> Estado y hoja de ruta: [docs/PLAN_TRABAJO.md](docs/PLAN_TRABAJO.md)
 
-## Características Principales
+## Arquitectura
 
-- Operación offline y sincronización automática
-- Compatible con dispositivos móviles (tablets y teléfonos)
-- Lectura de códigos de barra
-- Gestión de actividades preventivas y correctivas
-- Sistema de notificaciones en tiempo real
-- Reportes detallados y seguimiento de mantenimiento
+```
+Navegador ──► frontend (Angular 22, nginx :4200)
+                 │  /apigateway/*
+                 ▼
+             api-gateway (Ocelot, valida JWT, :7021)
+              ├──► user-service         (auth, usuarios, credenciales, cuadrillas, turnos, horarios)
+              └──► maintenance-service  (compañías, plantas, áreas, equipos, guías, actividades)
+                         │
+                         ▼
+                   SQL Server (DB_SYNC)  ◄── db-migrator (DbUp: migraciones + procedimientos)
+```
 
-## Tecnologías Utilizadas
+| Carpeta | Contenido |
+|---|---|
+| `Backend/shared/Sync.Common` | Base común: acceso SQL, CRUD genérico con aislamiento por compañía, errores ProblemDetails, JWT, health checks |
+| `Backend/user-service` · `Backend/maintenance-service` | Microservicios .NET 10 (capas Entity → Data → Services → Controllers) |
+| `Backend/api-gateway` | Ocelot; rutas en `ocelot.json` |
+| `Backend/db-migrator` | Migraciones DbUp (`sql/migrations`, una vez) y procedimientos (`sql/procedures`, siempre) |
+| `Backend/tests` | Pruebas unitarias (xUnit) y smoke test end-to-end (`tests/smoke/smoke_test.py`) |
+| `Frontend` | Angular 22 standalone + signals, sin zone.js |
+| `Docker` | `docker-compose.yml` y `.env.example` |
 
-Frontend:
+## Puesta en marcha (Docker)
 
-- Angular 16+
-- Progressive Web App (PWA)
-- Angular Material
-- IndexedDB para almacenamiento offline
-- Service Workers
-
-Backend:
-
-- .NET Core 7.0+
-- Entity Framework Core
-- SQL Server
-
-Infraestructura:
-
-- Docker
-- Kubernetes (opcional)
-- API Gateway (Ocelot)
-- Servicio de Configuración (Consul)
-- Servicio de Descubrimiento (Eureka)
-
-## Requisitos
-
-- Node.js 18+
-- .NET Core SDK 7.0+
-- Docker Desktop
-- SQL Server 2019+
-
-## Instalación y Ejecución
+Requisitos: Docker Desktop.
 
 ```bash
-# Clonar el repositorio
-git clone https://github.com/mario1525/sync-maintenance.git
-
-# Navegar al directorio del proyecto
-cd sync-maintenance
-
-# Iniciar con Docker Compose
-docker-compose up -d
+cd Docker
+cp .env.example .env      # edite contraseñas y JWT_SECRET
+docker compose up -d --build
 ```
 
-## Configuración del Entorno de Desarrollo
+- Aplicación: http://localhost:4200 — usuario inicial `SEED_ROOT_USER` / `SEED_ROOT_PASSWORD` del `.env`
+- API (gateway): http://localhost:7021/apigateway/...
+- El migrador crea la base, aplica migraciones y crea el usuario Root solo si no existen credenciales.
 
-1. Frontend (Angular):
+## Desarrollo local
+
+| Herramienta | Versión |
+|---|---|
+| .NET SDK | 10.0 |
+| Node.js | ≥ 22.22 o 24.x (requisito de Angular CLI 22) |
+| Docker | para SQL Server y el stack completo |
 
 ```bash
-cd frontend
-npm install
-ng serve
+# Backend: compilar y probar
+dotnet build Backend/Sync.sln
+dotnet test Backend/Sync.sln
+
+# Migrar una base local
+dotnet run --project Backend/db-migrator -- --connection "Data Source=localhost,1433;Initial Catalog=DB_SYNC;User ID=sa;Password=...;TrustServerCertificate=True"
+
+# Frontend (con el gateway corriendo en :7021; ng serve hace proxy de /apigateway)
+cd Frontend && npm ci && npm start
+npm test && npm run lint
 ```
 
-2. Backend (.NET Core):
+Los servicios leen su configuración de `appsettings.json` y variables de entorno:
+`ConnectionStrings__DefaultConnection`, `Jwt__SecretKey` (≥ 32 caracteres), `Jwt__Issuer`, `Jwt__Audience`, `Cors__Origins`.
+Los secretos nunca van en el repositorio.
 
-```bash
-cd backend
-dotnet restore
-dotnet run
-```
+## Roles
 
-3. Docker:
+| Rol | Puede |
+|---|---|
+| Root | Todo, en todas las compañías; crear compañías y usuarios Root; catálogo global de tipos de área |
+| Admin | Gestionar su compañía: plantas, equipos, guías, usuarios, credenciales, catálogos |
+| Supervisor | Programar actividades, gestionar cuadrillas y horarios; consultar el resto |
+| Tecnico | Consultar equipos, guías y actividades; su perfil |
 
-```bash
-cd docker
-docker-compose up --build
-```
+## API
 
-## Estructura del Proyecto
-
-```
-/
-├── frontend/           # Aplicación Angular PWA
-│   ├── src/
-│   ├── angular.json
-│   ├── package.json
-│   └── ...
-├── backend/            # API .NET Core
-│   ├── user-service/
-│   │   ├── src/
-│   │   ├── Dockerfile
-│   │   ├── database/
-│   │   │   ├── migrations/
-│   │   │   │   ├── 2024_06_05_create_user_table.sql
-│   │   │   ├── seeds/
-│   │   │   │   ├── seed_user_data.sql
-│   │   │   ├── backups/
-│   │   │   │   ├── backup_2024_06_05.sql
-│   │   │   └── scripts/
-│   │   │       ├── create_tables.sql
-│   │   │       ├── create_stored_procedures.sql
-│   │   │       └── ...
-│   │   └── ...
-│   ├── maintenance-service/
-│   │   ├── src/
-│   │   ├── Dockerfile
-│   │   ├── database/
-│   │   │   ├── migrations/
-│   │   │   │   ├── 2024_06_05_create_maintenance_table.sql
-│   │   │   ├── seeds/
-│   │   │   │   ├── seed_maintenance_data.sql
-│   │   │   ├── backups/
-│   │   │   │   ├── backup_2024_06_05.sql
-│   │   │   └── scripts/
-│   │   │       ├── create_tables.sql
-│   │   │       ├── create_stored_procedures.sql
-│   │   │       └── ...
-│   │   └── ...
-│   ├── notification-service/
-│   │   ├── src/
-│   │   ├── Dockerfile
-│   │   ├── database/
-│   │   │   ├── migrations/
-│   │   │   │   ├── 2024_06_05_create_notification_table.sql
-│   │   │   ├── seeds/
-│   │   │   │   ├── seed_notification_data.sql
-│   │   │   ├── backups/
-│   │   │   │   ├── backup_2024_06_05.sql
-│   │   │   └── scripts/
-│   │   │       ├── create_tables.sql
-│   │   │       ├── create_stored_procedures.sql
-│   │   │       └── ...
-│   │   └── ...
-│   ├── api-gateway/
-│   │   ├── src/
-│   │   ├── Dockerfile
-│   │   └── ...
-│   ├── config-service/
-│   │   ├── src/
-│   │   ├── Dockerfile
-│   │   └── ...
-│   ├── discovery-service/
-│   │   ├── src/
-│   │   ├── Dockerfile
-│   │   └── ...
-│   └── docker-compose.yml
-├── database/          # Scripts SQL y migraciones generales
-│   ├── README.md
-│   └── ...
-├── docker/            # Configuraciones Docker
-│   ├── Dockerfile
-│   ├── docker-compose.yml
-│   └── ...
-├── docs/             # Documentación adicional
-│   ├── architecture.md
-│   ├── api-docs.md
-│   └── ...
-└── README.md
-```
-
-## Contribución
-
-1. Haz un Fork del proyecto
-2. Crea una nueva rama (`git checkout -b feature/nueva-caracteristica`)
-3. Realiza tus cambios y haz commit (`git commit -am 'Agrega nueva característica'`)
-4. Sube los cambios a tu Fork (`git push origin feature/nueva-caracteristica`)
-5. Crea un Pull Request
+Todos los recursos siguen el mismo contrato: `GET /` (filtros por query), `GET /{id}`, `POST`, `PUT /{id}`,
+`DELETE /{id}` (lógico) y `PATCH /{id}/estado`. Errores en formato RFC 7807 (`title`, `status`).
+OpenAPI de cada servicio en `/openapi/v1.json` (entorno Development).
 
 ## Licencia
 
-MIT License
-
-Copyright (c) 2025 SYNC
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-## Contacto
-
-Mario Beltran - [ma](mailto:mario.beltran@sync.com)
+MIT — Copyright (c) 2025 SYNC

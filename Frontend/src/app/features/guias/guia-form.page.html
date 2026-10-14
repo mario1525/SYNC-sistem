@@ -1,0 +1,187 @@
+<div class="page-header">
+  <h2>{{ esNueva() ? 'Nueva guía' : guia().nombre }}</h2>
+  <div class="acciones">
+    <a class="btn btn-secondary" routerLink="/guia">Volver</a>
+  </div>
+</div>
+
+<form #f="ngForm" (ngSubmit)="guardar()">
+  <fieldset class="sin-borde" [disabled]="!puedeEditar">
+    <div class="card">
+      <h3>Datos generales</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nombre">Nombre *</label>
+          <input id="nombre" name="nombre" [(ngModel)]="guia().nombre" required />
+        </div>
+        <div class="form-group">
+          <label for="esp">Especialidad</label>
+          <select id="esp" name="idEsp" [(ngModel)]="guia().idEsp">
+            <option [ngValue]="null">— Ninguna —</option>
+            @for (e of especialidades(); track e.id) {
+              <option [ngValue]="e.id">{{ e.nombre }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="intervalo">Frecuencia (días)</label>
+          <input id="intervalo" name="intervalo" type="number" min="0" [(ngModel)]="guia().intervalo" />
+        </div>
+        <div class="form-group">
+          <label for="duracion">Duración estimada (h)</label>
+          <input id="duracion" name="duracion" type="number" min="0" [(ngModel)]="guia().duracion" />
+        </div>
+        <div class="form-group">
+          <label for="personal">Personas requeridas</label>
+          <input id="personal" name="personal" type="number" min="0" [(ngModel)]="guia().personal" />
+        </div>
+        <div class="form-group">
+          <label for="situacion">Situación</label>
+          <input
+            id="situacion"
+            name="situacion"
+            [(ngModel)]="guia().situacion"
+            placeholder="Equipo detenido, en marcha…"
+          />
+        </div>
+        <div class="form-group ancho">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" name="descripcion" [(ngModel)]="guia().descripcion"></textarea>
+        </div>
+        <label class="check"><input type="checkbox" name="estado" [(ngModel)]="guia().estado" /> Activa</label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Preparación y seguridad</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="herramientas">Herramientas</label
+          ><textarea id="herramientas" name="herramientas" [(ngModel)]="guia().herramientas"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="insumos">Insumos y repuestos</label
+          ><textarea id="insumos" name="insumos" [(ngModel)]="guia().insumos"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="segInd">Seguridad industrial</label
+          ><textarea id="segInd" name="seguridadInd" [(ngModel)]="guia().seguridadInd"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="segAmb">Seguridad ambiental</label
+          ><textarea id="segAmb" name="seguridadAmb" [(ngModel)]="guia().seguridadAmb"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="logistica">Logística</label
+          ><textarea id="logistica" name="logistica" [(ngModel)]="guia().logistica"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="importante">Importante</label
+          ><textarea id="importante" name="importante" [(ngModel)]="guia().importante"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="proceso">Proceso general</label
+          ><textarea id="proceso" name="proceso" [(ngModel)]="guia().proceso"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="inspeccion">Inspección</label
+          ><textarea id="inspeccion" name="inspeccion" [(ngModel)]="guia().inspeccion"></textarea>
+        </div>
+        <div class="form-group ancho">
+          <label for="notas">Notas</label><textarea id="notas" name="notas" [(ngModel)]="guia().notas"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>
+        Procedimiento paso a paso
+        @if (puedeEditar) {
+          <button class="btn btn-info" type="button" (click)="agregarPaso()">
+            <span class="material-icons">add</span> Agregar paso
+          </button>
+        }
+      </h3>
+
+      @for (p of pasos; track $index; let i = $index) {
+        <div class="paso">
+          <div class="paso-cab">
+            <span class="num">{{ i + 1 }}.</span>
+            <div class="campos">
+              <input
+                [name]="'p-nombre-' + i"
+                [(ngModel)]="p.nombre"
+                placeholder="Nombre del paso *"
+                required
+                aria-label="Nombre del paso"
+              />
+              <input
+                [name]="'p-desc-' + i"
+                [(ngModel)]="p.descripcion"
+                placeholder="Descripción"
+                aria-label="Descripción del paso"
+              />
+            </div>
+            @if (puedeEditar) {
+              <button class="btn btn-icon" type="button" title="Subir" (click)="moverPaso(i, -1)" [disabled]="i === 0">
+                <span class="material-icons">arrow_upward</span>
+              </button>
+              <button
+                class="btn btn-icon"
+                type="button"
+                title="Bajar"
+                (click)="moverPaso(i, 1)"
+                [disabled]="i === pasos.length - 1"
+              >
+                <span class="material-icons">arrow_downward</span>
+              </button>
+              <button class="btn btn-icon peligro" type="button" title="Quitar paso" (click)="quitarPaso(i)">
+                <span class="material-icons">delete</span>
+              </button>
+            }
+          </div>
+
+          <div class="validaciones">
+            @for (v of p.valid; track $index; let j = $index) {
+              <div class="valid">
+                <input
+                  [name]="'v-nombre-' + i + '-' + j"
+                  [(ngModel)]="v.nombre"
+                  placeholder="Punto a verificar *"
+                  required
+                  aria-label="Punto a verificar"
+                />
+                <input
+                  [name]="'v-desc-' + i + '-' + j"
+                  [(ngModel)]="v.descripcion"
+                  placeholder="Criterio de aceptación"
+                  aria-label="Criterio de aceptación"
+                />
+                @if (puedeEditar) {
+                  <button class="btn btn-icon peligro" type="button" title="Quitar" (click)="quitarValidacion(p, j)">
+                    <span class="material-icons">close</span>
+                  </button>
+                }
+              </div>
+            }
+            @if (puedeEditar) {
+              <button class="btn btn-link" type="button" (click)="agregarValidacion(p)">
+                <span class="material-icons">playlist_add_check</span> Agregar verificación
+              </button>
+            }
+          </div>
+        </div>
+      } @empty {
+        <p class="muted">La guía aún no tiene pasos.</p>
+      }
+    </div>
+
+    @if (puedeEditar) {
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit" [disabled]="f.invalid || guardando()">
+          <span class="material-icons">save</span> Guardar guía
+        </button>
+      </div>
+    }
+  </fieldset>
+</form>

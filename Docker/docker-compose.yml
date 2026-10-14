@@ -1,59 +1,102 @@
-version: "3.8"
+# =====================================================================================
+# SYNC - entorno completo
+#   1. cp .env.example .env   (y defina contraseñas/clave JWT propias)
+#   2. docker compose up -d --build
+# Orden de arranque: sqlserver (healthy) -> db-migrator (termina OK) -> servicios -> gateway
+# =====================================================================================
+name: sync
 
-services: 
+services:
 
-  user-services:
-    image: user-services:latest
-    build:
-      context: ../Backend/user-service/src
-      dockerfile: Dockerfile
-    ports:
-      - "7020:80"
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Data Source=user-sqlserver,1433;Initial Catalog=ProductTrack;Persist Security Info=True;TrustServerCertificate=True; User ID=SA;Password=logPaSs#123$32 
-    depends_on:
-      - user-sqlserver
-    restart: always
-
-  maintenace-services:
-    image: maintenace-services:latest
-    build:
-      context: ../Backend/maintenace-service/src
-      dockerfile: Dockerfile
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SQL_SA_PASSWORD:?Defina SQL_SA_PASSWORD en .env}
+      MSSQL_PID: Developer
+      # Hora local para GETDATE()/CURRENT_TIMESTAMP (las fechas de registro se guardan sin zona)
+      TZ: ${TZ:-America/Bogota}
     ports:
-      - "7022:80"
+      - "${SQL_PORT:-1433}:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' -b -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  db-migrator:
+    build:
+      context: ../Backend
+      dockerfile: db-migrator/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Data Source=user-sqlserver,1433;Initial Catalog=ProductTrack;Persist Security Info=True;TrustServerCertificate=True; User ID=SA;Password=logPaSs#123$32 
+      DB_CONNECTION: "Data Source=sqlserver,1433;Initial Catalog=DB_SYNC;User ID=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True"
+      SEED_ROOT_USER: ${SEED_ROOT_USER:-}
+      SEED_ROOT_PASSWORD: ${SEED_ROOT_PASSWORD:-}
+      SEED_ROOT_COMP: ${SEED_ROOT_COMP:-SYNC}
     depends_on:
-      - user-sqlserver
-    restart: always    
+      sqlserver:
+        condition: service_healthy
+    restart: "no"
+
+  user-service:
+    build:
+      context: ../Backend
+      dockerfile: user-service/Dockerfile
+    environment: &app-env
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ConnectionStrings__DefaultConnection: "Data Source=sqlserver,1433;Initial Catalog=DB_SYNC;User ID=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True"
+      Jwt__SecretKey: ${JWT_SECRET:?Defina JWT_SECRET en .env}
+      Jwt__Issuer: ${JWT_ISSUER:-sync-user-service}
+      Jwt__Audience: ${JWT_AUDIENCE:-sync-app}
+      Cors__Origins: ${CORS_ORIGINS:-http://localhost:4200}
+    ports:
+      - "7020:8080"
+    depends_on:
+      db-migrator:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  maintenance-service:
+    build:
+      context: ../Backend
+      dockerfile: maintenance-service/Dockerfile
+    environment: *app-env
+    ports:
+      - "7022:8080"
+    depends_on:
+      db-migrator:
+        condition: service_completed_successfully
+    restart: unless-stopped
 
   api-gateway:
-    image: api-gateway:latest
     build:
-      context: ../Backend/api-gateway
-      dockerfile: Dockerfile
-    ports:
-      - "7021:80"
+      context: ../Backend
+      dockerfile: api-gateway/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development      
-    restart: always
-    
-  
-  user-sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: user-sqlserver
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=logPaSs#123$32
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      Jwt__SecretKey: ${JWT_SECRET}
+      Jwt__Issuer: ${JWT_ISSUER:-sync-user-service}
+      Jwt__Audience: ${JWT_AUDIENCE:-sync-app}
+      Cors__Origins: ${CORS_ORIGINS:-http://localhost:4200}
     ports:
-      - "1433:1433"
-    volumes:
-      - sql_data:/var/opt/mssql    
-    restart: always  
+      - "7021:8080"
+    depends_on:
+      - user-service
+      - maintenance-service
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../Frontend
+    ports:
+      - "${FRONTEND_PORT:-4200}:80"
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
 
 volumes:
   sql_data:
-    driver: local

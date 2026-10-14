@@ -1,0 +1,30 @@
+<header class="topbar">
+  <button class="menu-toggle" type="button" aria-label="Abrir menú" (click)="menuAbierto.set(!menuAbierto())">
+    <span class="material-icons">menu</span>
+  </button>
+  <img src="assets/Img/Recurso 2.png" alt="SYNC" class="logo" />
+  <span class="spacer"></span>
+  <div class="usuario">
+    <span class="nombre">{{ auth.nombre() }}</span>
+    <span class="rol">{{ auth.rol() }}</span>
+  </div>
+</header>
+
+<aside class="sidebar" [class.abierto]="menuAbierto()">
+  <nav>
+    @for (item of menu(); track item.route) {
+      <a [routerLink]="item.route" routerLinkActive="activo" class="menu-link" (click)="menuAbierto.set(false)">
+        <span class="material-icons">{{ item.icon }}</span>
+        {{ item.label }}
+      </a>
+    }
+  </nav>
+  <button class="logout" type="button" (click)="auth.logout()">
+    <span class="material-icons">logout</span> Cerrar sesión
+  </button>
+  <div class="footer">SYNC</div>
+</aside>
+
+<main class="contenido">
+  <router-outlet />
+</main>

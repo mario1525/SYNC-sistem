@@ -1,0 +1,67 @@
+# CI de SYNC: backend (build + pruebas), base de datos (migraciones + smoke test de la API
+# completa en Docker) y frontend (lint + pruebas + build de producción).
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Build
+        run: dotnet build Backend/Sync.sln -c Release
+      - name: Pruebas unitarias
+        run: dotnet test Backend/Sync.sln -c Release --no-build
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: Frontend/package-lock.json
+      - run: npm ci
+      - run: npx ng lint
+      - run: npx ng test --watch=false
+      - run: npx ng build --configuration production
+
+  integracion:
+    needs: backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generar .env de prueba
+        working-directory: Docker
+        run: |
+          cp .env.example .env
+          sed -i "s|^SQL_SA_PASSWORD=.*|SQL_SA_PASSWORD=Ci#$(openssl rand -hex 12)A|" .env
+          sed -i "s|^SEED_ROOT_PASSWORD=.*|SEED_ROOT_PASSWORD=Ci#Root$(openssl rand -hex 8)|" .env
+          sed -i "s|^JWT_SECRET=.*|JWT_SECRET=$(openssl rand -base64 48 | tr -d '\n')|" .env
+      - name: Levantar stack (SQL + migrador + servicios + gateway)
+        working-directory: Docker
+        run: docker compose up -d --build sqlserver db-migrator user-service maintenance-service api-gateway
+      - name: Esperar al gateway
+        run: |
+          for i in $(seq 1 40); do curl -sf http://localhost:7021/health && exit 0; sleep 3; done
+          docker compose -f Docker/docker-compose.yml logs; exit 1
+      - name: Smoke test de la API
+        run: |
+          ROOT_PASS=$(grep ^SEED_ROOT_PASSWORD Docker/.env | cut -d= -f2-)
+          sleep 5
+          python3 Backend/tests/smoke/smoke_test.py --user http://localhost:7021/apigateway \
+            --maint http://localhost:7021/apigateway --root-user root --root-pass "$ROOT_PASS"
+      - name: Logs si falla
+        if: failure()
+        run: docker compose -f Docker/docker-compose.yml logs --tail=200

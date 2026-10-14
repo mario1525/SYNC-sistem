@@ -1,0 +1,143 @@
+<div class="page-header">
+  <h2>{{ esNuevo() ? 'Nuevo usuario' : usuario().nombre + ' ' + (usuario().apellido ?? '') }}</h2>
+  <div class="acciones">
+    @if (!esNuevo() && !esUnoMismo()) {
+      <button class="btn btn-danger" type="button" (click)="eliminar()">
+        <span class="material-icons">delete</span> Eliminar
+      </button>
+    }
+    <a class="btn btn-secondary" routerLink="/users">Volver</a>
+  </div>
+</div>
+
+<form class="card" #f="ngForm" (ngSubmit)="guardar()">
+  <h3>Datos del usuario</h3>
+  <div class="form-grid">
+    <div class="form-group">
+      <label for="nombre">Nombre *</label>
+      <input id="nombre" name="nombre" [(ngModel)]="usuario().nombre" required />
+    </div>
+    <div class="form-group">
+      <label for="apellido">Apellido</label>
+      <input id="apellido" name="apellido" [(ngModel)]="usuario().apellido" />
+    </div>
+    <div class="form-group">
+      <label for="identificacion">Identificación *</label>
+      <input
+        id="identificacion"
+        name="identificacion"
+        type="number"
+        min="1"
+        [(ngModel)]="usuario().identificacion"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="correo">Correo</label>
+      <input id="correo" name="correo" type="email" [(ngModel)]="usuario().correo" email />
+    </div>
+    <div class="form-group">
+      <label for="cargo">Cargo</label>
+      <input id="cargo" name="cargo" [(ngModel)]="usuario().cargo" />
+    </div>
+    <div class="form-group">
+      <label for="rol">Rol *</label>
+      <select id="rol" name="rol" [(ngModel)]="usuario().rol" required [disabled]="esUnoMismo()">
+        @for (r of roles(); track r) {
+          <option [value]="r">{{ r }}</option>
+        }
+      </select>
+    </div>
+    @if (esRoot && esNuevo()) {
+      <div class="form-group">
+        <label for="comp">Compañía *</label>
+        <select
+          id="comp"
+          name="idComp"
+          [(ngModel)]="usuario().idComp"
+          (ngModelChange)="usuario().idCuad = null; cargarCuadrillas()"
+          required
+        >
+          @for (c of companias(); track c.id) {
+            <option [value]="c.id">{{ c.nombre }}</option>
+          }
+        </select>
+      </div>
+    }
+    <div class="form-group">
+      <label for="cuad">Cuadrilla</label>
+      <select id="cuad" name="idCuad" [(ngModel)]="usuario().idCuad">
+        <option [ngValue]="null">— Ninguna —</option>
+        @for (c of cuadrillas(); track c.id) {
+          <option [ngValue]="c.id">{{ c.nombre }}</option>
+        }
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="esp">Especialidad</label>
+      <select id="esp" name="idEsp" [(ngModel)]="usuario().idEsp">
+        <option [ngValue]="null">— Ninguna —</option>
+        @for (e of especialidades(); track e.id) {
+          <option [ngValue]="e.id">{{ e.nombre }}</option>
+        }
+      </select>
+    </div>
+    <label class="check"
+      ><input type="checkbox" name="estado" [(ngModel)]="usuario().estado" [disabled]="esUnoMismo()" /> Activo</label
+    >
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit" [disabled]="f.invalid || guardando()">
+      <span class="material-icons">save</span> Guardar
+    </button>
+  </div>
+</form>
+
+@if (!esNuevo()) {
+  <div class="card">
+    <h3>Acceso al sistema</h3>
+    @if (credencial(); as c) {
+      <p>
+        Usuario: <strong>{{ c.usuario }}</strong>
+        <span class="badge" [class.ok]="c.estado" [class.off]="!c.estado">{{
+          c.estado ? 'Habilitado' : 'Bloqueado'
+        }}</span>
+      </p>
+      <div class="filtros">
+        <div class="form-group">
+          <label for="clave">Nueva contraseña (mín. 8)</label>
+          <input id="clave" type="password" autocomplete="new-password" [(ngModel)]="nuevaClave" />
+        </div>
+        <button class="btn btn-warning" type="button" [disabled]="nuevaClave.length < 8" (click)="restablecerClave()">
+          <span class="material-icons">lock_reset</span> Restablecer
+        </button>
+        @if (!esUnoMismo()) {
+          <button class="btn btn-secondary" type="button" (click)="alternarAcceso()">
+            <span class="material-icons">{{ c.estado ? 'lock' : 'lock_open' }}</span>
+            {{ c.estado ? 'Bloquear acceso' : 'Habilitar acceso' }}
+          </button>
+        }
+      </div>
+    } @else {
+      <p class="muted">Este usuario aún no puede iniciar sesión. Cree sus credenciales:</p>
+      <div class="filtros">
+        <div class="form-group">
+          <label for="nuevoUsuario">Usuario</label>
+          <input id="nuevoUsuario" autocomplete="off" [(ngModel)]="nuevoUsuario" />
+        </div>
+        <div class="form-group">
+          <label for="nuevaClave">Contraseña (mín. 8)</label>
+          <input id="nuevaClave" type="password" autocomplete="new-password" [(ngModel)]="nuevaClave" />
+        </div>
+        <button
+          class="btn btn-primary"
+          type="button"
+          [disabled]="!nuevoUsuario.trim() || nuevaClave.length < 8"
+          (click)="crearAcceso()"
+        >
+          <span class="material-icons">key</span> Crear acceso
+        </button>
+      </div>
+    }
+  </div>
+}

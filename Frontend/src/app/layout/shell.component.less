@@ -1,0 +1,137 @@
+@header: 64px;
+@sidebar: 220px;
+
+.topbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: @header;
+  background: var(--sync-navy);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px 0 0;
+  z-index: 20;
+  color: #fff;
+
+  .logo {
+    height: @header;
+  }
+  .spacer {
+    flex: 1;
+  }
+  .usuario {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1.2;
+    .nombre {
+      font-weight: 500;
+    }
+    .rol {
+      font-size: 12px;
+      opacity: 0.75;
+    }
+  }
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0 0 0 12px;
+}
+
+.sidebar {
+  position: fixed;
+  top: @header;
+  left: 0;
+  bottom: 0;
+  width: @sidebar;
+  background: var(--sync-gray);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  transition: transform 0.2s ease;
+
+  nav {
+    display: flex;
+    flex-direction: column;
+    padding-top: 8px;
+    overflow-y: auto;
+  }
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  transition: background-color 0.2s;
+
+  &:hover,
+  &.activo {
+    background: #888;
+  }
+  .material-icons {
+    font-size: 20px;
+  }
+}
+
+.logout {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 0;
+  background: #1a2b48ef;
+  color: #fff;
+  border: none;
+  border-top: 2px solid #fff;
+  cursor: pointer;
+  &:hover {
+    background: var(--sync-danger);
+  }
+}
+
+.footer {
+  background: var(--sync-navy);
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  padding: 12px 0;
+  border-top: 2px solid #b89fff;
+}
+
+.contenido {
+  margin: @header 0 0 @sidebar;
+  padding: 24px;
+  min-height: calc(100vh - @header);
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: block;
+  }
+  .sidebar {
+    transform: translateX(-100%);
+    &.abierto {
+      transform: none;
+      box-shadow: 4px 0 12px rgba(0, 0, 0, 0.25);
+    }
+  }
+  .contenido {
+    margin-left: 0;
+    padding: 16px;
+  }
+  .topbar .usuario .nombre {
+    display: none;
+  }
+}

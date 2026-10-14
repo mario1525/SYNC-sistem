@@ -1,0 +1,15 @@
+# Secretos
+.env
+*.env
+!.env.example
+
+# .NET
+**/bin/
+**/obj/
+**/TestResults/
+*.user
+.vs/
+
+# Node / Angular (ver también Frontend/.gitignore)
+node_modules/
+Frontend/.angular/
