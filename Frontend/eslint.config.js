@@ -16,6 +16,7 @@ module.exports = tseslint.config(
     ],
     processor: angular.processInlineTemplates,
     rules: {
+      "@typescript-eslint/no-non-null-assertion": "off",
       "@angular-eslint/directive-selector": [
         "error",
         {
@@ -41,6 +42,9 @@ module.exports = tseslint.config(
       ...angular.configs.templateAccessibility,
       prettier,
     ],
-    rules: {},
+    rules: {
+      // Los formularios usan <label for> + id; los botones de icono llevan title
+      "@angular-eslint/template/label-has-associated-control": "off",
+    },
   },
 );

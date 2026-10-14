@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DbUp" Version="5.0.11" />
-    <PackageReference Include="DbUp.SqlServer" Version="5.0.11" />
+    <PackageReference Include="dbup-sqlserver" Version="6.0.16" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="sql\**\*.sql" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

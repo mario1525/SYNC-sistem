@@ -1,0 +1,7 @@
+{
+  "/apigateway": {
+    "target": "http://localhost:7021",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

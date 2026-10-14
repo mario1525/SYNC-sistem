@@ -1,146 +1,159 @@
-using System;
-using System.IO;
-using System.Linq;
 using DbUp;
+using DbUp.Engine;
+using DbUp.Helpers;
+using DbUp.ScriptProviders;
+using Microsoft.Data.SqlClient;
 
-internal static class Program
+// =====================================================================================
+// SYNC DbMigrator
+//   1. sql/migrations/*.sql  -> se ejecutan UNA vez (registradas en dbo.SchemaVersions)
+//   2. sql/procedures/*.sql  -> se ejecutan SIEMPRE (CREATE OR ALTER, idempotentes)
+//   3. Seed opcional del usuario Root si la BD no tiene credenciales.
+//
+// Configuración (variables de entorno o argumentos):
+//   DB_CONNECTION / --connection    cadena de conexión (obligatoria)
+//   SQL_SCRIPTS   / --scripts       carpeta raíz de scripts (por defecto ./sql)
+//   SEED_ROOT_USER, SEED_ROOT_PASSWORD  credenciales del Root inicial (opcional)
+//   SEED_ROOT_COMP                       nombre de la compañía inicial (por defecto "SYNC")
+// =====================================================================================
+
+var connection = Arg("--connection") ?? Env("DB_CONNECTION") ?? Env("ConnectionStrings__DefaultConnection");
+if (string.IsNullOrWhiteSpace(connection))
+    return Fail("Falta la cadena de conexión. Use --connection o la variable DB_CONNECTION.", -1);
+
+var scriptsRoot = Path.GetFullPath(Arg("--scripts") ?? Env("SQL_SCRIPTS") ?? Path.Combine(AppContext.BaseDirectory, "sql"));
+var migrations = Path.Combine(scriptsRoot, "migrations");
+var procedures = Path.Combine(scriptsRoot, "procedures");
+
+Console.WriteLine("SYNC DbMigrator");
+Console.WriteLine($"  Scripts: {scriptsRoot}");
+if (!Directory.Exists(migrations) || !Directory.Exists(procedures))
+    return Fail($"No se encontraron las carpetas 'migrations' y 'procedures' en {scriptsRoot}", -2);
+
+try
 {
-    private static int Main(string[] args)
+    // SQL Server en contenedor puede tardar en aceptar conexiones: reintentos
+    await WaitForServerAsync(connection);
+    EnsureDatabase.For.SqlDatabase(connection);
+
+    var once = DeployChanges.To
+        .SqlDatabase(connection)
+        .WithScriptsFromFileSystem(migrations, new FileSystemScriptOptions { IncludeSubDirectories = false })
+        .WithTransactionPerScript()
+        .WithVariablesDisabled()
+        .JournalToSqlTable("dbo", "SchemaVersions")
+        .LogToConsole()
+        .Build();
+    if (!Check(once.PerformUpgrade()))
+        return -10;
+
+    var always = DeployChanges.To
+        .SqlDatabase(connection)
+        .WithScriptsFromFileSystem(procedures, new FileSystemScriptOptions { IncludeSubDirectories = false })
+        .WithTransactionPerScript()
+        .WithVariablesDisabled()
+        .JournalTo(new NullJournal())
+        .LogToConsole()
+        .Build();
+    if (!Check(always.PerformUpgrade()))
+        return -11;
+
+    await SeedRootAsync(connection);
+
+    Console.ForegroundColor = ConsoleColor.Green;
+    Console.WriteLine("Migración completada.");
+    Console.ResetColor();
+    return 0;
+}
+catch (Exception ex)
+{
+    return Fail("La migración falló: " + ex, -20);
+}
+
+// ------------------------------------------------------------------------------------
+
+static async Task SeedRootAsync(string connectionString)
+{
+    var user = Env("SEED_ROOT_USER");
+    var password = Env("SEED_ROOT_PASSWORD");
+    if (string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(password))
     {
-        // Usage examples:
-        // dotnet run --project ./Backend/db-migrator/DbMigrator.csproj -- --db user --connection "Data Source=localhost,1433;Initial Catalog=DB_SYNC_USER;User ID=SA;Password=****;TrustServerCertificate=True"
-        // dotnet run --project ./Backend/db-migrator/DbMigrator.csproj -- --db maintenance
-        //
-        // Environment variables fallback (recommended for secrets):
-        //   DB_CONNECTION ............ full connection string
-        //   DB_CHOICE ................ "user" | "maintenance" (default: "user")
-        //
-        // Scripts location (convention first, but overridable):
-        //   Default: ./Backend/db-migrator/sql/{user|maintenance}
-        //   Override: --scripts "absolute/or/relative/path"
+        Console.WriteLine("Seed Root omitido (SEED_ROOT_USER / SEED_ROOT_PASSWORD no definidos).");
+        return;
+    }
 
-        var dbChoice = GetArg(args, "--db") ?? (Environment.GetEnvironmentVariable("DB_CHOICE") ?? "user");
-        if (!new[] { "user", "maintenance" }.Contains(dbChoice, StringComparer.OrdinalIgnoreCase))
+    await using var cn = new SqlConnection(connectionString);
+    await cn.OpenAsync();
+
+    await using (var check = new SqlCommand("SELECT COUNT(*) FROM dbo.User_Cred WHERE Eliminado = 0", cn))
+    {
+        if ((int)(await check.ExecuteScalarAsync() ?? 0) > 0)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Invalid --db value '{dbChoice}'. Use 'user' or 'maintenance'.");
-            Console.ResetColor();
-            return -1;
+            Console.WriteLine("Seed Root omitido: ya existen credenciales.");
+            return;
         }
+    }
 
-        // Connection string resolution
-        var connection =
-            GetArg(args, "--connection")
-            ?? Environment.GetEnvironmentVariable("DB_CONNECTION")
-            ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"); // compatibility with existing envs
+    const string sql = """
+        INSERT INTO dbo.Comp (Id, Nombre, Ciudad, NIT, Direccion, Sector, Estado, Eliminado)
+        VALUES (@CompId, @CompNombre, '', '', '', 'Administración', 1, 0);
+        INSERT INTO dbo.Users (Id, Nombre, Apellido, Identificacion, Correo, IdComp, Cargo, Rol, Estado, Eliminado)
+        VALUES (@UserId, 'Administrador', 'SYNC', 0, '', @CompId, 'Administrador del sistema', 'Root', 1, 0);
+        INSERT INTO dbo.User_Cred (Id, Usuario, Contrasenia, IdUser, Estado, Eliminado)
+        VALUES (CONVERT(VARCHAR(36), NEWID()), @Usuario, @Hash, @UserId, 1, 0);
+        """;
+    await using var tx = (SqlTransaction)await cn.BeginTransactionAsync();
+    await using var cmd = new SqlCommand(sql, cn, tx);
+    cmd.Parameters.AddWithValue("@CompId", Guid.NewGuid().ToString());
+    cmd.Parameters.AddWithValue("@CompNombre", Env("SEED_ROOT_COMP") ?? "SYNC");
+    cmd.Parameters.AddWithValue("@UserId", Guid.NewGuid().ToString());
+    cmd.Parameters.AddWithValue("@Usuario", user);
+    cmd.Parameters.AddWithValue("@Hash", BCrypt.Net.BCrypt.HashPassword(password));
+    await cmd.ExecuteNonQueryAsync();
+    await tx.CommitAsync();
+    Console.WriteLine($"Seed Root creado: usuario '{user}'.");
+}
 
-        if (string.IsNullOrWhiteSpace(connection))
-        {
-            // As a last resort, provide a sensible default for Docker network names
-            // NOTE: Prefer setting DB_CONNECTION in your environment or docker-compose
-            connection = dbChoice.Equals("user", StringComparison.OrdinalIgnoreCase)
-                ? "Data Source=user-sqlserver,1433;Initial Catalog=DB_SYNC_USER;Persist Security Info=True;TrustServerCertificate=True;User ID=SA;Password=logPaSs#123$32"
-                : "Data Source=user-sqlserver,1433;Initial Catalog=DB_SYNC_MAINTENANCE;Persist Security Info=True;TrustServerCertificate=True;User ID=SA;Password=logPaSs#123$32";
-        }
-
-        // Scripts path resolution
-        var baseDir = AppContext.BaseDirectory;
-        var scriptsArg = GetArg(args, "--scripts");
-        var defaultScripts = Path.GetFullPath(Path.Combine(baseDir, "sql", dbChoice.ToLowerInvariant()));
-        var scriptsPath = string.IsNullOrWhiteSpace(scriptsArg)
-            ? defaultScripts
-            : Path.GetFullPath(scriptsArg);
-
-        Console.WriteLine("DbMigrator starting...");
-        Console.WriteLine($"  Database:        {dbChoice}");
-        Console.WriteLine($"  Scripts folder:  {scriptsPath}");
-        Console.WriteLine($"  Connection:      {(connection?.Contains("Password=", StringComparison.OrdinalIgnoreCase) == true ? "******** (hidden)" : connection)}");
-
-        if (!Directory.Exists(scriptsPath))
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"Scripts directory not found: {scriptsPath}");
-            Console.WriteLine("Create the folder and add ordered *.sql files, e.g.:");
-            Console.WriteLine($"  ./Backend/db-migrator/sql/{dbChoice}/001__create_tables.sql");
-            Console.WriteLine($"  ./Backend/db-migrator/sql/{dbChoice}/002__seed_data.sql");
-            Console.ResetColor();
-            return -2;
-        }
-
-        var sqlFiles = Directory.EnumerateFiles(scriptsPath, "*.sql", SearchOption.AllDirectories)
-            .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
-            .ToArray();
-
-        if (sqlFiles.Length == 0)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"No *.sql files found in: {scriptsPath}");
-            Console.ResetColor();
-            return -3;
-        }
-
+static async Task WaitForServerAsync(string connectionString)
+{
+    var master = new SqlConnectionStringBuilder(connectionString) { InitialCatalog = "master", ConnectTimeout = 5 }.ConnectionString;
+    for (var attempt = 1; ; attempt++)
+    {
         try
         {
-            // Ensure database exists (creates DB if missing)
-            EnsureDatabase.For.SqlDatabase(connection);
-
-            // Ensure DB exists and run migrations
-            var journalTable = $"DbUpJournal_{dbChoice.ToLowerInvariant()}";
-
-            var upgrader = DeployChanges.To
-                .SqlDatabase(connection)
-                .WithVariablesDisabled()
-                .WithTransactionPerScript()
-                .JournalToSqlTable("dbo", journalTable)
-                .WithScriptsFromFileSystem(scriptsPath)
-                .LogToConsole()
-                .Build();
-
-            var result = upgrader.PerformUpgrade();
-            if (!result.Successful)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(result.Error);
-                Console.ResetColor();
-#if DEBUG
-                Console.ReadLine();
-#endif
-                return -10;
-            }
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Database migration succeeded.");
-            Console.ResetColor();
-            return 0;
+            await using var cn = new SqlConnection(master);
+            await cn.OpenAsync();
+            return;
         }
-        catch (Exception ex)
+        catch (SqlException) when (attempt < 30)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Database migration failed:");
-            Console.WriteLine(ex);
-            Console.ResetColor();
-            return -20;
+            Console.WriteLine($"SQL Server no disponible aún (intento {attempt}/30)...");
+            await Task.Delay(TimeSpan.FromSeconds(3));
         }
     }
+}
 
-    private static string? GetArg(string[] args, string name)
-    {
-        // Simple arg parser for "--name value" or "--name=value"
-        var idx = Array.FindIndex(args, a => a.Equals(name, StringComparison.OrdinalIgnoreCase) || a.StartsWith(name + "=", StringComparison.OrdinalIgnoreCase));
-        if (idx < 0) return null;
-        var token = args[idx];
+static bool Check(DatabaseUpgradeResult result)
+{
+    if (result.Successful) return true;
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine($"Error en script '{result.ErrorScript?.Name}': {result.Error}");
+    Console.ResetColor();
+    return false;
+}
 
-        if (token.Contains("="))
-        {
-            var parts = token.Split('=', 2, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            return parts.Length == 2 ? parts[1] : null;
-        }
+static int Fail(string message, int code)
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine(message);
+    Console.ResetColor();
+    return code;
+}
 
-        if (idx + 1 < args.Length && !args[idx + 1].StartsWith("--"))
-        {
-            return args[idx + 1];
-        }
+static string? Env(string name) => Environment.GetEnvironmentVariable(name) is { Length: > 0 } v ? v : null;
 
-        return null;
-    }
+string? Arg(string name)
+{
+    var i = Array.IndexOf(args, name);
+    return i >= 0 && i + 1 < args.Length ? args[i + 1] : null;
 }

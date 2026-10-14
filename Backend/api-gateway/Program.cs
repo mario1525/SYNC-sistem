@@ -1,36 +1,36 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using Sync.Common.Web;
+
+// =====================================================================================
+// SYNC api-gateway (Ocelot). Punto de entrada único: /apigateway/{recurso}/...
+// Valida el JWT antes de reenviar (ADR-06); los servicios lo vuelven a validar.
+// Configuración: Jwt__SecretKey, Jwt__Issuer, Jwt__Audience, Cors__Origins
+// =====================================================================================
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
 
-// Agregar configuraci�n de Ocelot
-builder.Configuration.AddJsonFile("ocelot.jsonc", optional: false, reloadOnChange: true);
-
-// Configurar servicios
-builder.Services.AddOcelot();
-
-// Configurar CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAngularApp", policy =>
+var jwt = JwtOptions.From(builder.Configuration);
+builder.Services
+    .AddAuthentication()
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-        // Nota: No se usan credenciales (cookies). Autenticación por Authorization Bearer.
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters = jwt.ValidationParameters();
     });
-});
+
+var origins = (builder.Configuration["Cors:Origins"] ?? "http://localhost:4200")
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+builder.Services.AddCors(o => o.AddPolicy(ServiceDefaults.CorsPolicy, p => p.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod()));
+
+builder.Services.AddOcelot(builder.Configuration);
 
 var app = builder.Build();
 
-// [OPCIONAL] Forzar redirecci�n HTTPS solo si se est� usando HTTPS en el frontend
-// app.UseHttpsRedirection();
-
-// IMPORTANTE: Usar CORS ANTES de cualquier middleware
-app.UseRouting(); // esto mejora manejo de OPTIONS con CORS
-app.UseCors("AllowAngularApp");
-
-// Usa Ocelot (esperar la tarea)
-await app.UseOcelot();
+app.UseCors(ServiceDefaults.CorsPolicy);
+app.MapGet("/health", () => Results.Ok("OK"));
+app.UseWhen(ctx => !ctx.Request.Path.StartsWithSegments("/health"), branch => branch.UseOcelot().Wait());
 
 app.Run();

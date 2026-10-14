@@ -1,4 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
+/* =====================================================================================
+   Estilos globales de SYNC. Las páginas usan estas clases en lugar de repetir CSS.
+   ===================================================================================== */
+:root {
+  --sync-navy: #1a2b48;
+  --sync-navy-2: #1c2b4b;
+  --sync-gray: #acacac;
+  --sync-green: #009950;
+  --sync-info: #17a2b8;
+  --sync-warning: #e0a800;
+  --sync-danger: #dc3545;
+  --sync-border: #d5d9de;
+  --sync-text: #2a2a2a;
+  --sync-muted: #6b7280;
+  --sync-bg: #f4f6f8;
+}
 
 html,
 body {
@@ -6,5 +21,289 @@ body {
 }
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  color: var(--sync-text);
+  background: var(--sync-bg);
+}
+
+/* ------------------------------------------------------------ Encabezado de página */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: 3px solid #132240;
+
+  h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 500;
+  }
+  .acciones {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+}
+.subtitulo {
+  margin: 0 0 4px;
+  color: var(--sync-muted);
+  font-size: 13px;
+}
+
+/* ------------------------------------------------------------ Tarjetas */
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 16px;
+
+  > h3 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--sync-navy);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+}
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+.kpi {
+  .valor {
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--sync-navy);
+  }
+  .etiqueta {
+    color: var(--sync-muted);
+    font-size: 13px;
+  }
+}
+
+/* ------------------------------------------------------------ Tablas */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th {
+    background: var(--sync-navy-2);
+    color: #fff;
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  td {
+    padding: 8px 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid #eee;
+  }
+  tbody tr:nth-child(even) {
+    background: #f7f7f7;
+  }
+  tbody tr:hover {
+    background: #e2e6ea;
+  }
+  td.acciones {
+    white-space: nowrap;
+    text-align: right;
+  }
+  .vacio {
+    text-align: center;
+    color: var(--sync-muted);
+    padding: 24px;
+  }
+}
+
+/* ------------------------------------------------------------ Botones */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  color: #fff;
+  background: var(--sync-muted);
+  text-decoration: none;
+  line-height: 1.2;
+
+  .material-icons {
+    font-size: 18px;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  &-primary {
+    background: var(--sync-green);
+  }
+  &-info {
+    background: var(--sync-info);
+  }
+  &-warning {
+    background: var(--sync-warning);
+  }
+  &-danger {
+    background: var(--sync-danger);
+  }
+  &-secondary {
+    background: #6c757d;
+  }
+  &-link {
+    background: transparent;
+    color: var(--sync-navy);
+    padding: 4px 6px;
+  }
+  &-icon {
+    background: transparent;
+    color: #444;
+    padding: 4px;
+    &:hover {
+      background: #e3e6ea;
+    }
+    &.peligro:hover {
+      color: var(--sync-danger);
+    }
+  }
+}
+
+/* ------------------------------------------------------------ Formularios */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px 18px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &.ancho {
+    grid-column: 1 / -1;
+  }
+  label {
+    font-size: 13px;
+    color: var(--sync-muted);
+  }
+  input,
+  select,
+  textarea {
+    padding: 8px 10px;
+    border: 1px solid var(--sync-border);
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+
+    &:focus {
+      outline: 2px solid #9ec5fe;
+      border-color: #86b7fe;
+    }
+    &.ng-invalid.ng-touched {
+      border-color: var(--sync-danger);
+    }
+  }
+  textarea {
+    min-height: 70px;
+    resize: vertical;
+  }
+  .error {
+    color: var(--sync-danger);
+    font-size: 12px;
+  }
+}
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+.filtros {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 12px;
+
+  .form-group {
+    min-width: 180px;
+  }
+}
+
+/* ------------------------------------------------------------ Etiquetas */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #fff;
+  background: var(--sync-muted);
+
+  &.ok {
+    background: #28a745;
+  }
+  &.off {
+    background: var(--sync-danger);
+  }
+  &.info {
+    background: var(--sync-info);
+  }
+  &.warn {
+    background: var(--sync-warning);
+    color: #222;
+  }
+}
+.muted {
+  color: var(--sync-muted);
+}
+.cargando {
+  padding: 24px;
+  text-align: center;
+  color: var(--sync-muted);
+}
+
+/* ------------------------------------------------------------ Snackbars */
+.snack-ok {
+  --mat-snack-bar-container-color: #1e7e34;
+  --mat-snack-bar-supporting-text-color: #fff;
+  --mat-snack-bar-button-color: #fff;
+}
+.snack-error {
+  --mat-snack-bar-container-color: #b02a37;
+  --mat-snack-bar-supporting-text-color: #fff;
+  --mat-snack-bar-button-color: #fff;
+}
+
+fieldset.sin-borde {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
 }
