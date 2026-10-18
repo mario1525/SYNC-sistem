@@ -1,0 +1,174 @@
+<div class="maestro-detalle" [class.con-detalle]="!!id()">
+  <section class="maestro" aria-label="Lista de guías">
+    <div class="maestro-cab">
+      <h2>Guías</h2>
+      @if (puedeEditar) {
+        <a class="btn btn-primary" routerLink="/guia/nueva"
+          ><span class="material-icons" aria-hidden="true">add</span> Nueva</a
+        >
+      }
+    </div>
+    <form (ngSubmit)="cargar()" style="display: grid; gap: 10px">
+      <label class="buscador" style="min-height: 48px">
+        <span class="material-icons" aria-hidden="true">search</span>
+        <span class="sr-only">Buscar guía</span>
+        <input type="search" name="nombre" [(ngModel)]="nombre" placeholder="Buscar guía" />
+      </label>
+      @if (especialidades().length) {
+        <div class="form-group">
+          <label for="f-esp" class="sr-only">Especialidad</label>
+          <select id="f-esp" name="esp" [(ngModel)]="idEsp" (ngModelChange)="cargar()">
+            <option value="">Todas las especialidades</option>
+            @for (e of especialidades(); track e.id) {
+              <option [value]="e.id">{{ e.nombre }}</option>
+            }
+          </select>
+        </div>
+      }
+    </form>
+    <nav class="items">
+      @for (g of guias(); track g.id) {
+        <a class="item" [routerLink]="['/guia', g.id]" [attr.aria-current]="g.id === id() ? 'page' : null">
+          <strong>{{ g.nombre }}</strong>
+          <span>
+            {{ g.espNombre ?? 'Sin especialidad' }} ·
+            {{ g.intervalo ? 'cada ' + g.intervalo + ' días' : 'sin frecuencia' }}
+            @if (!g.estado) {
+              · inactiva
+            }
+          </span>
+        </a>
+      } @empty {
+        <p class="muted">{{ cargando() ? 'Cargando…' : 'No hay guías registradas.' }}</p>
+      }
+    </nav>
+  </section>
+
+  <section class="detalle" aria-live="polite">
+    @if (guia(); as g) {
+      <a class="btn btn-link volver-lista" routerLink="/guia">
+        <span class="material-icons" aria-hidden="true">arrow_back</span> Todas las guías
+      </a>
+      <div class="card">
+        <div class="cab-detalle">
+          <div style="flex: 1; min-width: 0">
+            <p class="subtitulo">
+              {{ g.espNombre ?? 'Sin especialidad' }}
+              @if (!g.estado) {
+                · <span class="badge off">Inactiva</span>
+              }
+            </p>
+            <h2>{{ g.nombre }}</h2>
+            @if (g.descripcion) {
+              <p class="desc">{{ g.descripcion }}</p>
+            }
+          </div>
+          @if (puedeEditar) {
+            <div class="acciones-detalle">
+              <a class="btn btn-secondary" [routerLink]="['/guia', g.id, 'editar']">
+                <span class="material-icons" aria-hidden="true">edit</span> Editar guía
+              </a>
+              <button class="btn btn-icon peligro" type="button" aria-label="Eliminar guía" (click)="eliminar(g)">
+                <span class="material-icons" aria-hidden="true">delete</span>
+              </button>
+            </div>
+          }
+        </div>
+        <dl class="datos" style="margin-top: 16px">
+          <div>
+            <dt>Frecuencia sugerida</dt>
+            <dd>{{ g.intervalo ? 'Cada ' + g.intervalo + ' días' : '—' }}</dd>
+          </div>
+          <div>
+            <dt>Duración</dt>
+            <dd>{{ g.duracion }} h</dd>
+          </div>
+          <div>
+            <dt>Personal requerido</dt>
+            <dd>{{ g.personal }}</dd>
+          </div>
+          <div>
+            <dt>Evidencia</dt>
+            <dd>{{ totales().verificaciones }} verif. · {{ totales().fotos }} fotos</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="dos-columnas">
+        <section class="card principal pasos" style="padding: 8px 0">
+          <h3 style="padding: 10px 20px 0">Pasos y puntos de verificación</h3>
+          @for (p of g.proced ?? []; track p.id; let i = $index) {
+            <div class="paso">
+              <button type="button" class="paso-cab" [attr.aria-expanded]="abiertos().has(i)" (click)="alternarPaso(i)">
+                <span class="num mono">{{ i + 1 }}</span>
+                <span class="crece">{{ p.nombre }}</span>
+                <span class="muted meta">
+                  {{ p.valid.length }} verif.{{
+                    fotosDe(i) ? ' · ' + fotosDe(i) + (fotosDe(i) === 1 ? ' foto' : ' fotos') : ''
+                  }}
+                </span>
+                <span class="material-icons" aria-hidden="true">{{
+                  abiertos().has(i) ? 'expand_less' : 'expand_more'
+                }}</span>
+              </button>
+              @if (abiertos().has(i)) {
+                <div class="paso-cuerpo">
+                  @if (p.descripcion) {
+                    <p>{{ p.descripcion }}</p>
+                  }
+                  @for (v of p.valid; track v.id) {
+                    <div class="verif">
+                      <span class="caja" aria-hidden="true"></span>
+                      <span>
+                        {{ v.nombre }}
+                        @if (v.descripcion) {
+                          <small>{{ v.descripcion }}</small>
+                        }
+                      </span>
+                      @if (v.requiereFoto) {
+                        <span class="badge"
+                          ><span class="material-icons" style="font-size: 16px" aria-hidden="true">photo_camera</span>
+                          Foto obligatoria</span
+                        >
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          } @empty {
+            <p class="muted" style="padding: 0 20px">La guía aún no tiene pasos.</p>
+          }
+        </section>
+
+        <aside class="lateral">
+          @for (b of ficha(); track b.titulo) {
+            <section class="card" [class.alerta-borde]="b.alerta">
+              <h3>{{ b.titulo }}</h3>
+              <p class="texto">{{ b.texto }}</p>
+            </section>
+          }
+          <section class="card">
+            <h3>Equipos asignados</h3>
+            <div class="chips">
+              @for (e of equipos(); track e.id) {
+                <a [routerLink]="['/equipo', e.idEquipo]" class="chip-enlace">{{ e.equipoNombre }}</a>
+              } @empty {
+                <span class="muted" style="background: none; padding: 0"
+                  >Ninguno. Se asignan desde la ficha del equipo.</span
+                >
+              }
+            </div>
+          </section>
+        </aside>
+      </div>
+    } @else if (id()) {
+      <div class="cargando">Cargando guía…</div>
+    } @else {
+      <div class="vacio-bloque" style="margin-top: 0">
+        <span class="material-icons" aria-hidden="true">fact_check</span>
+        Elige una guía para ver sus pasos, verificaciones y medidas de seguridad.
+      </div>
+    }
+  </section>
+</div>

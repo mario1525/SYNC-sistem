@@ -48,11 +48,35 @@ export const routes: Routes = [
         loadComponent: () => import('./features/equipos/equipo-list.page').then((m) => m.EquipoListPage),
       },
       {
-        path: 'equipo/:id',
+        path: 'equipo/nuevo',
+        canActivate: [rolGuard],
+        data: { ...GESTION, id: 'nuevo' },
         loadComponent: () => import('./features/equipos/equipo-form.page').then((m) => m.EquipoFormPage),
       },
+      {
+        path: 'equipo/:id/editar',
+        canActivate: [rolGuard],
+        data: GESTION,
+        loadComponent: () => import('./features/equipos/equipo-form.page').then((m) => m.EquipoFormPage),
+      },
+      {
+        path: 'equipo/:id',
+        loadComponent: () => import('./features/equipos/equipo-ficha.page').then((m) => m.EquipoFichaPage),
+      },
       { path: 'guia', loadComponent: () => import('./features/guias/guia-list.page').then((m) => m.GuiaListPage) },
-      { path: 'guia/:id', loadComponent: () => import('./features/guias/guia-form.page').then((m) => m.GuiaFormPage) },
+      {
+        path: 'guia/nueva',
+        canActivate: [rolGuard],
+        data: { ...GESTION, id: 'nueva' },
+        loadComponent: () => import('./features/guias/guia-form.page').then((m) => m.GuiaFormPage),
+      },
+      {
+        path: 'guia/:id/editar',
+        canActivate: [rolGuard],
+        data: GESTION,
+        loadComponent: () => import('./features/guias/guia-form.page').then((m) => m.GuiaFormPage),
+      },
+      { path: 'guia/:id', loadComponent: () => import('./features/guias/guia-list.page').then((m) => m.GuiaListPage) },
       {
         path: 'actividad',
         loadComponent: () => import('./features/actividades/actividad-list.page').then((m) => m.ActividadListPage),
@@ -60,6 +84,22 @@ export const routes: Routes = [
       {
         path: 'actividad/:id',
         loadComponent: () => import('./features/actividades/actividad-form.page').then((m) => m.ActividadFormPage),
+      },
+
+      // Operación en campo
+      {
+        path: 'ejecucion/:id',
+        loadComponent: () => import('./features/ejecucion/ejecucion.page').then((m) => m.EjecucionPage),
+      },
+      {
+        path: 'falla',
+        canActivate: [rolGuard],
+        data: OPERACION,
+        loadComponent: () => import('./features/fallas/falla-list.page').then((m) => m.FallaListPage),
+      },
+      {
+        path: 'falla/nueva',
+        loadComponent: () => import('./features/fallas/falla-reporte.page').then((m) => m.FallaReportePage),
       },
 
       // Personas

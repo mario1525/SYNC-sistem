@@ -75,14 +75,24 @@ Los secretos nunca van en el repositorio.
 |---|---|
 | Root | Todo, en todas las compañías; crear compañías y usuarios Root; catálogo global de tipos de área |
 | Admin | Gestionar su compañía: plantas, equipos, guías, usuarios, credenciales, catálogos |
-| Supervisor | Programar actividades, gestionar cuadrillas y horarios; consultar el resto |
-| Tecnico | Consultar equipos, guías y actividades; su perfil |
+| Supervisor | Programar actividades, gestionar cuadrillas y horarios, atender y cerrar fallas, reabrir ejecuciones; consultar el resto |
+| Tecnico | Consultar equipos, guías y actividades; ejecutar el checklist en campo con fotos de evidencia; reportar fallas; subir fotos de equipos; su perfil |
 
 ## API
 
 Todos los recursos siguen el mismo contrato: `GET /` (filtros por query), `GET /{id}`, `POST`, `PUT /{id}`,
 `DELETE /{id}` (lógico) y `PATCH /{id}/estado`. Errores en formato RFC 7807 (`title`, `status`).
 OpenAPI de cada servicio en `/openapi/v1.json` (entorno Development).
+
+Operación en campo:
+
+| Endpoint | Uso |
+|---|---|
+| `GET /actividadequipo?IdCuad=&FechaDesde=&FechaHasta=` | Intervenciones del día con progreso (`totalValid`, `validCumplidas`) y `estadoEjec` |
+| `GET /actividadequipo/{id}/resultados` · `PUT /actividadequipo/{id}/resultados/{idValid}` | Checklist de la ejecución (`{ cumple, observacion }`) |
+| `POST /actividadequipo/{id}/finalizar` · `POST /{id}/reabrir` | Cierra la ejecución (exige todas las verificaciones y las fotos que pide la guía) / la reabre (supervisión) |
+| `/falla` | Reportes de falla (cualquier rol reporta; supervisión atiende y cierra) |
+| `GET /adjunto?entidad=&idEntidad=` · `GET /adjunto/{id}/archivo` · `POST /adjunto` (multipart) · `DELETE /adjunto/{id}` | Fotos de `Equipo`, `Ejecucion` (con `ref` = verificación) y `Falla`; JPG/PNG/WebP hasta 8 MB, guardadas en la BD |
 
 ## Licencia
 

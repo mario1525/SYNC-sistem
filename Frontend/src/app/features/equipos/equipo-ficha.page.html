@@ -1,0 +1,238 @@
+@if (equipo(); as e) {
+  <div class="page-header">
+    <div style="display: flex; gap: 14px; align-items: flex-start">
+      <a
+        class="btn btn-secondary btn-icon"
+        routerLink="/equipo"
+        aria-label="Volver a equipos"
+        style="border-color: var(--line)"
+      >
+        <span class="material-icons" aria-hidden="true">arrow_back</span>
+      </a>
+      <div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 6px">
+          @if (e.nSerie) {
+            <span class="codigo">{{ e.nSerie }}</span>
+          }
+          @let u = e.ubicacion;
+          @if (u && u.idSeccionArea) {
+            <span class="badge" [class.ok]="u.tipoUbicacion === 'Produccion'">
+              <span class="punto" [class.completada]="u.tipoUbicacion === 'Produccion'"></span>
+              {{ u.tipoUbicacion === 'Produccion' ? 'En producción' : 'Almacenado' }}
+            </span>
+            <span class="muted" style="display: inline-flex; align-items: center; gap: 4px">
+              <span class="material-icons" aria-hidden="true" style="font-size: 18px">place</span>
+              {{ u.plantaNombre }} / {{ u.areaNombre }} /
+              <strong style="color: var(--ink)">{{ u.seccionNombre }}</strong>
+            </span>
+          } @else {
+            <span class="badge warn">Sin ubicación</span>
+          }
+          @if (!e.estado) {
+            <span class="badge off">Inactivo</span>
+          }
+        </div>
+        <h2>{{ e.nombre }}</h2>
+      </div>
+    </div>
+    <div class="acciones">
+      @if (puedeEditar) {
+        <a class="btn btn-soft btn-lg" [routerLink]="['/equipo', e.id, 'editar']">
+          <span class="material-icons" aria-hidden="true">edit</span> Editar
+        </a>
+      }
+      <a class="btn btn-secondary btn-lg" routerLink="/falla/nueva" [queryParams]="{ equipo: e.id }">
+        <span class="material-icons" aria-hidden="true">warning_amber</span> Reportar falla
+      </a>
+      @if (proxima(); as p) {
+        <a class="btn btn-accent btn-lg" [routerLink]="['/ejecucion', p.id]">
+          <span class="material-icons" aria-hidden="true">play_arrow</span>
+          {{ p.estadoEjec === 'EnCurso' ? 'Continuar mantenimiento' : 'Iniciar mantenimiento' }}
+        </a>
+      }
+    </div>
+  </div>
+
+  <div class="dos-columnas">
+    <div class="principal">
+      <section class="card" aria-label="Fotos del equipo">
+        <h3>
+          Fotos
+          <app-tomar-foto clase="btn btn-soft" [deshabilitado]="subiendo()" (foto)="subir($event)">
+            <span class="material-icons" aria-hidden="true">add_a_photo</span>
+            {{ subiendo() ? 'Subiendo…' : 'Agregar foto' }}
+          </app-tomar-foto>
+        </h3>
+        @if (actual(); as f) {
+          <div class="carrusel">
+            <app-foto [id]="f.id" [alt]="'Foto de ' + e.nombre + ': ' + f.nombre" />
+            @if (fotos().length > 1) {
+              <button class="nav-foto ant" type="button" aria-label="Foto anterior" (click)="mover(-1)">
+                <span class="material-icons" aria-hidden="true">chevron_left</span>
+              </button>
+              <button class="nav-foto sig" type="button" aria-label="Foto siguiente" (click)="mover(1)">
+                <span class="material-icons" aria-hidden="true">chevron_right</span>
+              </button>
+            }
+            <span class="rotulo" style="left: 12px">{{ f.fecha | date: 'd MMM y' }}</span>
+            <span class="rotulo mono" style="right: 12px">{{ indice() + 1 }} / {{ fotos().length }}</span>
+          </div>
+          <div class="miniaturas">
+            @for (m of fotos(); track m.id; let i = $index) {
+              <button
+                class="mini"
+                type="button"
+                [attr.aria-current]="i === indice()"
+                [attr.aria-label]="'Ver foto ' + (i + 1)"
+                (click)="indice.set(i)"
+              >
+                <app-foto [id]="m.id" />
+              </button>
+            }
+            @if (puedeBorrar(f)) {
+              <button
+                class="btn btn-icon peligro"
+                type="button"
+                aria-label="Eliminar la foto mostrada"
+                (click)="borrar(f)"
+                style="margin-left: auto"
+              >
+                <span class="material-icons" aria-hidden="true">delete</span>
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="vacio-bloque">
+            <span class="material-icons" aria-hidden="true">photo_camera</span>
+            Aún no hay fotos de este equipo. Agrega la vista general y la placa de datos.
+          </div>
+        }
+      </section>
+
+      <section class="card">
+        <h3>Ficha técnica</h3>
+        <dl class="datos">
+          @for (d of datos(); track d.k) {
+            <div>
+              <dt>{{ d.k }}</dt>
+              <dd>{{ d.v }}</dd>
+            </div>
+          }
+        </dl>
+        @if (e.descripcion || e.funcion || e.caracteristicas) {
+          <div style="margin-top: 16px; display: grid; gap: 12px; line-height: 1.5">
+            @if (e.descripcion) {
+              <div><span class="muted">Descripción · </span>{{ e.descripcion }}</div>
+            }
+            @if (e.funcion) {
+              <div><span class="muted">Función · </span>{{ e.funcion }}</div>
+            }
+            @if (e.caracteristicas) {
+              <div><span class="muted">Características · </span>{{ e.caracteristicas }}</div>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="card">
+        <h3>Mantenimientos realizados</h3>
+        @for (r of realizadas(); track r.id) {
+          <a class="fila" [routerLink]="['/ejecucion', r.id]">
+            <span class="material-icons" aria-hidden="true">task_alt</span>
+            <span class="crece">
+              <strong>{{ r.guiaNombre ?? r.actividadDescripcion ?? 'Intervención' }}</strong>
+              <span class="muted" style="display: block; font-size: 13px">
+                {{ r.fechaFin ?? r.fechaEjecucion | date: 'd MMM y, HH:mm' }} · {{ r.cuadNombre ?? 'Sin cuadrilla' }}
+              </span>
+            </span>
+            <span [class]="'badge ' + claseTipo(r.tipoActividadNombre)">{{ r.tipoActividadNombre }}</span>
+          </a>
+        } @empty {
+          <p class="muted" style="margin: 0">Sin mantenimientos registrados.</p>
+        }
+      </section>
+    </div>
+
+    <aside class="lateral">
+      <section class="card">
+        <h3>Próximo mantenimiento</h3>
+        @if (proxima(); as p) {
+          <a class="fila" [routerLink]="['/ejecucion', p.id]" style="border-top: 0">
+            <span class="material-icons" aria-hidden="true">event</span>
+            <span class="crece">
+              <strong>{{ p.fechaEjecucion | date: 'EEE d MMM, HH:mm' }}</strong>
+              <span class="muted" style="display: block; font-size: 14px">
+                {{ p.tipoActividadNombre }} · {{ p.cuadNombre ?? 'Sin cuadrilla' }}
+              </span>
+            </span>
+            <span class="badge">{{ estados[p.estadoEjec ?? 'Pendiente'] }}</span>
+          </a>
+        } @else {
+          <p class="muted" style="margin: 0">No hay mantenimientos programados.</p>
+        }
+      </section>
+
+      <section class="card">
+        <h3>Guías asignadas</h3>
+        @for (g of guias(); track g.id) {
+          <a class="fila" [routerLink]="['/guia', g.idGuia]">
+            <span class="material-icons" aria-hidden="true">fact_check</span>
+            <span class="crece">
+              <strong>{{ g.guiaNombre }}</strong>
+              <span class="muted" style="display: block; font-size: 13px">
+                {{ g.intervalo ? 'Cada ' + g.intervalo + ' días' : 'Sin frecuencia' }}
+              </span>
+            </span>
+            <span class="material-icons muted" aria-hidden="true">chevron_right</span>
+          </a>
+        } @empty {
+          <p class="muted" style="margin: 0">Sin guías asignadas.</p>
+        }
+      </section>
+
+      <section class="card">
+        <h3>Fallas reportadas</h3>
+        @for (f of fallas().slice(0, 5); track f.id) {
+          <div class="fila">
+            <span
+              class="punto"
+              [class.alerta]="f.estadoFalla !== 'Cerrada'"
+              [class.completada]="f.estadoFalla === 'Cerrada'"
+            ></span>
+            <span class="crece">
+              <strong>{{ tipoFalla(f.tipo) }}</strong>
+              <span class="muted" style="display: block; font-size: 13px">
+                {{ f.fechaReporte | date: 'd MMM y' }} · {{ estadosFalla[f.estadoFalla ?? 'Abierta'] }}
+              </span>
+            </span>
+            <span class="badge" [class.warn]="f.prioridad === 'Critica' || f.prioridad === 'Alta'">{{
+              f.prioridad
+            }}</span>
+          </div>
+        } @empty {
+          <p class="muted" style="margin: 0">Sin fallas reportadas.</p>
+        }
+      </section>
+
+      <section class="card">
+        <h3>Historial de ubicación</h3>
+        @for (h of historial(); track h.id) {
+          <div class="linea">
+            <span class="marca" [class.vigente]="h.vigente"></span>
+            <div>
+              <strong>{{ h.plantaNombre }} / {{ h.areaNombre }} / {{ h.seccionNombre }}</strong>
+              <div class="muted" style="font-size: 13px">
+                {{ h.tipoUbicacion === 'Produccion' ? 'En producción' : 'Almacenado' }} · desde
+                {{ h.fecha_log | date: 'd MMM y' }}{{ h.vigente ? ' · actual' : '' }}
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <p class="muted" style="margin: 0">Sin movimientos registrados.</p>
+        }
+      </section>
+    </aside>
+  </div>
+} @else {
+  <div class="cargando">Cargando equipo…</div>
+}

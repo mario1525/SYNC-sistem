@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Area, Equipo, Planta } from '../../core/api/models';
@@ -11,22 +11,28 @@ import { NotifyService } from '../../core/ui/notify.service';
   imports: [FormsModule, RouterLink],
   template: `
     <div class="page-header">
-      <h2>Equipos</h2>
+      <div>
+        <p class="subtitulo">Inventario de activos</p>
+        <h2>Equipos</h2>
+      </div>
       @if (puedeEditar) {
         <div class="acciones">
-          <a class="btn btn-primary" routerLink="/equipo/nuevo"><span class="material-icons">add</span> Nuevo equipo</a>
+          <a class="btn btn-primary btn-lg" routerLink="/equipo/nuevo"
+            ><span class="material-icons" aria-hidden="true">add</span> Nuevo equipo</a
+          >
         </div>
       }
     </div>
 
-    <div class="filtros">
-      <div class="form-group">
-        <label for="f-nombre">Buscar</label>
-        <input id="f-nombre" [(ngModel)]="nombre" (keyup.enter)="cargar()" placeholder="Nombre del equipo" />
-      </div>
+    <form class="filtros" (ngSubmit)="cargar()">
+      <label class="buscador">
+        <span class="material-icons" aria-hidden="true">search</span>
+        <span class="sr-only">Buscar equipo</span>
+        <input type="search" name="nombre" [(ngModel)]="nombre" placeholder="Buscar por nombre" />
+      </label>
       <div class="form-group">
         <label for="f-planta">Planta</label>
-        <select id="f-planta" [(ngModel)]="idPlanta" (ngModelChange)="cambiarPlanta()">
+        <select id="f-planta" name="planta" [(ngModel)]="idPlanta" (ngModelChange)="cambiarPlanta()">
           <option value="">Todas</option>
           @for (p of plantas(); track p.id) {
             <option [value]="p.id">{{ p.nombre }}</option>
@@ -35,28 +41,25 @@ import { NotifyService } from '../../core/ui/notify.service';
       </div>
       <div class="form-group">
         <label for="f-area">Área</label>
-        <select id="f-area" [(ngModel)]="idArea" (ngModelChange)="cargar()" [disabled]="!idPlanta">
+        <select id="f-area" name="area" [(ngModel)]="idArea" (ngModelChange)="cargar()" [disabled]="!idPlanta">
           <option value="">Todas</option>
           @for (a of areas(); track a.id) {
             <option [value]="a.id">{{ a.nombre }} ({{ a.tipoAreaNombre }})</option>
           }
         </select>
       </div>
-      <button class="btn btn-info" type="button" (click)="cargar()">
-        <span class="material-icons">search</span> Buscar
-      </button>
-    </div>
+      <button class="btn btn-primary btn-lg" type="submit">Buscar</button>
+    </form>
 
     <div class="table-wrap">
       <table class="table">
         <thead>
           <tr>
-            <th>Nombre</th>
+            <th>Equipo</th>
             <th>Marca / Modelo</th>
-            <th>N.º serie</th>
             <th>Ubicación</th>
             <th>Estado</th>
-            <th></th>
+            <th><span class="sr-only">Acciones</span></th>
           </tr>
         </thead>
         <tbody>
@@ -64,40 +67,49 @@ import { NotifyService } from '../../core/ui/notify.service';
             <tr>
               <td>
                 <a [routerLink]="['/equipo', e.id]">{{ e.nombre }}</a>
+                @if (e.nSerie) {
+                  <span class="sub mono">{{ e.nSerie }}</span>
+                }
               </td>
               <td>{{ e.marca }} {{ e.modelo }}</td>
-              <td>{{ e.nSerie }}</td>
               <td>
                 @let u = e.ubicacion;
                 @if (u && u.idSeccionArea) {
-                  <span
-                    class="badge"
-                    [class.ok]="u.tipoUbicacion === 'Produccion'"
-                    [class.info]="u.tipoUbicacion === 'Almacen'"
-                  >
+                  <span class="badge" [class.ok]="u.tipoUbicacion === 'Produccion'">
                     {{ u.tipoUbicacion === 'Produccion' ? 'Producción' : 'Almacén' }}
                   </span>
-                  {{ u.plantaNombre }} › {{ u.areaNombre }} › {{ u.seccionNombre }}
+                  <span class="sub">{{ u.plantaNombre }} / {{ u.areaNombre }} / {{ u.seccionNombre }}</span>
                 } @else {
                   <span class="badge warn">Sin ubicación</span>
                 }
               </td>
               <td>
-                <span class="badge" [class.ok]="e.estado" [class.off]="!e.estado">{{
-                  e.estado ? 'Activo' : 'Inactivo'
-                }}</span>
+                <span class="badge" [class.off]="!e.estado">{{ e.estado ? 'Activo' : 'Inactivo' }}</span>
               </td>
               <td class="acciones">
+                <a class="btn btn-soft" [routerLink]="['/equipo', e.id]">Ver ficha</a>
                 @if (puedeEditar) {
-                  <button class="btn btn-icon peligro" type="button" title="Eliminar" (click)="eliminar(e)">
-                    <span class="material-icons">delete</span>
+                  <a
+                    class="btn btn-icon"
+                    [routerLink]="['/equipo', e.id, 'editar']"
+                    [attr.aria-label]="'Editar ' + e.nombre"
+                  >
+                    <span class="material-icons" aria-hidden="true">edit</span>
+                  </a>
+                  <button
+                    class="btn btn-icon peligro"
+                    type="button"
+                    [attr.aria-label]="'Eliminar ' + e.nombre"
+                    (click)="eliminar(e)"
+                  >
+                    <span class="material-icons" aria-hidden="true">delete</span>
                   </button>
                 }
               </td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="6" class="vacio">{{ cargando() ? 'Cargando…' : 'No hay equipos con estos filtros.' }}</td>
+              <td colspan="5" class="vacio">{{ cargando() ? 'Cargando…' : 'No hay equipos con estos filtros.' }}</td>
             </tr>
           }
         </tbody>
@@ -106,6 +118,9 @@ import { NotifyService } from '../../core/ui/notify.service';
   `,
 })
 export class EquipoListPage implements OnInit {
+  /** Texto de búsqueda inicial (?q=), usado desde Inicio. */
+  readonly q = input<string>();
+
   private readonly service = inject(EquipoService);
   private readonly plantaService = inject(PlantaService);
   private readonly areaService = inject(AreaService);
@@ -121,6 +136,7 @@ export class EquipoListPage implements OnInit {
   protected idArea = '';
 
   ngOnInit(): void {
+    this.nombre = this.q() ?? '';
     this.plantaService.list({ Estado: true }).subscribe((p) => this.plantas.set(p));
     this.cargar();
   }
@@ -134,7 +150,7 @@ export class EquipoListPage implements OnInit {
 
   cargar(): void {
     this.cargando.set(true);
-    this.service.list({ Nombre: this.nombre, IdPlanta: this.idPlanta, IdArea: this.idArea }).subscribe({
+    this.service.list({ Nombre: this.nombre.trim(), IdPlanta: this.idPlanta, IdArea: this.idArea }).subscribe({
       next: (r) => {
         this.equipos.set(r);
         this.cargando.set(false);

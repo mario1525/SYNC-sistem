@@ -10,8 +10,7 @@ import { mensajeDeError } from '../../core/ui/notify.service';
   template: `
     <div class="login">
       <section class="marca">
-        <img src="assets/Img/Recurso 2.png" alt="Logo SYNC" class="logo" />
-        <img src="assets/Img/Recurso 3.png" alt="SYNC" class="titulo" />
+        <div class="logo"><span class="cuadro" aria-hidden="true"></span><span>SYNC</span></div>
         <p>Sistema de Información y Coordinación de Mantenimiento</p>
       </section>
 
@@ -36,7 +35,7 @@ import { mensajeDeError } from '../../core/ui/notify.service';
           @if (error()) {
             <p class="error" role="alert">{{ error() }}</p>
           }
-          <button class="btn btn-primary" type="submit" [disabled]="f.invalid || enviando()">
+          <button class="btn btn-accent btn-xl" type="submit" [disabled]="f.invalid || enviando()">
             {{ enviando() ? 'Ingresando…' : 'Entrar' }}
           </button>
         </form>
@@ -50,8 +49,8 @@ import { mensajeDeError } from '../../core/ui/notify.service';
       grid-template-columns: 1fr 1fr;
     }
     .marca {
-      background: var(--sync-navy);
-      color: #cfd8e6;
+      background: var(--ink);
+      color: #c9cbc4;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -59,12 +58,26 @@ import { mensajeDeError } from '../../core/ui/notify.service';
       gap: 16px;
       padding: 32px;
       text-align: center;
+      font-size: 17px;
       .logo {
-        width: min(260px, 60%);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: #fff;
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
       }
-      .titulo {
-        width: min(320px, 70%);
+      .cuadro {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        background: var(--accent);
       }
+    }
+    h2 {
+      font-size: 28px;
+      margin: 0 0 20px;
     }
     .formulario {
       display: flex;
@@ -80,11 +93,6 @@ import { mensajeDeError } from '../../core/ui/notify.service';
         flex-direction: column;
         gap: 16px;
       }
-      button {
-        justify-content: center;
-        padding: 10px;
-        font-size: 16px;
-      }
     }
     .error {
       color: var(--sync-danger);
@@ -98,7 +106,11 @@ import { mensajeDeError } from '../../core/ui/notify.service';
       .marca {
         padding: 24px;
         .logo {
-          width: 120px;
+          font-size: 36px;
+        }
+        .cuadro {
+          width: 36px;
+          height: 36px;
         }
       }
     }

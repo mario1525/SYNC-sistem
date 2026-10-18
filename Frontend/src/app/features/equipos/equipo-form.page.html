@@ -1,7 +1,10 @@
 <div class="page-header">
-  <h2>{{ esNuevo() ? 'Nuevo equipo' : equipo().nombre }}</h2>
+  <div>
+    <p class="subtitulo">{{ esNuevo() ? 'Registro de equipo' : 'Editar equipo' }}</p>
+    <h2>{{ esNuevo() ? 'Nuevo equipo' : equipo().nombre }}</h2>
+  </div>
   <div class="acciones">
-    <a class="btn btn-secondary" routerLink="/equipo">Volver</a>
+    <a class="btn btn-secondary" [routerLink]="esNuevo() ? ['/equipo'] : ['/equipo', id()]">Volver</a>
   </div>
 </div>
 

@@ -13,3 +13,6 @@
 # Node / Angular (ver también Frontend/.gitignore)
 node_modules/
 Frontend/.angular/
+
+# Credenciales generadas por los seeds de prueba
+Backend/tests/seed/*.csv

@@ -1,0 +1,165 @@
+<div class="page-header">
+  <div>
+    <p class="subtitulo">Mantenimiento preventivo, correctivo e inspecciones</p>
+    <h2>Programación</h2>
+  </div>
+  <div class="acciones">
+    <div class="seg" role="group" aria-label="Vista">
+      <button type="button" [attr.aria-pressed]="vista() === 'semana'" (click)="cambiarVista('semana')">
+        <span class="material-icons" aria-hidden="true">calendar_view_week</span> Semana
+      </button>
+      <button type="button" [attr.aria-pressed]="vista() === 'lista'" (click)="cambiarVista('lista')">
+        <span class="material-icons" aria-hidden="true">list</span> Lista
+      </button>
+    </div>
+    @if (puedeEditar) {
+      <a class="btn btn-primary btn-lg" routerLink="/actividad/nueva">
+        <span class="material-icons" aria-hidden="true">add</span> Programar actividad
+      </a>
+    }
+  </div>
+</div>
+
+@if (vista() === 'semana') {
+  <div class="semana-nav">
+    <button class="btn btn-secondary btn-icon" type="button" aria-label="Semana anterior" (click)="moverSemana(-1)">
+      <span class="material-icons" aria-hidden="true">chevron_left</span>
+    </button>
+    <strong>{{ dias()[0].fecha | date: 'd MMM' }} – {{ dias()[6].fecha | date: 'd MMM y' }}</strong>
+    <button class="btn btn-secondary btn-icon" type="button" aria-label="Semana siguiente" (click)="moverSemana(1)">
+      <span class="material-icons" aria-hidden="true">chevron_right</span>
+    </button>
+    <button class="btn btn-soft" type="button" (click)="moverSemana(0)">Esta semana</button>
+    @if (cargando()) {
+      <span class="muted">Cargando…</span>
+    }
+  </div>
+
+  <div class="table-wrap">
+    <div class="tablero">
+      <div class="fila cab">
+        <div class="celda-cuad etiqueta">Cuadrilla</div>
+        @for (d of dias(); track d.iso) {
+          <div class="dia" [class.hoy]="d.hoy" [class.finde]="d.finde">
+            <span>{{ d.nombre }}</span>
+            <strong class="mono">{{ d.fecha | date: 'd' }}</strong>
+          </div>
+        }
+      </div>
+      @for (f of filas(); track f.idCuad) {
+        <div class="fila">
+          <div class="celda-cuad">{{ f.nombre }}</div>
+          @for (acts of f.dias; track $index; let i = $index) {
+            <div class="celda" [class.hoy]="dias()[i].hoy" [class.finde]="dias()[i].finde">
+              @for (a of acts; track a.id) {
+                <a
+                  class="evento"
+                  [class]="'evento ' + claseTipo(a.tipoActividadNombre)"
+                  [routerLink]="['/actividad', a.id]"
+                >
+                  <span class="mono hora">{{ a.fechaEjecucion | date: 'HH:mm' }}</span>
+                  <span class="desc">{{ a.descripcion || a.tipoActividadNombre }}</span>
+                  <span class="eq">{{ a.numEquipos }} {{ a.numEquipos === 1 ? 'equipo' : 'equipos' }}</span>
+                </a>
+              }
+              @if (puedeEditar) {
+                <a
+                  class="agregar"
+                  routerLink="/actividad/nueva"
+                  [queryParams]="{ fecha: dias()[i].iso, cuad: f.idCuad || null }"
+                  [attr.aria-label]="'Programar el ' + (dias()[i].fecha | date: 'd MMM') + ' para ' + f.nombre"
+                >
+                  <span class="material-icons" aria-hidden="true">add</span>
+                </a>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+  <div class="leyenda">
+    <span><i class="preventiva"></i>Preventiva</span>
+    <span><i class="correctiva"></i>Correctiva</span>
+    <span><i class="inspeccion"></i>Inspección</span>
+  </div>
+} @else {
+  <div class="filtros">
+    <div class="form-group">
+      <label for="desde">Desde</label>
+      <input id="desde" type="date" [(ngModel)]="desde" (change)="cargar()" />
+    </div>
+    <div class="form-group">
+      <label for="hasta">Hasta</label>
+      <input id="hasta" type="date" [(ngModel)]="hasta" (change)="cargar()" />
+    </div>
+    <div class="form-group">
+      <label for="tipo">Tipo</label>
+      <select id="tipo" [(ngModel)]="idTipo" (ngModelChange)="cargar()">
+        <option value="">Todos</option>
+        @for (t of tipos(); track t.id) {
+          <option [value]="t.id">{{ t.nombre }}</option>
+        }
+      </select>
+    </div>
+    @if (puedeEditar) {
+      <div class="form-group">
+        <label for="cuad">Cuadrilla</label>
+        <select id="cuad" [(ngModel)]="idCuad" (ngModelChange)="cargar()">
+          <option value="">Todas</option>
+          @for (c of cuadrillas(); track c.id) {
+            <option [value]="c.id">{{ c.nombre }}</option>
+          }
+        </select>
+      </div>
+    }
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Tipo</th>
+          <th>Descripción</th>
+          <th>Cuadrilla</th>
+          <th>Equipos</th>
+          <th>Frecuencia</th>
+          <th><span class="sr-only">Acciones</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (a of actividades(); track a.id) {
+          <tr>
+            <td>
+              <a [routerLink]="['/actividad', a.id]">{{ a.fechaEjecucion | date: 'EEE d MMM y, HH:mm' }}</a>
+            </td>
+            <td>
+              <span [class]="'badge ' + claseTipo(a.tipoActividadNombre)">{{ a.tipoActividadNombre }}</span>
+            </td>
+            <td>{{ a.descripcion }}</td>
+            <td>{{ a.cuadNombre ?? '—' }}</td>
+            <td class="mono">{{ a.numEquipos }}</td>
+            <td>{{ a.intervalo ? 'Cada ' + a.intervalo + ' días' : 'Única' }}</td>
+            <td class="acciones">
+              @if (puedeEditar) {
+                <button
+                  class="btn btn-icon peligro"
+                  type="button"
+                  [attr.aria-label]="'Eliminar ' + (a.descripcion || 'actividad')"
+                  (click)="eliminar(a)"
+                >
+                  <span class="material-icons" aria-hidden="true">delete</span>
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="vacio">{{ cargando() ? 'Cargando…' : 'No hay actividades en el período.' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

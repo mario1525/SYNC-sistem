@@ -1,0 +1,265 @@
+@if (ae(); as a) {
+  <header class="cabecera">
+    <a class="volver" routerLink="/home" aria-label="Volver a Inicio">
+      <span class="material-icons" aria-hidden="true">arrow_back</span>
+    </a>
+    <div class="titulo">
+      <div class="contexto">
+        {{ a.tipoActividadNombre }}
+        @if (a.equipoSerie) {
+          · <span class="mono">{{ a.equipoSerie }}</span>
+        }
+        @if (a.ubicacionNombre) {
+          · {{ a.ubicacionNombre }}
+        }
+      </div>
+      <h2>
+        <a [routerLink]="['/equipo', a.idEquipo]">{{ a.equipoNombre }}</a>
+        @if (a.guiaNombre) {
+          <span> — {{ a.guiaNombre }}</span>
+        }
+      </h2>
+    </div>
+    @if (pasos().length) {
+      <div class="contador">
+        <span>Paso</span>
+        <strong class="mono">{{ paso() }}/{{ pasos().length }}</strong>
+      </div>
+    }
+  </header>
+  <div class="barra" aria-hidden="true"><span [style.width.%]="avance()"></span></div>
+
+  @if (finalizada()) {
+    <div class="finalizada" role="status">
+      <span class="material-icons" aria-hidden="true">task_alt</span>
+      <span>
+        Completada el {{ a.fechaFin | date: "d MMM y 'a las' HH:mm" }}.
+        @if (a.observacion) {
+          Observación: {{ a.observacion }}
+        }
+      </span>
+      @if (esSupervision) {
+        <button class="btn btn-secondary" type="button" (click)="reabrir()">Reabrir</button>
+      }
+    </div>
+  }
+
+  @if (cargando()) {
+    <div class="cargando">Cargando la guía…</div>
+  } @else if (!guia() || !pasos().length) {
+    <section class="card cuerpo-simple">
+      @if (guia()) {
+        <h3>Guía sin pasos</h3>
+        <p>La guía «{{ guia()!.nombre }}» todavía no tiene pasos. Registra lo realizado y finaliza.</p>
+      } @else {
+        <h3>Sin guía asignada</h3>
+        <p>Este equipo no tiene una guía en la actividad. Registra lo realizado y finaliza.</p>
+      }
+      <div class="form-group">
+        <label for="obs">Observación</label>
+        <textarea
+          id="obs"
+          [(ngModel)]="observacion"
+          [disabled]="finalizada()"
+          placeholder="Qué se hizo y qué se encontró"
+        ></textarea>
+      </div>
+      @if (!finalizada()) {
+        <div class="form-actions">
+          <button class="btn btn-accent btn-xl" type="button" [disabled]="ocupado()" (click)="finalizar()">
+            Finalizar actividad
+          </button>
+        </div>
+      }
+    </section>
+  } @else {
+    <div class="cuerpo">
+      <nav class="rail" aria-label="Pasos de la guía">
+        <button type="button" class="paso" [attr.aria-current]="paso() === 0 ? 'step' : null" (click)="ir(0)">
+          <span class="num"><span class="material-icons" aria-hidden="true">shield</span></span>
+          <span>Antes de empezar</span>
+        </button>
+        @for (p of pasos(); track p.id; let i = $index) {
+          <button
+            type="button"
+            class="paso"
+            [class.hecho]="completo(p)"
+            [attr.aria-current]="paso() === i + 1 ? 'step' : null"
+            (click)="ir(i + 1)"
+          >
+            <span class="num mono">
+              @if (completo(p) && paso() !== i + 1) {
+                <span class="material-icons" aria-hidden="true">check</span>
+                <span class="sr-only">Completo:</span>
+              } @else {
+                {{ i + 1 }}
+              }
+            </span>
+            <span>{{ p.nombre }}</span>
+          </button>
+        }
+      </nav>
+
+      <main class="detalle">
+        @if (paso() === 0) {
+          @let g = guia()!;
+          <p class="etiqueta-seccion">Preparación</p>
+          <h1>Antes de empezar</h1>
+          @if (g.descripcion) {
+            <p class="descripcion">{{ g.descripcion }}</p>
+          }
+          @if (g.seguridadInd) {
+            <div class="aviso-seguridad">
+              <span class="material-icons" aria-hidden="true">health_and_safety</span>
+              <div><strong>Seguridad industrial:</strong> {{ g.seguridadInd }}</div>
+            </div>
+          }
+          @if (g.seguridadAmb) {
+            <div class="aviso-seguridad">
+              <span class="material-icons" aria-hidden="true">eco</span>
+              <div><strong>Medidas ambientales:</strong> {{ g.seguridadAmb }}</div>
+            </div>
+          }
+          <div class="prep">
+            @if (g.herramientas) {
+              <div>
+                <h3 class="etiqueta-seccion">Herramientas</h3>
+                <p>{{ g.herramientas }}</p>
+              </div>
+            }
+            @if (g.insumos) {
+              <div>
+                <h3 class="etiqueta-seccion">Insumos y repuestos</h3>
+                <p>{{ g.insumos }}</p>
+              </div>
+            }
+            @if (g.importante) {
+              <div>
+                <h3 class="etiqueta-seccion">Importante</h3>
+                <p>{{ g.importante }}</p>
+              </div>
+            }
+            <div>
+              <h3 class="etiqueta-seccion">Resumen</h3>
+              <p>
+                {{ pasos().length }} pasos · {{ totalVerificaciones() }} verificaciones · {{ g.duracion }} h ·
+                {{ g.personal }} {{ g.personal === 1 ? 'persona' : 'personas' }}
+              </p>
+            </div>
+          </div>
+        } @else if (actual(); as p) {
+          <p class="etiqueta-seccion">Paso {{ paso() }}</p>
+          <h1>{{ p.nombre }}</h1>
+          @if (p.descripcion) {
+            <p class="descripcion">{{ p.descripcion }}</p>
+          }
+
+          <div class="checks">
+            @for (v of p.valid; track v.id) {
+              <button
+                type="button"
+                class="check-item"
+                [class.on]="cumple(v)"
+                [attr.aria-pressed]="cumple(v)"
+                [disabled]="finalizada()"
+                (click)="marcar(v)"
+              >
+                <span class="caja" aria-hidden="true"><span class="material-icons">check</span></span>
+                <span class="texto">
+                  {{ v.nombre }}
+                  @if (v.descripcion) {
+                    <small>{{ v.descripcion }}</small>
+                  }
+                </span>
+                @if (v.requiereFoto) {
+                  <span class="material-icons foto-req" aria-label="Requiere foto">photo_camera</span>
+                }
+              </button>
+            } @empty {
+              <p class="muted">Este paso no tiene verificaciones.</p>
+            }
+          </div>
+
+          @if (fotosPaso().length) {
+            <p class="etiqueta-seccion" style="margin-top: 8px">
+              <span class="material-icons" aria-hidden="true" style="font-size: 18px; vertical-align: -3px"
+                >photo_camera</span
+              >
+              Evidencia que pide la guía
+            </p>
+            <div class="fotos">
+              @for (v of fotosPaso(); track v.id) {
+                @let f = fotoDe(v);
+                <div class="foto-slot" [class.cargada]="!!f">
+                  @if (f) {
+                    <app-foto class="mini" [id]="f.id" [alt]="'Evidencia: ' + v.nombre" />
+                  } @else {
+                    <span class="mini vacia" aria-hidden="true"><span class="material-icons">add_a_photo</span></span>
+                  }
+                  <span class="info">
+                    <strong>{{ v.nombre }}</strong>
+                    <small>{{ f ? 'Cargada' : 'Obligatoria' }}</small>
+                  </span>
+                  @if (!finalizada()) {
+                    <app-tomar-foto
+                      [clase]="f ? 'btn btn-soft' : 'btn btn-primary'"
+                      [deshabilitado]="ocupado() !== null"
+                      (foto)="subirFoto(v, $event)"
+                    >
+                      {{ ocupado() === v.id ? 'Subiendo…' : f ? 'Repetir' : 'Tomar foto' }}
+                    </app-tomar-foto>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (esUltimo() && !finalizada()) {
+            <div class="form-group" style="margin-top: 8px">
+              <label for="obs">Observación final (opcional)</label>
+              <textarea
+                id="obs"
+                [(ngModel)]="observacion"
+                placeholder="Hallazgos, repuestos usados, recomendaciones"
+              ></textarea>
+            </div>
+          }
+        }
+
+        <div class="pie">
+          <button class="btn btn-secondary btn-xl" type="button" [disabled]="paso() === 0" (click)="ir(paso() - 1)">
+            <span class="material-icons" aria-hidden="true">chevron_left</span> Anterior
+          </button>
+          <span class="estado-paso muted">
+            @if (actual()) {
+              {{ mensajePaso() }}
+            } @else {
+              {{ cumplidas() }}/{{ totalVerificaciones() }} verificaciones
+            }
+          </span>
+          @if (paso() === 0) {
+            <button class="btn btn-accent btn-xl" type="button" (click)="ir(1)" [disabled]="!pasos().length">
+              {{ a.estadoEjec === 'Pendiente' ? 'Comenzar' : 'Ir a los pasos' }}
+              <span class="material-icons" aria-hidden="true">chevron_right</span>
+            </button>
+          } @else if (!esUltimo()) {
+            <button class="btn btn-accent btn-xl" type="button" [disabled]="!pasoListo()" (click)="siguiente()">
+              Siguiente paso <span class="material-icons" aria-hidden="true">chevron_right</span>
+            </button>
+          } @else if (!finalizada()) {
+            <button
+              class="btn btn-accent btn-xl"
+              type="button"
+              [disabled]="!pasoListo() || cumplidas() < totalVerificaciones() || ocupado() !== null"
+              (click)="finalizar()"
+            >
+              <span class="material-icons" aria-hidden="true">flag</span> Finalizar actividad
+            </button>
+          }
+        </div>
+      </main>
+    </div>
+  }
+} @else {
+  <div class="cargando">Cargando…</div>
+}

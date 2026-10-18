@@ -38,6 +38,43 @@ def call(method, url, token=None, body=None):
             return e.code, raw.decode(errors="replace")
 
 
+def upload(url, token, campos, archivo, contenido, content_type="image/png"):
+    """POST multipart/form-data con un archivo (campo 'archivo')."""
+    limite = uuid.uuid4().hex
+    partes = []
+    for k, v in campos.items():
+        partes.append(f'--{limite}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode())
+    partes.append((f'--{limite}\r\nContent-Disposition: form-data; name="archivo"; filename="{archivo}"\r\n'
+                   f"Content-Type: {content_type}\r\n\r\n").encode() + contenido + b"\r\n")
+    partes.append(f"--{limite}--\r\n".encode())
+    req = urllib.request.Request(url, data=b"".join(partes), method="POST")
+    req.add_header("Content-Type", f"multipart/form-data; boundary={limite}")
+    req.add_header("Authorization", f"Bearer {token}")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return r.status, json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        raw = e.read()
+        try:
+            return e.code, json.loads(raw) if raw else None
+        except ValueError:
+            return e.code, raw.decode(errors="replace")
+
+
+def download(url, token):
+    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return r.status, r.headers.get("Content-Type"), r.read()
+    except urllib.error.HTTPError as e:
+        return e.code, None, e.read()
+
+
+# PNG 1x1 válido
+PNG = bytes.fromhex("89504e470d0a1a0a0000000d4948445200000001000000010806000000"
+                    "1f15c4890000000d49444154789c6360000002000154a24f5d0000000049454e44ae426082")
+
+
 def check(nombre, cond, detalle=""):
     print(("  OK   " if cond else "  FAIL ") + nombre + ("" if cond else f"  -> {detalle}"))
     if not cond:
@@ -148,6 +185,59 @@ def main():
     s, b = call("GET", f"{M}/actividad/{act}", root)
     check("actividad muestra cuadrilla y nº equipos", s == 200 and b["cuadNombre"] == "Cuadrilla mecánica" and b["numEquipos"] == 1, (s, b))
 
+    print("== Operación en campo: ejecución, fotos y fallas")
+    s, b = call("POST", f"{M}/guia", root, {"nombre": "Cambio de sello", "idComp": compA, "intervalo": 90, "personal": 1,
+                                             "duracion": 2, "proced": [{"nombre": "Montaje", "valid": [
+                                                 {"nombre": "Eje limpio"}, {"nombre": "Sello instalado", "requiereFoto": True}]}]})
+    idGuiaFoto = b["id"]
+    s, g = call("GET", f"{M}/guia/{idGuiaFoto}", root)
+    v1, v2 = g["proced"][0]["valid"]
+    check("la guía guarda 'requiere foto'", v2["requiereFoto"] is True and v1["requiereFoto"] is False, g)
+    s, b = call("POST", f"{M}/equipo", root, {"nombre": "Bomba P-202", "idComp": compA,
+                                               "ubicacion": {"tipoUbicacion": "Produccion", "idSeccionArea": secProd}})
+    equipo2 = b["id"]
+    s, b = call("POST", f"{M}/actividadequipo", root, {"idActividad": act, "idEquipo": equipo2, "idGuia": idGuiaFoto})
+    ae = b["id"]
+    s, b = call("GET", f"{M}/actividadequipo?IdCuad={cuad}&FechaDesde=2026-10-20&FechaHasta=2026-10-20", root)
+    fila = next((x for x in b if x["id"] == ae), None) if s == 200 else None
+    check("equipos del día por cuadrilla, con progreso y ubicación",
+          fila and fila["estadoEjec"] == "Pendiente" and fila["totalValid"] == 2 and fila["ubicacionNombre"], (s, b))
+    s, b = call("PUT", f"{M}/actividadequipo/{ae}/resultados/{v1['id']}", root, {"cumple": True})
+    check("marcar verificación", s == 200, (s, b))
+    s, b = call("GET", f"{M}/actividadequipo/{ae}", root)
+    check("la primera marca inicia la ejecución", b["estadoEjec"] == "EnCurso" and b["validCumplidas"] == 1, b)
+    s, b = call("PUT", f"{M}/actividadequipo/{ae}/resultados/no-existe", root, {"cumple": True})
+    check("verificación ajena a la guía -> 404", s == 404, (s, b))
+    s, b = call("POST", f"{M}/actividadequipo/{ae}/finalizar", root, {})
+    check("finalizar con verificaciones pendientes -> 400", s == 400, (s, b))
+    call("PUT", f"{M}/actividadequipo/{ae}/resultados/{v2['id']}", root, {"cumple": True})
+    s, b = call("POST", f"{M}/actividadequipo/{ae}/finalizar", root, {})
+    check("finalizar sin la foto que exige la guía -> 400", s == 400 and "foto" in str(b), (s, b))
+    s, b = upload(f"{M}/adjunto", root, {"entidad": "Ejecucion", "idEntidad": ae, "ref": v2["id"]}, "sello.png", PNG)
+    check("subir foto de evidencia", s == 201, (s, b))
+    fotoEvidencia = b["id"]
+    s, b = upload(f"{M}/adjunto", root, {"entidad": "Equipo", "idEntidad": equipo2}, "notas.txt", b"hola", "text/plain")
+    check("adjunto que no es imagen -> 400", s == 400, (s, b))
+    s, ctype, datos = download(f"{M}/adjunto/{fotoEvidencia}/archivo", root)
+    check("descargar foto (mismos bytes)", s == 200 and ctype == "image/png" and datos == PNG, (s, ctype))
+    s, b = call("POST", f"{M}/actividadequipo/{ae}/finalizar", root, {"observacion": "Sin novedad"})
+    check("finalizar con checklist y fotos completos", s == 200, (s, b))
+    s, b = call("PUT", f"{M}/actividadequipo/{ae}/resultados/{v1['id']}", root, {"cumple": False})
+    check("ejecución finalizada no admite cambios -> 400", s == 400, (s, b))
+    s, b = upload(f"{M}/adjunto", root, {"entidad": "Equipo", "idEntidad": equipo2}, "vista.png", PNG)
+    check("subir foto del equipo", s == 201, (s, b))
+    fotoEquipo = b["id"]
+    s, b = call("GET", f"{M}/adjunto?entidad=Equipo&idEntidad={equipo2}", root)
+    check("listar fotos del equipo", s == 200 and len(b) == 1 and b[0]["tamano"] == len(PNG), (s, b))
+    s, b = call("POST", f"{M}/falla", root, {"idEquipo": equipo2, "tipo": "Fuga", "prioridad": "Critica",
+                                              "equipoDetenido": True, "descripcion": "Goteo en el sello"})
+    check("reportar falla", s == 201, (s, b))
+    falla = b["id"]
+    s, b = call("GET", f"{M}/falla/{falla}", root)
+    check("la falla queda abierta y con el equipo", s == 200 and b["estadoFalla"] == "Abierta" and b["equipoNombre"] == "Bomba P-202", (s, b))
+    s, b = call("POST", f"{M}/falla", root, {"idEquipo": equipo2, "tipo": "Explosion", "prioridad": "Alta"})
+    check("tipo de falla inválido -> 400", s == 400, (s, b))
+
     print("== Turnos y horarios")
     s, b = call("POST", f"{U}/turno", root, {"nombre": "Mañana", "idComp": compA, "horaInicio": "06:00", "horaFin": "14:00"})
     check("crear turno", s == 201, (s, b))
@@ -189,6 +279,14 @@ def main():
     check("Admin B solo ve su compañía", s == 200 and len(b) == 1 and b[0]["id"] == compB, (s, b))
     s, b = call("POST", f"{M}/comp", tb, {"nombre": "Hack"})
     check("Admin B no crea compañías -> 403", s == 403, (s, b))
+    s, _, _ = download(f"{M}/adjunto/{fotoEquipo}/archivo", tb)
+    check("Admin B no descarga fotos de A -> 404", s == 404, s)
+    s, b = upload(f"{M}/adjunto", tb, {"entidad": "Equipo", "idEntidad": equipo2}, "x.png", PNG)
+    check("Admin B no sube fotos a equipos de A -> 404", s == 404, (s, b))
+    s, b = call("POST", f"{M}/falla", tb, {"idEquipo": equipo2, "tipo": "Fuga", "prioridad": "Alta"})
+    check("Admin B no reporta fallas de equipos de A -> 404", s == 404, (s, b))
+    s, b = call("GET", f"{M}/falla", tb)
+    check("Admin B no ve fallas de A", s == 200 and all(f["idComp"] == compB for f in b), (s, b))
     s, b = call("POST", f"{U}/auth/me/password", tb, {"actual": "Clave#Segura1", "nueva": "Clave#Nueva22"})
     check("cambio de contraseña propia", s == 200, (s, b))
     s, b = call("POST", f"{U}/auth", body={"usuario": f"adminb{sfx}", "contrasenia": "Clave#Nueva22"})

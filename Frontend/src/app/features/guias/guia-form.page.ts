@@ -16,11 +16,25 @@ import { NotifyService } from '../../core/ui/notify.service';
   templateUrl: './guia-form.page.html',
   styles: `
     .paso {
-      border: 1px solid var(--sync-border);
-      border-radius: 6px;
-      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
       margin-bottom: 12px;
-      background: #fbfcfd;
+      background: var(--bg-2);
+    }
+    .paso input:not([type='checkbox']) {
+      min-height: 44px;
+      padding: 8px 12px;
+      border: 2px solid var(--line);
+      border-radius: 10px;
+      font: inherit;
+      background: #fff;
+      box-sizing: border-box;
+      width: 100%;
+      &:focus {
+        outline: none;
+        border-color: var(--ink);
+      }
     }
     .paso-cab {
       display: flex;
@@ -28,9 +42,9 @@ import { NotifyService } from '../../core/ui/notify.service';
       align-items: flex-start;
     }
     .paso-cab .num {
+      font-family: var(--mono);
       font-weight: 600;
-      color: var(--sync-navy);
-      padding-top: 8px;
+      padding-top: 10px;
       min-width: 24px;
     }
     .paso-cab .campos {
@@ -40,18 +54,22 @@ import { NotifyService } from '../../core/ui/notify.service';
       gap: 8px;
     }
     .validaciones {
-      margin: 8px 0 0 32px;
+      margin: 10px 0 0 32px;
     }
     .valid {
       display: grid;
-      grid-template-columns: 1fr 2fr auto;
+      grid-template-columns: 1fr 2fr auto auto;
       gap: 8px;
       margin-bottom: 6px;
       align-items: center;
     }
-    .valid .material-icons.check {
-      color: var(--sync-green);
-      font-size: 18px;
+    .check.foto {
+      font-size: 14px;
+      white-space: nowrap;
+      .material-icons {
+        font-size: 18px;
+        color: var(--muted);
+      }
     }
     @media (max-width: 800px) {
       .paso-cab .campos,

@@ -1,4 +1,4 @@
-// Tema de Angular Material (M3) con la paleta de SYNC
+// Tema de Angular Material (M3): neutro, para que diálogos y snackbars combinen con el sistema visual de SYNC
 @use '@angular/material' as mat;
 
 html {
@@ -6,11 +6,20 @@ html {
   @include mat.theme(
     (
       color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$green-palette,
+        primary: mat.$orange-palette,
+        tertiary: mat.$blue-palette,
       ),
-      typography: Roboto,
+      typography: (
+        plain-family: "'IBM Plex Sans', system-ui, sans-serif",
+        brand-family: "'IBM Plex Sans', system-ui, sans-serif",
+      ),
       density: 0,
+    )
+  );
+  @include mat.dialog-overrides(
+    (
+      container-shape: 16px,
+      container-color: #fff,
     )
   );
 }

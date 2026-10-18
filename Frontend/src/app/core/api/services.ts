@@ -1,15 +1,21 @@
-import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '@env/environment';
 import { CrudService } from './crud.service';
 import {
   Actividad,
   ActividadEquipo,
+  Adjunto,
   Area,
   Comp,
   Credencial,
   Cuad,
+  EjecucionValid,
+  EntidadAdjunto,
   Equipo,
   Esp,
+  Falla,
   Guia,
   GuiaEquipo,
   Horario,
@@ -87,6 +93,60 @@ export class ActividadService extends CrudService<Actividad> {
 @Injectable({ providedIn: 'root' })
 export class ActividadEquipoService extends CrudService<ActividadEquipo> {
   protected readonly recurso = 'actividadequipo';
+
+  // Ejecución en campo
+  resultados(id: string): Observable<EjecucionValid[]> {
+    return this.http.get<EjecucionValid[]>(`${this.url}/${encodeURIComponent(id)}/resultados`);
+  }
+
+  marcar(id: string, idValid: string, cumple: boolean, observacion?: string | null): Observable<Mensaje> {
+    return this.http.put<Mensaje>(`${this.url}/${encodeURIComponent(id)}/resultados/${encodeURIComponent(idValid)}`, {
+      cumple,
+      observacion,
+    });
+  }
+
+  finalizar(id: string, observacion?: string | null): Observable<Mensaje> {
+    return this.http.post<Mensaje>(`${this.url}/${encodeURIComponent(id)}/finalizar`, { observacion });
+  }
+
+  reabrir(id: string): Observable<Mensaje> {
+    return this.http.post<Mensaje>(`${this.url}/${encodeURIComponent(id)}/reabrir`, {});
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class FallaService extends CrudService<Falla> {
+  protected readonly recurso = 'falla';
+}
+
+/** Fotos de equipos, evidencias de ejecución y fotos de fallas. */
+@Injectable({ providedIn: 'root' })
+export class AdjuntoService {
+  private readonly http = inject(HttpClient);
+  private readonly url = `${environment.apiUrl}/adjunto`;
+
+  list(entidad: EntidadAdjunto, idEntidad: string): Observable<Adjunto[]> {
+    return this.http.get<Adjunto[]>(this.url, { params: { entidad, idEntidad } });
+  }
+
+  /** Bytes de la imagen (las imágenes requieren el token, por eso no se usan como src directo). */
+  archivo(id: string): Observable<Blob> {
+    return this.http.get(`${this.url}/${encodeURIComponent(id)}/archivo`, { responseType: 'blob' });
+  }
+
+  subir(entidad: EntidadAdjunto, idEntidad: string, archivo: Blob, nombre: string, ref?: string): Observable<Mensaje> {
+    const form = new FormData();
+    form.append('entidad', entidad);
+    form.append('idEntidad', idEntidad);
+    if (ref) form.append('ref', ref);
+    form.append('archivo', archivo, nombre);
+    return this.http.post<Mensaje>(this.url, form);
+  }
+
+  delete(id: string): Observable<Mensaje> {
+    return this.http.delete<Mensaje>(`${this.url}/${encodeURIComponent(id)}`);
+  }
 }
 
 @Injectable({ providedIn: 'root' })

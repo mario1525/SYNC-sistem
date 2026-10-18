@@ -1,7 +1,10 @@
 <div class="page-header">
-  <h2>{{ esNueva() ? 'Nueva guía' : guia().nombre }}</h2>
+  <div>
+    <p class="subtitulo">{{ esNueva() ? 'Nueva guía de mantenimiento' : 'Editar guía' }}</p>
+    <h2>{{ esNueva() ? 'Nueva guía' : guia().nombre }}</h2>
+  </div>
   <div class="acciones">
-    <a class="btn btn-secondary" routerLink="/guia">Volver</a>
+    <a class="btn btn-secondary" [routerLink]="esNueva() ? ['/guia'] : ['/guia', id()]">Volver</a>
   </div>
 </div>
 
@@ -157,6 +160,10 @@
                   placeholder="Criterio de aceptación"
                   aria-label="Criterio de aceptación"
                 />
+                <label class="check foto" [title]="'El técnico debe adjuntar una foto al ejecutar esta verificación'">
+                  <input type="checkbox" [name]="'v-foto-' + i + '-' + j" [(ngModel)]="v.requiereFoto" />
+                  <span class="material-icons" aria-hidden="true">photo_camera</span> Requiere foto
+                </label>
                 @if (puedeEditar) {
                   <button class="btn btn-icon peligro" type="button" title="Quitar" (click)="quitarValidacion(p, j)">
                     <span class="material-icons">close</span>

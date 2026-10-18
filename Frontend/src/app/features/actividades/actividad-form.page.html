@@ -1,0 +1,204 @@
+<div class="page-header">
+  <div>
+    <p class="subtitulo">{{ esNueva() ? 'Nueva actividad' : 'Actividad programada' }}</p>
+    <h2>
+      {{
+        esNueva() ? 'Programar actividad' : actividad().descripcion || actividad().tipoActividadNombre || 'Actividad'
+      }}
+    </h2>
+  </div>
+  <div class="acciones"><a class="btn btn-secondary" routerLink="/actividad">Volver a programación</a></div>
+</div>
+
+<div class="dos-columnas">
+  <form class="card principal" #f="ngForm" (ngSubmit)="guardar()" style="margin: 0">
+    <h3>Datos de la actividad</h3>
+    <fieldset class="sin-borde" [disabled]="!puedeEditar">
+      <div class="form-group" style="margin-bottom: 16px">
+        <span class="sr-only" id="lbl-tipo">Tipo de actividad</span>
+        <div class="seg" role="radiogroup" aria-labelledby="lbl-tipo" style="flex-wrap: wrap">
+          @for (t of tipos(); track t.id) {
+            <button
+              type="button"
+              role="radio"
+              [attr.aria-checked]="actividad().idTipoActividad === t.id"
+              (click)="actividad.set({ ...actividad(), idTipoActividad: t.id! })"
+            >
+              {{ t.nombre }}
+            </button>
+          }
+        </div>
+        @if (tipos().length === 0) {
+          <span class="error">Primero cree tipos de actividad en Catálogos.</span>
+        }
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="fecha">Fecha y hora *</label>
+          <input id="fecha" name="fecha" type="datetime-local" [(ngModel)]="fechaHora" required />
+        </div>
+        <div class="form-group">
+          <label for="cuad">Cuadrilla responsable</label>
+          <select id="cuad" name="idCuad" [(ngModel)]="actividad().idCuad">
+            <option [ngValue]="null">— Sin asignar —</option>
+            @for (c of cuadrillas(); track c.id) {
+              <option [ngValue]="c.id">{{ c.nombre }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="intervalo">Repetir cada (días, 0 = única)</label>
+          <input id="intervalo" name="intervalo" type="number" min="0" [(ngModel)]="actividad().intervalo" />
+        </div>
+        <div class="form-group">
+          <label for="ubicacion">Lugar</label>
+          <input id="ubicacion" name="ubicacion" [(ngModel)]="actividad().ubicacion" />
+        </div>
+        <div class="form-group ancho">
+          <label for="descripcion">Descripción</label>
+          <input
+            id="descripcion"
+            name="descripcion"
+            [(ngModel)]="actividad().descripcion"
+            placeholder="Ej.: PM bombas línea 2"
+          />
+        </div>
+        <div class="form-group ancho">
+          <label for="detalle">Detalle / instrucciones</label>
+          <textarea id="detalle" name="detalle" [(ngModel)]="actividad().detalle"></textarea>
+        </div>
+      </div>
+      @if (puedeEditar) {
+        <div class="form-actions">
+          <button
+            class="btn btn-accent btn-lg"
+            type="submit"
+            [disabled]="f.invalid || !actividad().idTipoActividad || guardando()"
+          >
+            <span class="material-icons" aria-hidden="true">save</span>
+            {{ esNueva() ? 'Programar y agregar equipos' : 'Guardar cambios' }}
+          </button>
+        </div>
+      }
+    </fieldset>
+  </form>
+
+  <section class="card lateral" style="margin: 0">
+    <h3>Equipos a intervenir y guía</h3>
+    @if (esNueva()) {
+      <p class="muted" style="margin: 0">
+        Guarda la actividad para agregar los equipos. Con cada equipo se cargan los pasos de su guía.
+      </p>
+    } @else {
+      @for (ae of equiposActividad(); track ae.id) {
+        <div class="equipo-ae">
+          <div class="ae-cab">
+            <span class="crece">
+              <a [routerLink]="['/equipo', ae.idEquipo]"
+                ><strong>{{ ae.equipoNombre }}</strong></a
+              >
+              <span class="muted" style="display: block; font-size: 14px">{{ ae.guiaNombre ?? 'Sin guía' }}</span>
+            </span>
+            <span class="badge" [class.oscuro]="ae.estadoEjec === 'Completada'">
+              <span
+                class="punto"
+                [class.encurso]="ae.estadoEjec === 'EnCurso'"
+                [class.completada]="ae.estadoEjec === 'Completada'"
+              ></span>
+              {{ estados[ae.estadoEjec ?? 'Pendiente'] }}
+              @if (ae.totalValid) {
+                <span class="mono">{{ ae.validCumplidas }}/{{ ae.totalValid }}</span>
+              }
+            </span>
+            <a class="btn btn-soft" [routerLink]="['/ejecucion', ae.id]">{{
+              ae.estadoEjec === 'Completada' ? 'Ver' : 'Ejecutar'
+            }}</a>
+            @if (puedeEditar && ae.estadoEjec === 'Pendiente') {
+              <button
+                class="btn btn-icon peligro"
+                type="button"
+                [attr.aria-label]="'Quitar ' + ae.equipoNombre"
+                (click)="quitarEquipo(ae)"
+              >
+                <span class="material-icons" aria-hidden="true">remove_circle_outline</span>
+              </button>
+            }
+          </div>
+          @if (ae.idGuia) {
+            <button class="cargados" type="button" [attr.aria-expanded]="expandido() === ae.id" (click)="alternar(ae)">
+              <span class="material-icons" aria-hidden="true" style="font-size: 18px">checklist</span>
+              <span class="crece"
+                >Actividades cargadas de la guía{{ resumen(ae.idGuia) ? ' · ' + resumen(ae.idGuia) : '' }}</span
+              >
+              <span class="material-icons" aria-hidden="true">{{
+                expandido() === ae.id ? 'expand_less' : 'expand_more'
+              }}</span>
+            </button>
+            @if (expandido() === ae.id) {
+              <ol>
+                @for (p of detalles()[ae.idGuia]?.proced ?? []; track p.id) {
+                  <li>
+                    {{ p.nombre }}
+                    <span class="muted">
+                      · {{ p.valid.length }} verif.
+                      @for (v of p.valid; track v.id) {
+                        @if (v.requiereFoto) {
+                          <span
+                            class="material-icons"
+                            style="font-size: 15px; vertical-align: -2px"
+                            aria-label="Requiere foto"
+                            >photo_camera</span
+                          >
+                        }
+                      }
+                    </span>
+                  </li>
+                } @empty {
+                  <li class="muted">Cargando pasos…</li>
+                }
+              </ol>
+            }
+          }
+        </div>
+      } @empty {
+        <div class="vacio-bloque" style="margin-bottom: 12px">Aún no hay equipos en esta actividad.</div>
+      }
+
+      @if (puedeEditar) {
+        <div style="display: grid; gap: 10px; margin-top: 12px">
+          <div class="form-group">
+            <label for="equipo">Agregar equipo</label>
+            <select id="equipo" [(ngModel)]="nuevoEquipo" (ngModelChange)="elegirEquipo()">
+              <option value="">— Seleccione —</option>
+              @for (e of equiposDisponibles(); track e.id) {
+                <option [value]="e.id">{{ e.nombre }}{{ e.nSerie ? ' · ' + e.nSerie : '' }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="guia">Guía a aplicar</label>
+            <select id="guia" [(ngModel)]="nuevaGuia" (ngModelChange)="elegirGuia()">
+              <option value="">— Ninguna —</option>
+              @for (g of guias(); track g.id) {
+                <option [value]="g.id">
+                  {{ g.nombre }}{{ guiasDelEquipo().includes(g.id!) ? ' (asignada al equipo)' : '' }}
+                </option>
+              }
+            </select>
+            @if (nuevaGuia && resumen(nuevaGuia)) {
+              <p class="previa">
+                <span class="material-icons" aria-hidden="true" style="font-size: 16px; vertical-align: -3px"
+                  >checklist</span
+                >
+                Se cargarán {{ resumen(nuevaGuia) }}
+              </p>
+            }
+          </div>
+          <button class="btn btn-primary btn-lg" type="button" [disabled]="!nuevoEquipo" (click)="agregarEquipo()">
+            <span class="material-icons" aria-hidden="true">add</span> Agregar equipo
+          </button>
+        </div>
+      }
+    }
+  </section>
+</div>

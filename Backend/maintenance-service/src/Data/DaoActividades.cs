@@ -96,6 +96,10 @@ namespace Data
             Sql.P("@IdEquipo", Sql.NullIfEmpty(f.IdEquipo)),
             Sql.P("@IdGuia", Sql.NullIfEmpty(f.IdGuia)),
             Sql.P("@IdComp", Sql.NullIfEmpty(f.IdComp)),
+            Sql.P("@IdCuad", Sql.NullIfEmpty(f.IdCuad)),
+            Sql.P("@FechaDesde", f.FechaDesde),
+            Sql.P("@FechaHasta", f.FechaHasta),
+            Sql.P("@EstadoEjec", Sql.NullIfEmpty(f.EstadoEjec)),
             Sql.P("@Estado", f.Estado)
         ];
 
@@ -115,10 +119,62 @@ namespace Data
             IdEquipo = r.Str("IdEquipo"),
             IdGuia = r.StrOrNull("IdGuia"),
             EquipoNombre = r.StrOrNull("EquipoNombre"),
+            EquipoSerie = r.StrOrNull("EquipoSerie"),
             GuiaNombre = r.StrOrNull("GuiaNombre"),
+            GuiaDuracion = r.Int("GuiaDuracion"),
             FechaEjecucion = r.Date("FechaEjecucion"),
+            ActividadDescripcion = r.StrOrNull("ActividadDescripcion"),
+            TipoActividadNombre = r.StrOrNull("TipoActividadNombre"),
+            IdCuad = r.StrOrNull("IdCuad"),
+            CuadNombre = r.StrOrNull("CuadNombre"),
+            UbicacionNombre = r.StrOrNull("UbicacionNombre"),
+            EstadoEjec = r.Has("EstadoEjec") ? r.Str("EstadoEjec") : ActividadEquipo.Pendiente,
+            FechaInicio = r.Date("FechaInicio"),
+            FechaFin = r.Date("FechaFin"),
+            IdUserEjec = r.StrOrNull("IdUserEjec"),
+            Observacion = r.StrOrNull("Observacion"),
+            TotalValid = r.Int("TotalValid"),
+            ValidCumplidas = r.Int("ValidCumplidas"),
             Estado = r.Bool("Estado"),
             Fecha_log = r.Date("Fecha_log")
         };
+
+        // ------------------------------------------------------------ Ejecución en campo
+
+        public virtual async Task<List<EjecucionValid>> GetResultadosAsync(string idActividadEquipo, CancellationToken ct = default)
+        {
+            var table = await Db.QueryAsync("dbo.db_Sp_EjecucionValid_Get", [Sql.P("@IdActividadEquipo", idActividadEquipo)], ct);
+            return table.MapRows(r => new EjecucionValid
+            {
+                Id = r.Str("Id"),
+                IdActividadEquipo = r.Str("IdActividadEquipo"),
+                IdValid = r.Str("IdValid"),
+                Cumple = r.Bool("Cumple"),
+                Observacion = r.StrOrNull("Observacion"),
+                IdUser = r.StrOrNull("IdUser"),
+                Fecha = r.Date("Fecha")
+            });
+        }
+
+        /// <summary>Registra o corrige el resultado de una verificación (inicia la ejecución si estaba pendiente).</summary>
+        public virtual Task SetResultadoAsync(EjecucionValid e, CancellationToken ct = default) =>
+            Db.ExecuteAsync("dbo.db_Sp_EjecucionValid_Set",
+            [
+                Sql.P("@Id", e.Id),
+                Sql.P("@IdActividadEquipo", e.IdActividadEquipo),
+                Sql.P("@IdValid", e.IdValid),
+                Sql.P("@Cumple", e.Cumple),
+                Sql.P("@Observacion", Sql.NullIfEmpty(e.Observacion)),
+                Sql.P("@IdUser", e.IdUser)
+            ], ct);
+
+        public virtual Task SetEjecucionAsync(string id, string estadoEjec, string? idUser, string? observacion, CancellationToken ct = default) =>
+            Db.ExecuteAsync("dbo.db_Sp_ActividadEquipo_Ejecucion",
+            [
+                Sql.P("@Id", id),
+                Sql.P("@EstadoEjec", estadoEjec),
+                Sql.P("@IdUser", idUser),
+                Sql.P("@Observacion", Sql.NullIfEmpty(observacion))
+            ], ct);
     }
 }

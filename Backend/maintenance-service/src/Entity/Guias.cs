@@ -69,6 +69,8 @@ namespace Entity
         public string? IdGuia { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public string? Descripcion { get; set; }
+        /// <summary>La verificación exige una foto como evidencia al ejecutarla.</summary>
+        public bool RequiereFoto { get; set; }
         public bool Estado { get; set; } = true;
         public DateTime? Fecha_log { get; set; }
     }

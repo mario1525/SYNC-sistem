@@ -5,16 +5,16 @@
 
 ---
 
-## 0. Estado de ejecución (actualizado 2026-10-13, rama `fase-0-1-2`)
+## 0. Estado de ejecución (actualizado 2026-10-15, rama `fase-0-1-2`)
 
-**Fases 0, 1 y 2: implementadas y verificadas.** Las secciones 1 y 2 describen el estado *anterior* (diagnóstico original).
+**Fases 0, 1 y 2: implementadas y verificadas.** Además, un primer corte de **operación en campo** (adelanto de las fases 3 y 4, ver abajo). Las secciones 1 y 2 describen el estado *anterior* (diagnóstico original).
 
 | Verificación | Resultado |
 |---|---|
 | `dotnet build` de la solución `Backend/Sync.sln` (.NET 10) | ✅ sin errores |
-| Pruebas unitarias backend (xUnit) | ✅ 34/34 |
+| Pruebas unitarias backend (xUnit) | ✅ 42/42 (incluye `CampoTests`) |
 | Migraciones sobre BD vacía y re-ejecución (idempotencia) | ✅ |
-| Smoke test end-to-end a través del gateway, stack completo en Docker | ✅ 49/49 verificaciones (auth, CRUD, ubicaciones, árbol de guía, tenant, roles, errores) |
+| Smoke test end-to-end a través del gateway, stack completo en Docker | ✅ todas (auth, CRUD, ubicaciones, árbol de guía, ejecución en campo, fotos, fallas, tenant, roles, errores) |
 | Frontend Angular 22: lint, pruebas (Vitest) y build de producción | ✅ lint limpio · 8/8 pruebas · build OK |
 | Verificación manual en navegador (login, equipos, planta, guía, cuadrilla, usuarios, perfil, móvil) | ✅ |
 
@@ -25,6 +25,13 @@
 - **Logging:** se usa el logger JSON nativo de .NET (estructurado, con trace/span id) en lugar de Serilog, para no añadir dependencias.
 - **Tests de integración de SP:** en lugar de Testcontainers, el smoke test corre contra el stack real en Docker, tanto en local como en CI.
 - **Frontend reconstruido** (no migrado por pasos): standalone, signals y sin zone.js, con layout común y servicio CRUD genérico. La fase 2 cubría Actividad, Cuadrilla, Turnos, Horarios, Perfil, Usuarios, Área y Sección, Equipo con ubicación y guías, y el editor de Proced→Valid; todo quedó implementado.
+
+**Operación en campo (adelanto de las fases 3 y 4)**, sobre las tablas existentes en lugar de la `OrdenTrabajo` completa:
+
+- Migración `004__ejecucion_fallas_adjuntos.sql`: `Valid.RequiereFoto`, estado de ejecución en `Actividad_Equipo` (`Pendiente → EnCurso → Completada`), `EjecucionValid`, `Falla` y `Adjunto` (fotos en la BD), con fechas en `DATETIME2`.
+- API: checklist por equipo (`/actividadequipo/{id}/resultados`, `finalizar`, `reabrir`), `/falla` y `/adjunto` (multipart, JPG/PNG/WebP ≤ 8 MB), con rutas en el gateway.
+- Front: inicio con las intervenciones del día, pantalla de ejecución paso a paso con fotos obligatorias, ficha de equipo con fotos, reporte y bandeja de fallas.
+- Falta para cerrar la fase 3 tal como está planteada: OT con máquina de estados, plan preventivo, modo de falla obligatorio, lecturas de medidores y KPIs. Falta para la fase 4: offline (PWA) y QR.
 
 **Pendientes de las fases 0–2** (no bloquean la fase 3):
 

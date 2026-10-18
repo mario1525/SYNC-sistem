@@ -109,6 +109,8 @@ export interface Valid extends Entidad {
   idProced?: string;
   nombre: string;
   descripcion?: string;
+  /** La verificación exige una foto como evidencia al ejecutarla. */
+  requiereFoto?: boolean;
 }
 
 export interface Proced extends Entidad {
@@ -171,13 +173,105 @@ export interface Actividad extends Entidad {
   numEquipos?: number;
 }
 
+export type EstadoEjec = 'Pendiente' | 'EnCurso' | 'Completada';
+
+export const ESTADO_EJEC: Record<EstadoEjec, string> = {
+  Pendiente: 'Pendiente',
+  EnCurso: 'En curso',
+  Completada: 'Completada',
+};
+
+/** Equipo intervenido en una actividad y su ejecución en campo. */
 export interface ActividadEquipo extends Entidad {
   idActividad: string;
   idEquipo: string;
   idGuia?: string | null;
+  // Solo lectura
   equipoNombre?: string;
+  equipoSerie?: string | null;
   guiaNombre?: string;
+  guiaDuracion?: number;
   fechaEjecucion?: string;
+  actividadDescripcion?: string | null;
+  tipoActividadNombre?: string | null;
+  idCuad?: string | null;
+  cuadNombre?: string | null;
+  ubicacionNombre?: string | null;
+  estadoEjec?: EstadoEjec;
+  fechaInicio?: string | null;
+  fechaFin?: string | null;
+  observacion?: string | null;
+  totalValid?: number;
+  validCumplidas?: number;
+}
+
+/** Resultado de una verificación durante la ejecución. */
+export interface EjecucionValid {
+  id?: string;
+  idActividadEquipo: string;
+  idValid: string;
+  cumple: boolean;
+  observacion?: string | null;
+  fecha?: string;
+}
+
+// ---------------------------------------------------------------- Operación en campo
+export type TipoFalla = 'Fuga' | 'RuidoVibracion' | 'Temperatura' | 'Electrica' | 'NoArranca' | 'Otro';
+export type PrioridadFalla = 'Baja' | 'Media' | 'Alta' | 'Critica';
+export type EstadoFalla = 'Abierta' | 'EnAtencion' | 'Cerrada';
+
+export const TIPOS_FALLA: { id: TipoFalla; nombre: string; icono: string }[] = [
+  { id: 'Fuga', nombre: 'Fuga', icono: 'water_drop' },
+  { id: 'RuidoVibracion', nombre: 'Ruido / vibración', icono: 'graphic_eq' },
+  { id: 'Temperatura', nombre: 'Temperatura', icono: 'device_thermostat' },
+  { id: 'Electrica', nombre: 'Eléctrica', icono: 'bolt' },
+  { id: 'NoArranca', nombre: 'No arranca', icono: 'power_settings_new' },
+  { id: 'Otro', nombre: 'Otro', icono: 'more_horiz' },
+];
+export const PRIORIDADES_FALLA: { id: PrioridadFalla; nombre: string }[] = [
+  { id: 'Baja', nombre: 'Baja' },
+  { id: 'Media', nombre: 'Media' },
+  { id: 'Alta', nombre: 'Alta' },
+  { id: 'Critica', nombre: 'Crítica · parar' },
+];
+export const ESTADOS_FALLA: Record<EstadoFalla, string> = {
+  Abierta: 'Abierta',
+  EnAtencion: 'En atención',
+  Cerrada: 'Cerrada',
+};
+
+export interface Falla extends Entidad {
+  idComp?: string;
+  idEquipo: string;
+  tipo: TipoFalla;
+  prioridad: PrioridadFalla;
+  equipoDetenido: boolean;
+  descripcion?: string | null;
+  estadoFalla?: EstadoFalla;
+  idUserReporta?: string | null;
+  fechaReporte?: string;
+  fechaCierre?: string | null;
+  // Solo lectura
+  equipoNombre?: string;
+  equipoSerie?: string | null;
+  reportaNombre?: string | null;
+  numFotos?: number;
+}
+
+export type EntidadAdjunto = 'Equipo' | 'Ejecucion' | 'Falla';
+
+/** Metadatos de una foto. Los bytes se piden aparte (AdjuntoService.archivo). */
+export interface Adjunto {
+  id: string;
+  entidad: EntidadAdjunto;
+  idEntidad: string;
+  /** En Ejecucion: Id de la verificación que evidencia. */
+  ref?: string | null;
+  nombre: string;
+  contentType: string;
+  tamano: number;
+  idUser?: string | null;
+  fecha?: string;
 }
 
 // ---------------------------------------------------------------- Personas

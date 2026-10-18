@@ -1,0 +1,284 @@
+@if (esTecnico) {
+  <!-- ============================================================ Vista de campo (técnico) -->
+  <div class="page-header">
+    <div>
+      <p class="subtitulo">{{ hoy | date: "EEEE d 'de' MMMM" }}{{ cuadrilla() ? ' · ' + cuadrilla() : '' }}</p>
+      <h2>
+        @if (tareas(); as t) {
+          {{ dia() === 'hoy' ? 'Hoy' : 'Mañana' }} tienes {{ t.length }}
+          {{ t.length === 1 ? 'intervención' : 'intervenciones' }}
+        } @else {
+          Cargando tu día…
+        }
+      </h2>
+    </div>
+    <div class="seg" role="group" aria-label="Día">
+      <button type="button" [attr.aria-pressed]="dia() === 'hoy'" (click)="cambiarDia('hoy')">Hoy</button>
+      <button type="button" [attr.aria-pressed]="dia() === 'manana'" (click)="cambiarDia('manana')">Mañana</button>
+    </div>
+  </div>
+
+  <form class="buscar" (ngSubmit)="buscarEquipo()">
+    <label class="buscador">
+      <span class="material-icons" aria-hidden="true">search</span>
+      <span class="sr-only">Buscar equipo</span>
+      <input type="search" name="q" [(ngModel)]="busqueda" placeholder="Buscar equipo por nombre" />
+    </label>
+    <button class="btn btn-primary btn-lg" type="submit">
+      <span class="material-icons" aria-hidden="true">search</span> Buscar
+    </button>
+  </form>
+
+  <div class="dos-columnas">
+    <section class="principal tareas" aria-label="Intervenciones">
+      @for (t of tareas(); track t.id) {
+        <article class="tarea">
+          <div class="hora">
+            {{ t.fechaEjecucion | date: 'HH:mm' }}
+            <small>{{ t.guiaDuracion ? t.guiaDuracion + ' h' : '' }}</small>
+          </div>
+          <div class="info">
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+              @if (t.tipoActividadNombre) {
+                <span class="badge" [class]="'badge ' + claseTipo(t.tipoActividadNombre)">{{
+                  t.tipoActividadNombre
+                }}</span>
+              }
+              @if (t.equipoSerie) {
+                <span class="mono muted">{{ t.equipoSerie }}</span>
+              }
+            </div>
+            <a class="nombre" [routerLink]="['/equipo', t.idEquipo]" style="text-decoration: none">{{
+              t.equipoNombre
+            }}</a>
+            <span class="lugar">
+              <span class="material-icons" aria-hidden="true">place</span>
+              {{ t.ubicacionNombre ?? 'Sin ubicación registrada' }}
+            </span>
+            @if (t.guiaNombre) {
+              <span class="lugar">
+                <span class="material-icons" aria-hidden="true">fact_check</span>{{ t.guiaNombre }}
+              </span>
+            }
+          </div>
+          @if (t.estadoEjec === 'EnCurso') {
+            <div class="avance">
+              {{ t.validCumplidas }} de {{ t.totalValid }} verificaciones
+              <div class="progreso"><span [style.width.%]="porcentaje(t)"></span></div>
+            </div>
+          }
+          @if (t.estadoEjec === 'Completada') {
+            <span class="badge oscuro"
+              ><span class="material-icons" style="font-size: 16px">check</span> Completada</span
+            >
+          }
+          <a [class]="accion(t).clase" [routerLink]="['/ejecucion', t.id]">{{ accion(t).texto }}</a>
+        </article>
+      } @empty {
+        @if (tareas()) {
+          <div class="vacio-bloque">
+            <span class="material-icons" aria-hidden="true">event_available</span>
+            No hay intervenciones programadas para {{ dia() === 'hoy' ? 'hoy' : 'mañana' }}.
+          </div>
+        } @else {
+          <div class="cargando">Cargando…</div>
+        }
+      }
+    </section>
+
+    <aside class="lateral">
+      <div class="card resumen">
+        <h3>Progreso del día</h3>
+        <span class="valor">{{ completadas() }}/{{ tareas()?.length ?? 0 }}</span>
+        <span class="muted"> completadas</span>
+        <div class="barras" aria-hidden="true">
+          @for (t of tareas(); track t.id) {
+            <span
+              [class]="t.estadoEjec === 'Completada' ? 'completada' : t.estadoEjec === 'EnCurso' ? 'encurso' : ''"
+            ></span>
+          }
+        </div>
+      </div>
+      <a class="btn btn-secondary btn-xl btn-bloque" routerLink="/falla/nueva">
+        <span class="material-icons" aria-hidden="true">warning_amber</span> Reportar falla
+      </a>
+    </aside>
+  </div>
+} @else {
+  <!-- ============================================================ Panel de supervisión -->
+  <div class="page-header">
+    <div>
+      <p class="subtitulo">{{ hoy | date: "EEEE d 'de' MMMM" }}</p>
+      <h2>Inicio</h2>
+    </div>
+    <div class="acciones">
+      @if (puedeUbicar) {
+        <a class="btn btn-secondary" routerLink="/equipo/nuevo">Registrar equipo</a>
+      }
+      <a class="btn btn-primary" routerLink="/actividad/nueva">
+        <span class="material-icons" aria-hidden="true">add</span> Programar actividad
+      </a>
+    </div>
+  </div>
+
+  <div class="grid-cards">
+    <a class="card kpi" routerLink="/equipo">
+      <div class="etiqueta">Equipos activos</div>
+      <div class="valor">{{ equipos()?.length ?? '—' }}</div>
+    </a>
+    <a class="card kpi" routerLink="/equipo" [class.alerta]="sinUbicacion().length > 0">
+      <div class="etiqueta">Sin ubicación</div>
+      <div class="valor">{{ equipos() ? sinUbicacion().length : '—' }}</div>
+      <div class="detalle">requieren asignación</div>
+    </a>
+    <a class="card kpi" routerLink="/guia">
+      <div class="etiqueta">Guías registradas</div>
+      <div class="valor">{{ guias() ?? '—' }}</div>
+    </a>
+    <a class="card kpi" routerLink="/falla" [class.alerta]="fallas().length > 0">
+      <div class="etiqueta">Fallas abiertas</div>
+      <div class="valor">{{ fallas().length }}</div>
+    </a>
+    <a class="card kpi" routerLink="/actividad">
+      <div class="etiqueta">Próximas actividades</div>
+      <div class="valor">{{ proximas().length }}</div>
+      <div class="detalle">en los próximos 7 días</div>
+    </a>
+  </div>
+
+  <div class="dos-columnas">
+    <div class="principal">
+      <div class="card">
+        <h3>Hoy en planta</h3>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Equipo</th>
+                <th>Tipo</th>
+                <th>Cuadrilla</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (t of enPlantaHoy(); track t.id) {
+                <tr>
+                  <td class="mono">
+                    <strong>{{ t.fechaEjecucion | date: 'HH:mm' }}</strong>
+                  </td>
+                  <td>
+                    <a [routerLink]="['/ejecucion', t.id]">{{ t.equipoNombre }}</a>
+                    <span class="sub">{{ t.guiaNombre ?? 'Sin guía' }}</span>
+                  </td>
+                  <td>
+                    <span [class]="'badge ' + claseTipo(t.tipoActividadNombre)">{{ t.tipoActividadNombre }}</span>
+                  </td>
+                  <td>{{ t.cuadNombre ?? '—' }}</td>
+                  <td>
+                    <span style="display: inline-flex; align-items: center; gap: 8px">
+                      <span
+                        class="punto"
+                        [class.encurso]="t.estadoEjec === 'EnCurso'"
+                        [class.completada]="t.estadoEjec === 'Completada'"
+                      ></span>
+                      {{ estados[t.estadoEjec ?? 'Pendiente'] }}
+                    </span>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="vacio">No hay intervenciones programadas para hoy.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>
+          Próximas actividades
+          <a class="btn btn-link" routerLink="/actividad">Ver programación</a>
+        </h3>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Cuadrilla</th>
+                <th>Equipos</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of proximas(); track a.id) {
+                <tr>
+                  <td>
+                    <a [routerLink]="['/actividad', a.id]">{{ a.fechaEjecucion | date: 'EEE d MMM, HH:mm' }}</a>
+                  </td>
+                  <td>
+                    <span [class]="'badge ' + claseTipo(a.tipoActividadNombre)">{{ a.tipoActividadNombre }}</span>
+                  </td>
+                  <td>{{ a.descripcion }}</td>
+                  <td>{{ a.cuadNombre ?? '—' }}</td>
+                  <td class="mono">{{ a.numEquipos }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="vacio">No hay actividades en los próximos 7 días.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <aside class="lateral">
+      <div class="card">
+        <h3>
+          <span style="display: inline-flex; align-items: center; gap: 8px">
+            <span class="punto alerta"></span> Fallas abiertas
+          </span>
+          <a class="btn btn-link" routerLink="/falla">Ver todas</a>
+        </h3>
+        @for (f of fallas().slice(0, 5); track f.id) {
+          <a class="fila-lista" routerLink="/falla">
+            <span class="crece">
+              <strong>{{ f.equipoNombre }}</strong>
+              <span class="sub muted" style="display: block; font-size: 13px">
+                {{ tipoFalla(f.tipo) }} · {{ f.fechaReporte | date: 'd MMM, HH:mm' }}
+              </span>
+            </span>
+            <span class="badge" [class.warn]="f.prioridad === 'Critica' || f.prioridad === 'Alta'">{{
+              f.prioridad
+            }}</span>
+          </a>
+        } @empty {
+          <p class="muted" style="margin: 0">Sin fallas abiertas.</p>
+        }
+      </div>
+
+      <div class="card">
+        <h3>Equipos sin ubicación</h3>
+        @for (e of sinUbicacion().slice(0, 6); track e.id) {
+          <div class="fila-lista">
+            <span class="crece">
+              <strong>{{ e.nombre }}</strong>
+              @if (e.nSerie) {
+                <span class="mono muted" style="display: block; font-size: 13px">{{ e.nSerie }}</span>
+              }
+            </span>
+            <a class="btn btn-soft" [routerLink]="puedeUbicar ? ['/equipo', e.id, 'editar'] : ['/equipo', e.id]">
+              {{ puedeUbicar ? 'Ubicar' : 'Ver' }}
+            </a>
+          </div>
+        } @empty {
+          <p class="muted" style="margin: 0">Todos los equipos tienen ubicación.</p>
+        }
+      </div>
+    </aside>
+  </div>
+}

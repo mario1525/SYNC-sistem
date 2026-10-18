@@ -26,6 +26,8 @@ builder.Services.AddSingleton<DaoGuiaEquipo>();
 builder.Services.AddSingleton<DaoTipoActividad>();
 builder.Services.AddSingleton<DaoActividad>();
 builder.Services.AddSingleton<DaoActividadEquipo>();
+builder.Services.AddSingleton<DaoFalla>();
+builder.Services.AddSingleton<DaoAdjunto>();
 
 // Lógica
 builder.Services.AddSingleton<CompLogical>();
@@ -42,6 +44,9 @@ builder.Services.AddSingleton<GuiaEquipoLogical>();
 builder.Services.AddSingleton<TipoActividadLogical>();
 builder.Services.AddSingleton<ActividadLogical>();
 builder.Services.AddSingleton<ActividadEquipoLogical>();
+builder.Services.AddSingleton<EjecucionLogical>();
+builder.Services.AddSingleton<FallaLogical>();
+builder.Services.AddSingleton<AdjuntoLogical>();
 
 var app = builder.Build();
 app.UseSyncDefaults();

@@ -138,27 +138,51 @@ GO
 -- ActividadEquipo (equipos intervenidos en una actividad)
 ------------------------------------------------------------
 CREATE OR ALTER PROCEDURE dbo.db_Sp_ActividadEquipo_Get
-    @Id          VARCHAR(36) = NULL,
-    @IdActividad VARCHAR(36) = NULL,
-    @IdEquipo    VARCHAR(36) = NULL,
-    @IdGuia      VARCHAR(36) = NULL,
-    @IdComp      VARCHAR(36) = NULL,
-    @Estado      BIT         = NULL
+    @Id          VARCHAR(36)   = NULL,
+    @IdActividad VARCHAR(36)   = NULL,
+    @IdEquipo    VARCHAR(36)   = NULL,
+    @IdGuia      VARCHAR(36)   = NULL,
+    @IdComp      VARCHAR(36)   = NULL,
+    @IdCuad      VARCHAR(36)   = NULL,
+    @FechaDesde  SMALLDATETIME = NULL,
+    @FechaHasta  SMALLDATETIME = NULL,
+    @EstadoEjec  VARCHAR(20)   = NULL,
+    @Estado      BIT           = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT ae.Id, ae.IdActividad, ae.IdEquipo, e.Nombre AS EquipoNombre, ae.IdGuia, g.Nombre AS GuiaNombre,
-           a.FechaEjecucion, ae.Estado, ae.Fecha_log
+    SELECT ae.Id, ae.IdActividad, ae.IdEquipo, e.Nombre AS EquipoNombre, e.NSerie AS EquipoSerie,
+           ae.IdGuia, g.Nombre AS GuiaNombre, g.Duracion AS GuiaDuracion,
+           a.FechaEjecucion, a.Descripcion AS ActividadDescripcion, t.Nombre AS TipoActividadNombre,
+           a.IdCuad, c.Nombre AS CuadNombre,
+           CASE WHEN s.Id IS NULL THEN NULL
+                ELSE p.Nombre + ' / ' + ar.Nombre + ' / ' + s.Nombre END AS UbicacionNombre,
+           ae.EstadoEjec, ae.FechaInicio, ae.FechaFin, ae.IdUserEjec, ae.Observacion,
+           (SELECT COUNT(*) FROM dbo.Valid v JOIN dbo.Proced pr ON pr.Id = v.IdProced AND pr.Eliminado = 0
+             WHERE pr.IdGuia = ae.IdGuia AND v.Eliminado = 0) AS TotalValid,
+           (SELECT COUNT(*) FROM dbo.EjecucionValid ev JOIN dbo.Valid v ON v.Id = ev.IdValid AND v.Eliminado = 0
+             WHERE ev.IdActividadEquipo = ae.Id AND ev.Cumple = 1) AS ValidCumplidas,
+           ae.Estado, ae.Fecha_log
     FROM dbo.Actividad_Equipo ae
     JOIN dbo.Actividad a ON a.Id = ae.IdActividad AND a.Eliminado = 0
     JOIN dbo.Equipo e    ON e.Id = ae.IdEquipo
     LEFT JOIN dbo.Guia g ON g.Id = ae.IdGuia
+    LEFT JOIN dbo.TipoActividad t ON t.Id = a.IdTipoActividad
+    LEFT JOIN dbo.Cuad c ON c.Id = a.IdCuad
+    LEFT JOIN dbo.UbicacionEquipo u ON u.IdEquipo = e.Id AND u.Eliminado = 0
+    LEFT JOIN dbo.SeccionArea s ON s.Id = u.IdSeccionArea
+    LEFT JOIN dbo.Area ar ON ar.Id = s.IdArea
+    LEFT JOIN dbo.Planta p ON p.Id = ar.IdPlanta
     WHERE ae.Eliminado = 0
       AND (@Id IS NULL OR ae.Id = @Id)
       AND (@IdActividad IS NULL OR ae.IdActividad = @IdActividad)
       AND (@IdEquipo IS NULL OR ae.IdEquipo = @IdEquipo)
       AND (@IdGuia IS NULL OR ae.IdGuia = @IdGuia)
       AND (@IdComp IS NULL OR a.IdComp = @IdComp)
+      AND (@IdCuad IS NULL OR a.IdCuad = @IdCuad)
+      AND (@FechaDesde IS NULL OR a.FechaEjecucion >= @FechaDesde)
+      AND (@FechaHasta IS NULL OR a.FechaEjecucion < DATEADD(DAY, 1, @FechaHasta))
+      AND (@EstadoEjec IS NULL OR ae.EstadoEjec = @EstadoEjec)
       AND (@Estado IS NULL OR ae.Estado = @Estado)
     ORDER BY a.FechaEjecucion DESC, e.Nombre;
 END

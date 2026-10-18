@@ -80,17 +80,18 @@ BEGIN
     IF @ProcedJson IS NOT NULL
     BEGIN
         DECLARE @p TABLE (Id VARCHAR(36), Nombre VARCHAR(255), Descripcion VARCHAR(MAX), Orden INT);
-        DECLARE @v TABLE (Id VARCHAR(36), IdProced VARCHAR(36), Nombre VARCHAR(255), Descripcion VARCHAR(MAX));
+        DECLARE @v TABLE (Id VARCHAR(36), IdProced VARCHAR(36), Nombre VARCHAR(255), Descripcion VARCHAR(MAX), RequiereFoto BIT);
 
         INSERT INTO @p (Id, Nombre, Descripcion, Orden)
         SELECT j.Id, j.Nombre, ISNULL(j.Descripcion, ''), CAST(k.[key] AS INT)
         FROM OPENJSON(@ProcedJson) k
         CROSS APPLY OPENJSON(k.value) WITH (Id VARCHAR(36) '$.id', Nombre VARCHAR(255) '$.nombre', Descripcion VARCHAR(MAX) '$.descripcion') j;
 
-        INSERT INTO @v (Id, IdProced, Nombre, Descripcion)
-        SELECT v.Id, JSON_VALUE(k.value, '$.id'), v.Nombre, ISNULL(v.Descripcion, '')
+        INSERT INTO @v (Id, IdProced, Nombre, Descripcion, RequiereFoto)
+        SELECT v.Id, JSON_VALUE(k.value, '$.id'), v.Nombre, ISNULL(v.Descripcion, ''), ISNULL(v.RequiereFoto, 0)
         FROM OPENJSON(@ProcedJson) k
-        CROSS APPLY OPENJSON(k.value, '$.valid') WITH (Id VARCHAR(36) '$.id', Nombre VARCHAR(255) '$.nombre', Descripcion VARCHAR(MAX) '$.descripcion') v;
+        CROSS APPLY OPENJSON(k.value, '$.valid') WITH (Id VARCHAR(36) '$.id', Nombre VARCHAR(255) '$.nombre',
+            Descripcion VARCHAR(MAX) '$.descripcion', RequiereFoto BIT '$.requiereFoto') v;
 
         -- Bajas: lo que ya no viene en el JSON
         UPDATE dbo.Valid SET Eliminado = 1
@@ -107,11 +108,11 @@ BEGIN
         FROM @p p WHERE NOT EXISTS (SELECT 1 FROM dbo.Proced x WHERE x.Id = p.Id);
 
         -- Altas / cambios de Valid
-        UPDATE va SET Nombre = v.Nombre, Descripcion = v.Descripcion, IdProced = v.IdProced
+        UPDATE va SET Nombre = v.Nombre, Descripcion = v.Descripcion, IdProced = v.IdProced, RequiereFoto = v.RequiereFoto
         FROM dbo.Valid va JOIN @v v ON v.Id = va.Id
         WHERE va.IdProced IN (SELECT Id FROM dbo.Proced WHERE IdGuia = @Id);
-        INSERT INTO dbo.Valid (Id, IdProced, Nombre, Descripcion, Estado, Eliminado)
-        SELECT v.Id, v.IdProced, v.Nombre, v.Descripcion, 1, 0
+        INSERT INTO dbo.Valid (Id, IdProced, Nombre, Descripcion, RequiereFoto, Estado, Eliminado)
+        SELECT v.Id, v.IdProced, v.Nombre, v.Descripcion, v.RequiereFoto, 1, 0
         FROM @v v WHERE NOT EXISTS (SELECT 1 FROM dbo.Valid x WHERE x.Id = v.Id);
     END
 
@@ -208,7 +209,7 @@ CREATE OR ALTER PROCEDURE dbo.db_Sp_Valid_Get
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT v.Id, v.IdProced, pr.IdGuia, v.Nombre, v.Descripcion, v.Estado, v.Fecha_log
+    SELECT v.Id, v.IdProced, pr.IdGuia, v.Nombre, v.Descripcion, v.RequiereFoto, v.Estado, v.Fecha_log
     FROM dbo.Valid v
     JOIN dbo.Proced pr ON pr.Id = v.IdProced AND pr.Eliminado = 0
     JOIN dbo.Guia g    ON g.Id = pr.IdGuia AND g.Eliminado = 0
@@ -228,16 +229,18 @@ CREATE OR ALTER PROCEDURE dbo.db_Sp_Valid_Set
     @IdProced    VARCHAR(36),
     @Nombre      VARCHAR(255),
     @Descripcion VARCHAR(MAX),
+    @RequiereFoto BIT = 0,
     @Estado      BIT,
     @Operacion   CHAR(1)
 AS
 BEGIN
     SET NOCOUNT ON;
     IF @Operacion = 'I'
-        INSERT INTO dbo.Valid (Id, IdProced, Nombre, Descripcion, Estado, Eliminado)
-        VALUES (@Id, @IdProced, @Nombre, ISNULL(@Descripcion, ''), @Estado, 0);
+        INSERT INTO dbo.Valid (Id, IdProced, Nombre, Descripcion, RequiereFoto, Estado, Eliminado)
+        VALUES (@Id, @IdProced, @Nombre, ISNULL(@Descripcion, ''), ISNULL(@RequiereFoto, 0), @Estado, 0);
     ELSE IF @Operacion = 'A'
-        UPDATE dbo.Valid SET Nombre = @Nombre, Descripcion = ISNULL(@Descripcion, ''), Estado = @Estado
+        UPDATE dbo.Valid SET Nombre = @Nombre, Descripcion = ISNULL(@Descripcion, ''),
+            RequiereFoto = ISNULL(@RequiereFoto, 0), Estado = @Estado
         WHERE Id = @Id AND Eliminado = 0;
 END
 GO

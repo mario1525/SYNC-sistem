@@ -53,7 +53,7 @@ namespace Data
                     id = p.Id,
                     nombre = p.Nombre,
                     descripcion = p.Descripcion,
-                    valid = (p.valid ?? []).Select(v => new { id = v.Id, nombre = v.Nombre, descripcion = v.Descripcion })
+                    valid = (p.valid ?? []).Select(v => new { id = v.Id, nombre = v.Nombre, descripcion = v.Descripcion, requiereFoto = v.RequiereFoto })
                 }), Json))
         ];
 
@@ -139,6 +139,7 @@ namespace Data
             Sql.P("@IdProced", e.IdProced),
             Sql.P("@Nombre", e.Nombre),
             Sql.P("@Descripcion", e.Descripcion),
+            Sql.P("@RequiereFoto", e.RequiereFoto),
             Sql.P("@Estado", e.Estado)
         ];
 
@@ -149,6 +150,7 @@ namespace Data
             IdGuia = r.StrOrNull("IdGuia"),
             Nombre = r.Str("Nombre"),
             Descripcion = r.Str("Descripcion"),
+            RequiereFoto = r.Bool("RequiereFoto"),
             Estado = r.Bool("Estado"),
             Fecha_log = r.Date("Fecha_log")
         };

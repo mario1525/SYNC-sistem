@@ -1,0 +1,180 @@
+<div class="page-header">
+  <div>
+    <p class="subtitulo">Tres pasos rápidos · menos de un minuto</p>
+    <h2>Reportar falla</h2>
+  </div>
+  <div class="acciones">
+    <button class="btn btn-secondary" type="button" (click)="cancelar()">Cancelar</button>
+  </div>
+</div>
+
+<div class="dos-columnas">
+  <div class="principal" style="display: flex; flex-direction: column; gap: 22px">
+    <!-- Equipo -->
+    @if (seleccionado(); as e) {
+      <div class="equipo-sel">
+        <span class="material-icons" aria-hidden="true">precision_manufacturing</span>
+        <span class="crece">
+          <strong style="font-size: 18px">{{ e.nombre }}</strong>
+          @if (e.nSerie) {
+            <span class="mono muted"> {{ e.nSerie }}</span>
+          }
+          <span class="muted" style="display: block; font-size: 14px">
+            @let u = e.ubicacion;
+            @if (u && u.idSeccionArea) {
+              {{ u.plantaNombre }} / {{ u.areaNombre }} / {{ u.seccionNombre }}
+            } @else {
+              Sin ubicación registrada
+            }
+          </span>
+        </span>
+        <button class="btn btn-soft" type="button" (click)="cambiarEquipo()">Cambiar</button>
+      </div>
+    } @else {
+      <div>
+        <h2 class="paso">¿En qué equipo?</h2>
+        <label class="buscador">
+          <span class="material-icons" aria-hidden="true">search</span>
+          <span class="sr-only">Buscar equipo</span>
+          <input
+            type="search"
+            [ngModel]="busqueda()"
+            (ngModelChange)="busqueda.set($event)"
+            placeholder="Nombre o número de serie"
+          />
+        </label>
+        <div class="resultados">
+          @for (e of coincidencias(); track e.id) {
+            <button class="opcion" type="button" (click)="seleccionado.set(e)">
+              <span class="material-icons" aria-hidden="true">precision_manufacturing</span>
+              {{ e.nombre }}
+              @if (e.nSerie) {
+                <span class="mono muted">{{ e.nSerie }}</span>
+              }
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- 1. Tipo -->
+    <section>
+      <h2 class="paso"><span class="mono">1</span>¿Qué está pasando?</h2>
+      <div class="rejilla tipos" role="group" aria-label="Tipo de falla">
+        @for (t of tipos; track t.id) {
+          <button class="opcion" type="button" [attr.aria-pressed]="tipo() === t.id" (click)="tipo.set(t.id)">
+            <span class="material-icons" aria-hidden="true" style="font-size: 28px">{{ t.icono }}</span>
+            {{ t.nombre }}
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- 2. Urgencia -->
+    <section>
+      <h2 class="paso"><span class="mono">2</span>¿Qué tan urgente es?</h2>
+      <div class="rejilla prioridades" role="radiogroup" aria-label="Prioridad">
+        @for (p of prioridades; track p.id) {
+          <button
+            class="opcion"
+            [class.critica]="p.id === 'Critica'"
+            type="button"
+            role="radio"
+            [attr.aria-checked]="prioridad() === p.id"
+            (click)="prioridad.set(p.id)"
+          >
+            {{ p.nombre }}
+          </button>
+        }
+      </div>
+      <div class="card" style="display: flex; align-items: center; gap: 14px; margin: 12px 0 0; flex-wrap: wrap">
+        <div style="flex: 1">
+          <strong style="font-size: 17px">¿El equipo está detenido?</strong>
+          <div class="muted" style="font-size: 14px">Supervisión lo verá como urgente en su panel</div>
+        </div>
+        <div class="seg" role="group" aria-label="Equipo detenido">
+          <button
+            type="button"
+            [attr.aria-pressed]="!detenido()"
+            (click)="detenido.set(false)"
+            style="min-width: 72px; min-height: 48px"
+          >
+            No
+          </button>
+          <button
+            type="button"
+            [attr.aria-pressed]="detenido()"
+            (click)="detenido.set(true)"
+            style="min-width: 72px; min-height: 48px"
+          >
+            Sí
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="lateral" style="display: flex; flex-direction: column; gap: 22px">
+    <!-- 3. Descripción y fotos -->
+    <section>
+      <h2 class="paso"><span class="mono">3</span>Describe y documenta</h2>
+      <div class="form-group">
+        <label for="desc">Descripción (opcional si adjuntas fotos)</label>
+        <textarea
+          id="desc"
+          rows="5"
+          [(ngModel)]="descripcion"
+          placeholder="Ej.: goteo constante en el sello lado acople, empezó hoy a las 7:40"
+        ></textarea>
+      </div>
+      @if (puedeDictar) {
+        <button
+          class="btn btn-secondary btn-lg btn-bloque"
+          type="button"
+          style="margin-top: 10px"
+          (click)="dictar()"
+          [attr.aria-pressed]="dictando()"
+        >
+          <span class="material-icons" aria-hidden="true">{{ dictando() ? 'stop' : 'mic' }}</span>
+          {{ dictando() ? 'Detener dictado' : 'Dictar descripción' }}
+        </button>
+      }
+    </section>
+
+    <section>
+      <p class="muted" style="margin: 0 0 8px">Fotos ({{ fotos().length }}/{{ maxFotos }})</p>
+      <div class="rejilla fotos">
+        @for (f of fotos(); track f.url; let i = $index) {
+          <div class="foto">
+            <img [src]="f.url" [alt]="'Foto ' + (i + 1) + ' de la falla'" />
+            <button type="button" [attr.aria-label]="'Quitar foto ' + (i + 1)" (click)="quitarFoto(i)">
+              <span class="material-icons" aria-hidden="true">close</span>
+            </button>
+          </div>
+        }
+        @if (fotos().length < maxFotos) {
+          <app-tomar-foto clase="opcion" (foto)="agregarFoto($event)" style="display: grid">
+            <span class="material-icons" aria-hidden="true">add_a_photo</span>
+            <span class="sr-only">Tomar foto</span>
+          </app-tomar-foto>
+        }
+      </div>
+    </section>
+
+    <button
+      class="btn btn-xl btn-bloque"
+      [class.btn-accent]="!urgente()"
+      [class.btn-danger]="urgente()"
+      type="button"
+      [disabled]="!listo() || enviando()"
+      (click)="enviar()"
+      style="min-height: 72px; font-size: 19px"
+    >
+      <span class="material-icons" aria-hidden="true">send</span>
+      {{ enviando() ? 'Enviando…' : urgente() ? 'Enviar como urgente' : 'Enviar reporte' }}
+    </button>
+    @if (!listo()) {
+      <p class="muted" style="margin: -12px 0 0; text-align: center">Selecciona el equipo y qué está pasando.</p>
+    }
+  </div>
+</div>
